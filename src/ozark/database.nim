@@ -25,20 +25,20 @@ type
 
   DBConnections = OrderedTableRef[string, DBConnection]
 
-  Enimsql = object
+  Ozark = object
     dbs: DBConnections
       # holds credentials for multiple Database Connections
     maindb: DBConnection
       # credentials for the main database connection
 
 var
-  DB: ptr Enimsql
+  DB: ptr Ozark
   o = createOnce()
 
-proc getInstance*(): ptr Enimsql =
+proc getInstance*(): ptr Ozark =
   ## Get the singleton instance of the database manager
   once(o):
-    DB = createShared(Enimsql)
+    DB = createShared(Ozark)
   result = DB
 
 proc initOzarkDatabase*(address, name, user, password: string,
@@ -55,11 +55,11 @@ proc initOzarkDatabase*(address, name, user, password: string,
     driver: driver
   )
 
-proc `[]=`*(db: Enimsql, id: string, dbCon: DBConnection) =
+proc `[]=`*(db: Ozark, id: string, dbCon: DBConnection) =
   ## Add new database connection credentials
   db[id] = dbCon
 
-proc add*(db: Enimsql, id: string, dbCon: DBConnection) {.inline.} =
+proc add*(db: Ozark, id: string, dbCon: DBConnection) {.inline.} =
   ## Add new database connection credentials
   db[id] = dbCon
 
