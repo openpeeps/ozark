@@ -12,15 +12,15 @@
   <img src="https://github.com/openpeeps/ozark/workflows/test/badge.svg" alt="Github Actions">  <img src="https://github.com/openpeeps/ozark/workflows/docs/badge.svg" alt="Github Actions">
 </p>
 
-> [!NOTE]
-> Ozark is still in active development. Expect bugs and breaking changes. Contributions are welcome!
-
 ## 😍 Key Features
 - [x] Macro-based query builder with a fluent API
 - [x] Compile-time SQL validation & type safety
 - [x] Support for PostgreSQL
 - [ ] Async query execution (coming soon)
 - [ ] Migration system (coming soon)
+
+> [!NOTE]
+> Ozark is still in active development. Expect bugs and breaking changes. Contributions are welcome!
 
 ## Examples
 
