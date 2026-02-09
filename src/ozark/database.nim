@@ -69,7 +69,7 @@ proc add*(db: Ozark, id: string, dbCon: DBConnection) {.inline.} =
   ## Add new database connection credentials
   db[id] = dbCon
 
-macro withMainDB*(body: untyped) =
+macro withDB*(body: untyped) =
   ## Use the current database context to run database queries.
   ## 
   ## This macro will open a connection to the database,
@@ -86,7 +86,7 @@ macro withMainDB*(body: untyped) =
     block:
       `body`
 
-macro withDB*(id: static string, body: untyped) =
+macro withDatabase*(id: static string, body: untyped) =
   ## Use the specified database context to run database queries.
   ## 
   ## This macro will open a connection to the database,
