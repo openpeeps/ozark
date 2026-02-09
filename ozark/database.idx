@@ -1,0 +1,12 @@
+nimTitle	database	ozark/database.html	module ozark/database		0
+nim	DBConnectionPool	ozark/database.html#DBConnectionPool	type DBConnectionPool		16
+nim	PostgreSQLDriver	ozark/database.html#PostgreSQLDriver	DBDriver.PostgreSQLDriver		20
+nim	MYSQLDriver	ozark/database.html#MYSQLDriver	DBDriver.MYSQLDriver		20
+nim	SQLiteDriver	ozark/database.html#SQLiteDriver	DBDriver.SQLiteDriver		20
+nim	DBDriver	ozark/database.html#DBDriver	enum DBDriver		20
+nim	getInstance	ozark/database.html#getInstance	proc getInstance(): ptr Ozark		44
+nim	initOzarkDatabase	ozark/database.html#initOzarkDatabase,string,string,string,string,Port,DBDriver	proc initOzarkDatabase(address, name, user, password: string; port: Port;\n                  driver: DBDriver = DBDriver.PostgreSQLDriver)		50
+nim	`[]=`	ozark/database.html#[]=,Ozark,string,DBConnection	proc `[]=`(db: Ozark; id: string; dbCon: DBConnection)		64
+nim	add	ozark/database.html#add,Ozark,string,DBConnection	proc add(db: Ozark; id: string; dbCon: DBConnection)		68
+nim	withDB	ozark/database.html#withDB.m,untyped	macro withDB(body: untyped)		72
+nim	withDatabase	ozark/database.html#withDatabase.m,staticstring,untyped	macro withDatabase(id: static string; body: untyped)		89

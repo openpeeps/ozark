@@ -1,0 +1,9 @@
+nimTitle	model	ozark/model.html	module ozark/model		0
+nim	Model	ozark/model.html#Model	object Model		16
+nim	SchemaTable	ozark/model.html#SchemaTable	type SchemaTable		18
+nim	ModelsTable	ozark/model.html#ModelsTable	object ModelsTable		21
+nim	Models	ozark/model.html#Models	var Models		27
+nim	StaticSchemas	ozark/model.html#StaticSchemas	const StaticSchemas		33
+nim	getDatatype	ozark/model.html#getDatatype,string	proc getDatatype(dt: string): (DataType, Option[seq[string]])		46
+nim	getTableName	ozark/model.html#getTableName,string	proc getTableName(id: string): string		57
+nim	newModel	ozark/model.html#newModel.m,untyped,untyped	macro newModel(id, fields: untyped)		66

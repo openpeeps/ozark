@@ -1,0 +1,8 @@
+nimTitle	collection	ozark/collection.html	module ozark/collection		0
+nim	Collection	ozark/collection.html#Collection	object Collection		9
+nim	len	ozark/collection.html#len,Collection[T]	proc len[T](col: Collection[T]): int		17
+nim	isEmpty	ozark/collection.html#isEmpty,Collection[T]	proc isEmpty[T](col: Collection[T]): bool		21
+nim	first	ozark/collection.html#first,Collection[T]	proc first[T](col: Collection[T]): T		25
+nim	contains	ozark/collection.html#contains,Collection[T],string,string	proc contains[T](col: Collection[T]; key, val: string): bool		29
+nim	items	ozark/collection.html#items.i,Collection[T]	iterator items[T](col: Collection[T]): T		37
+nim	mitems	ozark/collection.html#mitems.i,Collection[T]	iterator mitems[T](col: Collection[T]): var T		42

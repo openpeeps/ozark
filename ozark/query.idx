@@ -1,0 +1,16 @@
+nimTitle	query	ozark/query.html	module ozark/query		0
+nim	OzarkModelDefect	ozark/query.html#OzarkModelDefect	object OzarkModelDefect		18
+nim	table	ozark/query.html#table.m,ptr.ModelsTable,staticstring	macro table(models: ptr ModelsTable; name: static string): untyped		25
+nim	select	ozark/query.html#select.m,untyped,staticopenArray[string]	macro select(tableName: untyped; cols: static openArray[string]): untyped		34
+nim	select	ozark/query.html#select.m,untyped,staticstring	macro select(tableName: untyped; col: static string): untyped		46
+nim	selectAll	ozark/query.html#selectAll.m,untyped	macro selectAll(tableName: untyped): untyped		57
+nim	where	ozark/query.html#where.m,untyped,staticstring,staticstring	macro where(sql: untyped; col: static string; val: static string): untyped		62
+nim	whereNot	ozark/query.html#whereNot.m,untyped,staticstring,staticstring	macro whereNot(sql: untyped; col: static string; val: static string): untyped		76
+nim	getAll	ozark/query.html#getAll.m,untyped,typedesc	macro getAll(sql: untyped; m: typedesc): untyped		171
+nim	get	ozark/query.html#get.m,untyped,typedesc	macro get(sql: untyped; m: typedesc): untyped		179
+nim	insert	ozark/query.html#insert.m,staticstring,untyped	macro insert(tableName: static string; data: untyped): untyped		186
+nim	rawSQL	ozark/query.html#rawSQL.m,ptr.ModelsTable,staticstring,varargs[untyped]	macro rawSQL(models: ptr ModelsTable; sql: static string; values: varargs[untyped]): untyped		213
+nim	exec	ozark/query.html#exec.m,untyped	macro exec(sql: untyped)		233
+nim	execGet	ozark/query.html#execGet.m,untyped	macro execGet(sql: untyped)		247
+nim	`$`	ozark/query.html#$,SqlQuery	proc `$`(sql: SqlQuery): string		256
+nimgrp	select	ozark/query.html#select-macros-all	macro		34
