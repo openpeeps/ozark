@@ -1,9 +1,8 @@
-# Enimsql - A simple ORM for Nim
+# A magical ORM for the Nim language
 #
-# (c) 2025 George Lemon | LGPL License
+# (c) 2026 George Lemon | MIT License
 #          Made by Humans from OpenPeeps
-#          https://github.com/openpeeps/enimsql
-
+#          https://github.com/openpeeps/ozark
 type
   DataType* = enum
     BigInt = "int8"

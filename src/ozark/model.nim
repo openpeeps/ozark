@@ -7,15 +7,13 @@
 import std/[macros, macrocache, tables, strutils, options, sequtils]
 
 import pkg/threading/once
-import pkg/parsesql
+import pkg/[parsesql, voodoo/setget]
 
 import ./private/types
-export tables
+export tables, setget
 
 type
   Model* = object of RootObj
-    tableName*: string
-    fields*: TableRef[string, string]
 
   SchemaTable* = OrderedTableRef[string, ref Model]
     ## A cache table that holds all models defined at compile-time.
@@ -109,6 +107,7 @@ macro newModel*(id, fields: untyped) =
         modelSchema[$(fieldName)] = colDefNode
       of nnkAccQuoted:
         field[0][0].expectKind(nnkIdent)
+        let id = field[0][0]
         fieldIdent.add(nnkPostfix.newTree(ident"*", field[0][0]))
       of nnkPragmaExpr:
         var id: NimNode
@@ -116,7 +115,7 @@ macro newModel*(id, fields: untyped) =
           id = field[0][0]
         elif field[0][0].kind == nnkAccQuoted:
           id = field[0][0][0]
-        fieldIdent.add(nnkPostfix.newTree(ident"*", id))
+          fieldIdent.add(nnkPostfix.newTree(ident"*", id))
       else: discard
       fieldIdent.add(ident"string")
       fieldIdent.add(newEmptyNode())
@@ -126,7 +125,10 @@ macro newModel*(id, fields: untyped) =
   result = newStmtList(
     nnkTypeSection.newTree(
       nnkTypeDef.newTree(
-        nnkPostfix.newTree(ident("*"), id),
+        nnkPragmaExpr.newTree(
+          nnkPostfix.newTree(ident("*"), id),
+          nnkPragma.newTree(ident"getters")
+        ),
         newEmptyNode(),
         nnkRefTy.newTree(
           nnkObjectTy.newTree(
@@ -139,6 +141,7 @@ macro newModel*(id, fields: untyped) =
         )
       )
     ),
+    newCall(ident"expandGetters"),
     nnkAsgn.newTree(
       nnkBracketExpr.newTree(
         nnkDotExpr.newTree(

@@ -41,7 +41,7 @@ proc getInstance*(): ptr Enimsql =
     DB = createShared(Enimsql)
   result = DB
 
-proc initDBManager*(address, name, user, password: string,
+proc initOzarkDatabase*(address, name, user, password: string,
                 port: Port, driver: DBDriver = DBDriver.PostgreSQLDriver) =
   ## Initializes the singleton instance of the database manager
   ## using provided credentials as main database
@@ -64,7 +64,10 @@ proc add*(db: Enimsql, id: string, dbCon: DBConnection) {.inline.} =
   db[id] = dbCon
 
 macro withDB*(body) =
-  ## Use the current database context to run database queries
+  ## Use the current database context to run database queries.
+  ## 
+  ## This macro will open a connection to the database,
+  ## execute the body, and then close the connection.
   result = newStmtList()
   add result, quote do:
     let db = getInstance()

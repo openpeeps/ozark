@@ -2,7 +2,7 @@
 
 version       = "0.1.0"
 author        = "George Lemon"
-description   = "A simple ORM for Nim"
+description   = "A magical ORM for the Nim language "
 license       = "MIT"
 srcDir        = "src"
 
@@ -11,6 +11,9 @@ srcDir        = "src"
 
 requires "nim >= 2.0.0"
 requires "db_connector"
-requires "jsony#head"
+
 requires "threading"
 requires "parsesql"
+
+requires "jsony#head"
+requires "voodoo#head"
