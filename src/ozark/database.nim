@@ -69,7 +69,7 @@ proc add*(db: Ozark, id: string, dbCon: DBConnection) {.inline.} =
   ## Add new database connection credentials
   db[id] = dbCon
 
-macro withDB*(body) =
+macro withMainDB*(body: untyped) =
   ## Use the current database context to run database queries.
   ## 
   ## This macro will open a connection to the database,
@@ -81,6 +81,24 @@ macro withDB*(body) =
     let dbcon {.inject.} =
         open(db[].maindb.address, db[].maindb.user,
                 db[].maindb.password, db[].maindb.name)
+    defer:
+      dbcon.close()
+    block:
+      `body`
+
+macro withDB*(id: static string, body: untyped) =
+  ## Use the specified database context to run database queries.
+  ## 
+  ## This macro will open a connection to the database,
+  ## execute the body, and then close the connection.
+  result = newStmtList()
+  add result, quote do:
+    let db = getInstance()
+    assert db != nil, "Database manager not initialized. Call initDBManager first."
+    assert db.hasKey(id), "Database connection with id `" & id & "` not found."
+    let dbcon {.inject.} =
+        open(db[id].address, db[$id].user,
+                db[id].password, db[$id].name)
     defer:
       dbcon.close()
     block:
