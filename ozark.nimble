@@ -17,3 +17,5 @@ requires "parsesql"
 
 requires "jsony#head"
 requires "voodoo#head"
+
+requires "greskewel"

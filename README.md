@@ -65,11 +65,9 @@ withDB do:
   # getting the first result from the collection
   let user: User = results.first()
   
-  # each field of the user instance is also type-safe and
-  # can be accessed with the generated getters
-  assert user.getId == 1
+  assert user.getId == "1"
   assert user.getName == "Alice"
-  assert user.getAge == 30
+  assert user.getAge == "30"
 ```
 
 ### Querying with raw SQL

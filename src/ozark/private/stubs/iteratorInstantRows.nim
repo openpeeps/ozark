@@ -5,7 +5,8 @@ block:
     cols: DBColumns = @[]
     colKeys: seq[string]
   let colNames = [$3]
-  for row in instantRows(dbcon, cols, SqlQuery("$1") $5):
+  let sqlPrepared = prepare(dbcon, "ozark_instant_$7", SqlQuery("$1"), $6)
+  for row in instantRows(dbcon, cols, sqlPrepared $5):
     isEmpty = isEmpty and row.len == 0
     if isEmpty: continue # skip empty rows
     if colKeys.len == 0:

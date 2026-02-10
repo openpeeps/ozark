@@ -4,9 +4,13 @@
 #          Made by Humans from OpenPeeps
 #          https://github.com/openpeeps/ozark
 
-import std/[macros, macrocache, strutils, sequtils, tables, os]
+import std/[macros, macrocache, strutils,
+      sequtils, tables, os, random]
 
-import pkg/db_connector/[db_postgres, db_common]
+import pkg/db_connector/postgres {.all.}
+import pkg/db_connector/db_postgres {.all.}
+import pkg/db_connector/db_common {.all.}
+
 import pkg/parsesql
 
 import ./model, ./collection
@@ -22,13 +26,15 @@ template checkTableExists(name: string) =
   if not StaticSchemas.hasKey(name):
     raise newException(OzarkModelDefect, "Unknown model `" & name & "`")
 
+randomize() # initialize random seed for generating unique statement names in `tryInsertID`
+
 macro table*(models: ptr ModelsTable, name: static string): untyped = 
   ## Define SQL statement for a table
   checkTableExists(name)
   result = newLit(name)
 
 proc ozarkSelectResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
-proc ozarkWhereResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
+proc ozarkWhereResult(sql: static[string], val: string): NimNode {.compileTime.} = newLit(sql)
 proc ozarkRawSQLResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkInsertResult(sql: static[string], values: seq[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkLimitResult(sql: static[string], count: int): NimNode {.compileTime.} = newLit(sql)
@@ -61,7 +67,7 @@ macro selectAll*(tableName: untyped): untyped =
   checkTableExists($tableName)
   result = newCall(bindSym"ozarkSelectResult", newLit("SELECT * FROM " & $tableName))
 
-macro where*(sql: untyped, col: static string, val: static string): untyped =
+macro where*(sql: untyped, col: static string, val: untyped): untyped =
   ## Define WHERE clause
   if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
     error("The first argument to `where` must be the result of a `select` macro.")
@@ -72,10 +78,11 @@ macro where*(sql: untyped, col: static string, val: static string): untyped =
     raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
   let selectSql = sql[1].strVal
   result = newCall(bindSym"ozarkWhereResult",
-    newLit(selectSql & " WHERE " & col & " = '" & val & "'")
+    newLit(selectSql & " WHERE " & col & " = $1"),
+    val
   )
 
-macro whereNot*(sql: untyped, col: static string, val: static string): untyped =
+macro whereNot*(sql: untyped, col: static string, val: untyped): untyped =
   ## Define WHERE clause with NOT
   if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
     error("The first argument to `whereNot` must be the result of a `select` macro.")
@@ -86,7 +93,8 @@ macro whereNot*(sql: untyped, col: static string, val: static string): untyped =
     raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
   let selectSql = sql[1].strVal
   result = newCall(bindSym"ozarkWhereResult",
-    newLit(selectSql & " WHERE " & col & " != '" & val & "'")
+    newLit(selectSql & " WHERE " & col & " != $1"),
+    val
   )
 
 template parseSqlQuery(getRowProcName: string, args: seq[NimNode] = @[]) {.dirty.} =
@@ -130,17 +138,18 @@ template parseSqlQuery(getRowProcName: string, args: seq[NimNode] = @[]) {.dirty
           assigns.join("\n    "), getRowProcName
         ]
     else:
+      let randId = genSym(nskVar, "id")
       runtimeCode =
         staticRead("private" / "stubs" / "iteratorInstantRows.nim") % [
           $parsedSql,
           $(getTypeImpl(m)[1]),
           colNames.mapIt("\"" & it & "\"").join(","),
           getRowProcName,
-            if args.len > 0: "," & args.mapIt(it.repr).join(",")
-            else: ""
+          (if args.len > 0: "," & args.mapIt(it.repr).join(",") else: ""),
+          (if args.len > 0: $args.len else: "0"),
+          randId.repr
         ]
     result = macros.parseStmt(runtimeCode) # parse the generated code into a NimNode
-    # echo result.repr
   except SqlParseError as e:
     raise newException(OzarkModelDefect, "SQL Parsing Error: " & e.msg)
 
@@ -153,7 +162,7 @@ macro getAll*(sql: untyped, m: typedesc): untyped =
   if sql[0].strVal == "ozarkLimitResult":
     parseSqlQuery("instantRows", @[nnkPrefix.newTree(ident"$", sql[2])])
   else:
-    parseSqlQuery("instantRows")
+    parseSqlQuery("instantRows", @[nnkPrefix.newTree(ident"$", sql[2])])
 
 macro get*(sql: untyped, m: typedesc): untyped =
   ## Finalize SQL statement. This macro produces the final SQL
@@ -168,18 +177,24 @@ macro insert*(tableName: static string, data: untyped): untyped =
   expectKind(data, nnkTableConstr)
   var cols: seq[string]
   var values = newNimNode(nnkBracket)
+  var valuesIds: seq[int]
+  var idx = 1
   for kv in data:
+    # var idx = genSym(nskVar, "v")
     let col = $kv[0]
     if col.validIdentifier:
       # todo check if column exists in model
       # todo check for NOT NULL columns without default values
       cols.add(col)
       values.add(kv[1])
+      valuesIds.add(idx)
+      inc idx
     else:
       raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
+  
   result = newCall(
     bindSym"ozarkInsertResult",
-    newLit("insert into " & $tableName & " (" & cols.join(",") & ") VALUES (" & values.mapIt("?").join(",") & ")"),
+    newLit("insert into " & $tableName & " (" & cols.join(",") & ") VALUES (" & valuesIds.mapIt("$" & $it).join(",") & ")"),
     nnkPrefix.newTree(ident"@", values)
   )
 
@@ -234,13 +249,32 @@ macro rawSQL*(models: ptr ModelsTable, sql: static string, values: varargs[untyp
 macro exec*(sql: untyped) =
   ## Finalize and execute an SQL statement that doesn't
   ## return results (e.g. INSERT, UPDATE, DELETE).
-  if sql.kind != nnkStrLit:
-    error("The argument to `exec` must be a string literal containing the SQL statement.")
-  result = newCall(
-    ident"exec",
-    ident"dbcon",
-    newCall(ident"SqlQuery", sql)
-  )
+  if sql.kind != nnkCall or sql[0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult", "ozarkInsertResult"]:
+    error("The argument to `exec` must be the result of a `where`, `rawSQL`, or `insert` macro.")
+  try:
+    let sqlNode = parseSQL(sql[1].strVal)
+    result = newCall(
+      ident"exec",
+      ident"dbcon",
+      newCall(ident"SqlQuery", newLit($sqlNode))
+    )
+  except SqlParseError as e:
+    raise newException(OzarkModelDefect, "SQL Parsing Error: " & e.msg)
+
+proc tryInsertID*(db: DbConn, query: SqlPrepared,
+                  args: varargs[string, `$`]): int64 {.
+                  tags: [WriteDbEffect].}=
+  ## executes the query (typically "INSERT") and returns the
+  ## generated ID for the row or -1 in case of an error. For Postgre this adds
+  ## `RETURNING id` to the query, so it only works if your primary key is
+  ## named `id`.
+  let res = setupQuery(db, query, args)
+  var x = pqgetvalue(res, 0, 0)
+  if not isNil(x):
+    result = parseBiggestInt($x)
+  else:
+    result = -1
+  pqclear(res)
 
 macro execGet*(sql: untyped): untyped =
   ## Finalize and execute an SQL statement that returns
@@ -254,8 +288,14 @@ macro execGet*(sql: untyped): untyped =
     let sqlNode = parseSQL($sql[1])
     case sqlNode.sons[0].kind
     of nkInsert:
+      let randId = genSym(nskVar, "id")
       let stub = staticRead("private" / "stubs" / "tryInsertID.nim")
-      result = macros.parseStmt(stub % [$sql[1], $sql[2][1].mapIt(it.repr).join(",")])
+      result = macros.parseStmt(stub % [
+              $sql[1],
+              $sql[2][1].mapIt(it.repr).join(","),
+              randId.repr,
+              $(sql[2][1]).len
+        ])
     of nkDelete:
       discard
     else: discard 
