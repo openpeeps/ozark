@@ -25,6 +25,8 @@ jobs:
         with:
           nim-version: ${{ matrix.nim-version }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: nimble install https://github.com/georgelemon/parsesql@#pr_allow_positional_params # temporary workaround until the PR is merged?
+      - run: nimble install https://github.com/georgelemon/db_connector@#pr_instant_rows_cols_prepared # temporary workaround until the PR is merged?
       - run: nimble install -Y
       - run: nim c -r src/${{ github.event.repository.name }}.nim
       - run: nimble test
