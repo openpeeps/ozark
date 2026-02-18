@@ -50,9 +50,6 @@ test "insert and select data":
     check res.entries[0].name == "John"
     check res.entries[0].username == "john1232"
     check res.entries[0].email == "test@example.com"
-
-  greskew.stop()
-  greskew.dispose()
   {.pop.}
 
 test "whereLike query":
@@ -102,3 +99,8 @@ test "whereNotEndsLike query":
     check res.isEmpty == false
     check res.get(0).name == "John"
   {.pop.}
+
+
+test "close embedded postgres":
+  greskew.stop()
+  greskew.dispose()
