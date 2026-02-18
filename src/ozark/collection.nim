@@ -26,6 +26,19 @@ proc first*[T](col: Collection[T]): T =
   ## Get the first item in the collection.
   result = col.entries[0]
 
+proc `[]`*[T](col: Collection[T], index: int): T =
+  ## A short syntax for accessing items in the collection by index.
+  result = col.entries[index]
+
+proc get*[T](col: Collection[T], index: int): T =
+  ## Get an item from the collection by index.
+  result = col.entries[index]
+
+proc getAll*[T](col: Collection[T]): lent seq[T] =
+  ## Get all items in the collection as a sequence.
+  ## For iterating over the items, it's more efficient to use the `items` iterator.
+  result = col.entries
+
 proc contains*[T](col: Collection[T], key, val: string): bool =
   ## Check if the collection contains an
   ## item with the given key and value.

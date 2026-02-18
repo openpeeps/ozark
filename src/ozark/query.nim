@@ -97,6 +97,104 @@ macro whereNot*(sql: untyped, col: static string, val: untyped): untyped =
     val
   )
 
+macro whereStartsLike*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause with LIKE for prefix matching
+  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
+    error("The first argument to `whereLike` must be the result of a `select` macro.")
+  if col.validIdentifier:
+    # todo check if column exists in model
+    discard
+  else:
+    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
+  let selectSql = sql[1].strVal
+  result = newCall(bindSym"ozarkWhereResult",
+    newLit(selectSql & " WHERE " & col & " LIKE $1"),
+    nnkInfix.newTree(ident"&", val, newLit("%"))
+  )
+
+macro whereEndsLike*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause with LIKE for suffix matching
+  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
+    error("The first argument to `whereLike` must be the result of a `select` macro.")
+  if col.validIdentifier:
+    # todo check if column exists in model
+    discard
+  else:
+    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
+  let selectSql = sql[1].strVal
+  result = newCall(bindSym"ozarkWhereResult",
+    newLit(selectSql & " WHERE " & col & " LIKE $1"),
+    nnkInfix.newTree(ident"&", newLit("%"), val)
+  )
+
+macro whereLike*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause with LIKE for any position
+  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
+    error("The first argument to `whereLikeAny` must be the result of a `select` macro.")
+  if col.validIdentifier:
+    # todo check if column exists in model
+    discard
+  else:
+    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
+  let selectSql = sql[1].strVal
+  result = newCall(bindSym"ozarkWhereResult",
+    newLit(selectSql & " WHERE " & col & " LIKE $1"),
+    nnkInfix.newTree(
+      ident"&",
+      val,
+      newLit("%")
+    )
+  )
+
+macro whereNotLike*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause with NOT LIKE for any position
+  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
+    error("The first argument to `whereNotLike` must be the result of a `select` macro.")
+  if col.validIdentifier:
+    # todo check if column exists in model
+    discard
+  else:
+    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
+  let selectSql = sql[1].strVal
+  result = newCall(bindSym"ozarkWhereResult",
+    newLit(selectSql & " WHERE " & col & " NOT LIKE $1;"),
+    nnkInfix.newTree(
+      ident"&",
+      val,
+      newLit("%")
+    )
+  )
+
+macro whereNotStartsLike*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause with NOT LIKE for prefix matching
+  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
+    error("The first argument to `whereNotStartsLike` must be the result of a `select` macro.")
+  if col.validIdentifier:
+    # todo check if column exists in model
+    discard
+  else:
+    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
+  let selectSql = sql[1].strVal
+  result = newCall(bindSym"ozarkWhereResult",
+    newLit(selectSql & " WHERE " & col & " NOT LIKE $1;"),
+    nnkInfix.newTree(ident"&", val, newLit("%"))
+  )
+
+macro whereNotEndsLike*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause with NOT LIKE for suffix matching
+  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
+    error("The first argument to `whereNotEndsLike` must be the result of a `select` macro.")
+  if col.validIdentifier:
+    # todo check if column exists in model
+    discard
+  else:
+    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
+  let selectSql = sql[1].strVal
+  result = newCall(bindSym"ozarkWhereResult",
+    newLit(selectSql & " WHERE " & col & " NOT LIKE $1;"),
+    nnkInfix.newTree(ident"&", newLit("%"), val)
+  )
+
 template parseSqlQuery(getRowProcName: string, args: seq[NimNode] = @[]) {.dirty.} =
   try:
     let parsedSql = parseSQL(sql[1].strVal)
@@ -131,11 +229,16 @@ template parseSqlQuery(getRowProcName: string, args: seq[NimNode] = @[]) {.dirty
     # applies the generated assignments
     var runtimeCode: string
     if getRowProcName == "getRow":
+      let randId = genSym(nskVar, "id")
       runtimeCode =
         staticRead("private" / "stubs" / "iteratorGetRow.nim") % [
           $parsedSql, 
           $(getTypeImpl(m)[1]),
-          assigns.join("\n    "), getRowProcName
+          assigns.join("\n    "),
+          getRowProcName,
+          (if args.len > 0: "," & args.mapIt(it.repr).join(",") else: ""),
+          (if args.len > 0: $args.len else: "0"),
+          randId.repr
         ]
     else:
       let randId = genSym(nskVar, "id")
@@ -159,17 +262,17 @@ macro getAll*(sql: untyped, m: typedesc): untyped =
   ## to execute it and return all rows via `instantRows`
   if sql.kind != nnkCall or sql[0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult", "ozarkLimitResult"]:
     error("The argument to `get` must be the result of a `where` macro.")
-  if sql[0].strVal == "ozarkLimitResult":
-    parseSqlQuery("instantRows", @[nnkPrefix.newTree(ident"$", sql[2])])
-  else:
-    parseSqlQuery("instantRows", @[nnkPrefix.newTree(ident"$", sql[2])])
+  # if sql[0].strVal == "ozarkLimitResult":
+  #   parseSqlQuery("instantRows", @[nnkPrefix.newTree(ident"$", sql[2])])
+  # else:
+  parseSqlQuery("instantRows", @[nnkPrefix.newTree(ident"$", sql[2])])
 
 macro get*(sql: untyped, m: typedesc): untyped =
   ## Finalize SQL statement. This macro produces the final SQL
   ## string and emits runtime code that maps selected columns into a new instance of `m`
   if sql.kind != nnkCall or sql[0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult"]:
     error("The argument to `get` must be the result of a `where` or `rawSQL` macro.")
-  parseSqlQuery("getRow")
+  parseSqlQuery("getRow", @[nnkPrefix.newTree(newCall(ident"$", sql[2]))])
 
 macro insert*(tableName: static string, data: untyped): untyped =
   ## Placeholder for INSERT queries
@@ -191,7 +294,6 @@ macro insert*(tableName: static string, data: untyped): untyped =
       inc idx
     else:
       raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
-  
   result = newCall(
     bindSym"ozarkInsertResult",
     newLit("insert into " & $tableName & " (" & cols.join(",") & ") VALUES (" & valuesIds.mapIt("$" & $it).join(",") & ")"),

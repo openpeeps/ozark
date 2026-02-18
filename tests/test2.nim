@@ -54,3 +54,51 @@ test "insert and select data":
   greskew.stop()
   greskew.dispose()
   {.pop.}
+
+test "whereLike query":
+  {.push dynlib: greskewel_lib.}
+  withDB do:
+    let res = Models.table("users").select("name").whereLike("name", "Jo").get(Users)
+    check res.isEmpty == false
+    check res.get(0).name == "John"
+  {.pop.}
+
+test "whereStartsLike query":
+  {.push dynlib: greskewel_lib.}
+  withDB do:
+    let res = Models.table("users").select("name").whereStartsLike("name", "Jo").get(Users)
+    check res.isEmpty == false
+    check res.get(0).name == "John"
+  {.pop.}
+
+test "whereEndsLike query":
+  {.push dynlib: greskewel_lib.}
+  withDB do:
+    let res = Models.table("users").select("name").whereEndsLike("name", "hn").get(Users)
+    check res.isEmpty == false
+    check res.get(0).name == "John"
+  {.pop.}
+
+test "whereNotLike query":
+  {.push dynlib: greskewel_lib.}
+  withDB do:
+    let res = Models.table("users").select("name").whereNot("name", "Ghost").get(Users)
+    check res.isEmpty == false
+    check res.get(0).name == "John"
+  {.pop.}  
+
+test "wereNotStartsLike query":
+  {.push dynlib: greskewel_lib.}
+  withDB do:
+    let res = Models.table("users").select("name").whereNotStartsLike("name", "Gh").get(Users)
+    check res.isEmpty == false
+    check res.get(0).name == "John"
+  {.pop.}
+
+test "whereNotEndsLike query":
+  {.push dynlib: greskewel_lib.}
+  withDB do:
+    let res = Models.table("users").select("name").whereNotEndsLike("name", "st").get(Users)
+    check res.isEmpty == false
+    check res.get(0).name == "John"
+  {.pop.}
