@@ -1,8 +1,8 @@
 # Package
 
-version       = "0.1.1"
+version       = "0.1.2"
 author        = "George Lemon"
-description   = "A magical ORM for the Nim language "
+description   = "A magical ORM for Nim"
 license       = "MIT"
 srcDir        = "src"
 
