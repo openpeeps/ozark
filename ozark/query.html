@@ -71,6 +71,10 @@
   <li><a class="reference" href="#%24%2CSqlQuery" title="`$`(sql: SqlQuery): string">`$`(sql: SqlQuery): string</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">tryInsertID
+  <li><a class="reference" href="#tryInsertID%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D" title="tryInsertID(db: DbConn; query: SqlPrepared; args: varargs[string, `$`]): int64">tryInsertID(db: DbConn; query: SqlPrepared; args: varargs[string, `$`]): int64</a></li>
+
+</ul>
 
     </ul>
   </details>
@@ -84,7 +88,11 @@
 
 </ul>
 <ul class="simple nested-toc-section">execGet
-  <li><a class="reference" href="#execGet.m%2Cuntyped" title="execGet(sql: untyped)">execGet(sql: untyped)</a></li>
+  <li><a class="reference" href="#execGet.m%2Cuntyped" title="execGet(sql: untyped): untyped">execGet(sql: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">exists
+  <li><a class="reference" href="#exists.m%2Cstaticstring" title="exists(tableName: static string)">exists(tableName: static string)</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">get
@@ -97,6 +105,10 @@
 </ul>
 <ul class="simple nested-toc-section">insert
   <li><a class="reference" href="#insert.m%2Cstaticstring%2Cuntyped" title="insert(tableName: static string; data: untyped): untyped">insert(tableName: static string; data: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">limit
+  <li><a class="reference" href="#limit.m%2Cuntyped%2Cuntyped" title="limit(sql: untyped; count: untyped): untyped">limit(sql: untyped; count: untyped): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">rawSQL
@@ -117,11 +129,35 @@
 
 </ul>
 <ul class="simple nested-toc-section">where
-  <li><a class="reference" href="#where.m%2Cuntyped%2Cstaticstring%2Cstaticstring" title="where(sql: untyped; col: static string; val: static string): untyped">where(sql: untyped; col: static string; val: static string): untyped</a></li>
+  <li><a class="reference" href="#where.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="where(sql: untyped; col: static string; val: untyped): untyped">where(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">whereEndsLike
+  <li><a class="reference" href="#whereEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereEndsLike(sql: untyped; col: static string; val: untyped): untyped">whereEndsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">whereLike
+  <li><a class="reference" href="#whereLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereLike(sql: untyped; col: static string; val: untyped): untyped">whereLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">whereNot
-  <li><a class="reference" href="#whereNot.m%2Cuntyped%2Cstaticstring%2Cstaticstring" title="whereNot(sql: untyped; col: static string; val: static string): untyped">whereNot(sql: untyped; col: static string; val: static string): untyped</a></li>
+  <li><a class="reference" href="#whereNot.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereNot(sql: untyped; col: static string; val: untyped): untyped">whereNot(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">whereNotEndsLike
+  <li><a class="reference" href="#whereNotEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereNotEndsLike(sql: untyped; col: static string; val: untyped): untyped">whereNotEndsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">whereNotLike
+  <li><a class="reference" href="#whereNotLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereNotLike(sql: untyped; col: static string; val: untyped): untyped">whereNotLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">whereNotStartsLike
+  <li><a class="reference" href="#whereNotStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereNotStartsLike(sql: untyped; col: static string; val: untyped): untyped">whereNotStartsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">whereStartsLike
+  <li><a class="reference" href="#whereStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereStartsLike(sql: untyped; col: static string; val: untyped): untyped">whereStartsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
 
 </ul>
 
@@ -171,6 +207,18 @@
 </div>
 
 </div>
+<div id="tryInsertID-procs-all">
+  <div id="tryInsertID,DbConn,SqlPrepared,varargs[string,]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#tryInsertID%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">tryInsertID</span></a><span class="Other">(</span><span class="Identifier">db</span><span class="Other">:</span> <span class="Identifier">DbConn</span><span class="Other">;</span> <span class="Identifier">query</span><span class="Other">:</span> <span class="Identifier">SqlPrepared</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int64</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">WriteDbEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    executes the query (typically &quot;INSERT&quot;) and returns the generated ID for the row or -1 in case of an error. For Postgre this adds <tt class="docutils literal"><span class="pre"><span class="Identifier">RETURNING</span> <span class="Identifier">id</span></span></tt> to the query, so it only works if your primary key is named <tt class="docutils literal"><span class="pre"><span class="Identifier">id</span></span></tt>.
+    
+  </dd>
+</div>
+
+</div>
 
   </dl>
 </div>
@@ -190,12 +238,23 @@
 </div>
 <div id="execGet-macros-all">
   <div id="execGet.m,untyped">
-  <dt><pre><span class="Keyword">macro</span> <a href="#execGet.m%2Cuntyped"><span class="Identifier">execGet</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span></pre></dt>
+  <dt><pre><span class="Keyword">macro</span> <a href="#execGet.m%2Cuntyped"><span class="Identifier">execGet</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
     <p>Finalize and execute an SQL statement that returns results (e.g. SELECT, INSERT with RETURNING).</p>
 <p>This macro produces the final SQL string and wraps it in a runtime call</p>
 
+    
+  </dd>
+</div>
+
+</div>
+<div id="exists-macros-all">
+  <div id="exists.m,staticstring">
+  <dt><pre><span class="Keyword">macro</span> <a href="#exists.m%2Cstaticstring"><span class="Identifier">exists</span></a><span class="Other">(</span><span class="Identifier">tableName</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">)</span></pre></dt>
+  <dd>
+    
+    Search in the current table for a record matching the specified values. This is a placeholder for an <tt class="docutils literal"><span class="pre"><span class="Identifier">EXISTS</span></span></tt> query.
     
   </dd>
 </div>
@@ -229,6 +288,17 @@
   <dd>
     
     Placeholder for INSERT queries
+    
+  </dd>
+</div>
+
+</div>
+<div id="limit-macros-all">
+  <div id="limit.m,untyped,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#limit.m%2Cuntyped%2Cuntyped"><span class="Identifier">limit</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">count</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Placeholder for a <tt class="docutils literal"><span class="pre"><span class="Identifier">LIMIT</span></span></tt> clause in SQL queries.
     
   </dd>
 </div>
@@ -288,8 +358,8 @@
 
 </div>
 <div id="where-macros-all">
-  <div id="where.m,untyped,staticstring,staticstring">
-  <dt><pre><span class="Keyword">macro</span> <a href="#where.m%2Cuntyped%2Cstaticstring%2Cstaticstring"><span class="Identifier">where</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <div id="where.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#where.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">where</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
     Define WHERE clause
@@ -298,12 +368,78 @@
 </div>
 
 </div>
+<div id="whereEndsLike-macros-all">
+  <div id="whereEndsLike.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereEndsLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define WHERE clause with LIKE for suffix matching
+    
+  </dd>
+</div>
+
+</div>
+<div id="whereLike-macros-all">
+  <div id="whereLike.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define WHERE clause with LIKE for any position
+    
+  </dd>
+</div>
+
+</div>
 <div id="whereNot-macros-all">
-  <div id="whereNot.m,untyped,staticstring,staticstring">
-  <dt><pre><span class="Keyword">macro</span> <a href="#whereNot.m%2Cuntyped%2Cstaticstring%2Cstaticstring"><span class="Identifier">whereNot</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <div id="whereNot.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereNot.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereNot</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
     Define WHERE clause with NOT
+    
+  </dd>
+</div>
+
+</div>
+<div id="whereNotEndsLike-macros-all">
+  <div id="whereNotEndsLike.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereNotEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereNotEndsLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define WHERE clause with NOT LIKE for suffix matching
+    
+  </dd>
+</div>
+
+</div>
+<div id="whereNotLike-macros-all">
+  <div id="whereNotLike.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereNotLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereNotLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define WHERE clause with NOT LIKE for any position
+    
+  </dd>
+</div>
+
+</div>
+<div id="whereNotStartsLike-macros-all">
+  <div id="whereNotStartsLike.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereNotStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereNotStartsLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define WHERE clause with NOT LIKE for prefix matching
+    
+  </dd>
+</div>
+
+</div>
+<div id="whereStartsLike-macros-all">
+  <div id="whereStartsLike.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereStartsLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define WHERE clause with LIKE for prefix matching
     
   </dd>
 </div>
@@ -319,7 +455,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-02-09 09:17:18 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-02-21 12:31:44 UTC</small>
       </div>
     </div>
   </div>

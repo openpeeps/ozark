@@ -34,6 +34,10 @@
 <li><a class="reference external"
           data-doc-search-tag="database: proc `[]=`(db: Ozark; id: string; dbCon: DBConnection)" href="ozark/database.html#%5B%5D%3D%2COzark%2Cstring%2CDBConnection">database: proc `[]=`(db: Ozark; id: string; dbCon: DBConnection)</a></li>
           </ul></dd>
+<dt><a name="%60%5B%5D%60" href="#%60%5B%5D%60"><span>`[]`:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="collection: proc `[]`[T](col: Collection[T]; index: int): T" href="ozark/collection.html#%5B%5D%2CCollection%5BT%5D%2Cint">collection: proc `[]`[T](col: Collection[T]; index: int): T</a></li>
+          </ul></dd>
 <dt><a name="add" href="#add"><span>add:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="database: proc add(db: Ozark; id: string; dbCon: DBConnection)" href="ozark/database.html#add%2COzark%2Cstring%2CDBConnection">database: proc add(db: Ozark; id: string; dbCon: DBConnection)</a></li>
@@ -116,7 +120,11 @@
           </ul></dd>
 <dt><a name="execGet" href="#execGet"><span>execGet:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="query: macro execGet(sql: untyped)" href="ozark/query.html#execGet.m%2Cuntyped">query: macro execGet(sql: untyped)</a></li>
+          data-doc-search-tag="query: macro execGet(sql: untyped): untyped" href="ozark/query.html#execGet.m%2Cuntyped">query: macro execGet(sql: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="exists" href="#exists"><span>exists:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro exists(tableName: static string)" href="ozark/query.html#exists.m%2Cstaticstring">query: macro exists(tableName: static string)</a></li>
           </ul></dd>
 <dt><a name="first" href="#first"><span>first:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -124,10 +132,14 @@
           </ul></dd>
 <dt><a name="get" href="#get"><span>get:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="collection: proc get[T](col: Collection[T]; index: int): T" href="ozark/collection.html#get%2CCollection%5BT%5D%2Cint">collection: proc get[T](col: Collection[T]; index: int): T</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="query: macro get(sql: untyped; m: typedesc): untyped" href="ozark/query.html#get.m%2Cuntyped%2Ctypedesc">query: macro get(sql: untyped; m: typedesc): untyped</a></li>
           </ul></dd>
 <dt><a name="getAll" href="#getAll"><span>getAll:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="collection: proc getAll[T](col: Collection[T]): lent seq[T]" href="ozark/collection.html#getAll%2CCollection%5BT%5D">collection: proc getAll[T](col: Collection[T]): lent seq[T]</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="query: macro getAll(sql: untyped; m: typedesc): untyped" href="ozark/query.html#getAll.m%2Cuntyped%2Ctypedesc">query: macro getAll(sql: untyped; m: typedesc): untyped</a></li>
           </ul></dd>
 <dt><a name="getDatatype" href="#getDatatype"><span>getDatatype:</span></a></dt><dd><ul class="simple">
@@ -187,6 +199,10 @@
 <dt><a name="len" href="#len"><span>len:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="collection: proc len[T](col: Collection[T]): int" href="ozark/collection.html#len%2CCollection%5BT%5D">collection: proc len[T](col: Collection[T]): int</a></li>
+          </ul></dd>
+<dt><a name="limit" href="#limit"><span>limit:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro limit(sql: untyped; count: untyped): untyped" href="ozark/query.html#limit.m%2Cuntyped%2Cuntyped">query: macro limit(sql: untyped; count: untyped): untyped</a></li>
           </ul></dd>
 <dt><a name="Line" href="#Line"><span>Line:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -330,6 +346,10 @@
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.Timezone" href="ozark/private/types.html#Timezone">types: DataType.Timezone</a></li>
           </ul></dd>
+<dt><a name="tryInsertID" href="#tryInsertID"><span>tryInsertID:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc tryInsertID(db: DbConn; query: SqlPrepared; args: varargs[string, `$`]): int64" href="ozark/query.html#tryInsertID%2CDbConn%2CSqlPrepared%2Cvarargs%5Bstring%2C%5D">query: proc tryInsertID(db: DbConn; query: SqlPrepared; args: varargs[string, `$`]): int64</a></li>
+          </ul></dd>
 <dt><a name="TsQuery" href="#TsQuery"><span>TsQuery:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.TsQuery" href="ozark/private/types.html#TsQuery">types: DataType.TsQuery</a></li>
@@ -348,11 +368,35 @@
           </ul></dd>
 <dt><a name="where" href="#where"><span>where:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="query: macro where(sql: untyped; col: static string; val: static string): untyped" href="ozark/query.html#where.m%2Cuntyped%2Cstaticstring%2Cstaticstring">query: macro where(sql: untyped; col: static string; val: static string): untyped</a></li>
+          data-doc-search-tag="query: macro where(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#where.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro where(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="whereEndsLike" href="#whereEndsLike"><span>whereEndsLike:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereEndsLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereEndsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="whereLike" href="#whereLike"><span>whereLike:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
           </ul></dd>
 <dt><a name="whereNot" href="#whereNot"><span>whereNot:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="query: macro whereNot(sql: untyped; col: static string; val: static string): untyped" href="ozark/query.html#whereNot.m%2Cuntyped%2Cstaticstring%2Cstaticstring">query: macro whereNot(sql: untyped; col: static string; val: static string): untyped</a></li>
+          data-doc-search-tag="query: macro whereNot(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereNot.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereNot(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="whereNotEndsLike" href="#whereNotEndsLike"><span>whereNotEndsLike:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereNotEndsLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereNotEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereNotEndsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="whereNotLike" href="#whereNotLike"><span>whereNotLike:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereNotLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereNotLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereNotLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="whereNotStartsLike" href="#whereNotStartsLike"><span>whereNotStartsLike:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereNotStartsLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereNotStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereNotStartsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="whereStartsLike" href="#whereStartsLike"><span>whereStartsLike:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereStartsLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereStartsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
           </ul></dd>
 <dt><a name="withDatabase" href="#withDatabase"><span>withDatabase:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -366,7 +410,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-02-09 09:17:18 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-02-21 12:31:44 UTC</small>
       </div>
     </div>
   </div>

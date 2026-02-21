@@ -3,6 +3,9 @@ nim	Collection	ozark/collection.html#Collection	object Collection		9
 nim	len	ozark/collection.html#len,Collection[T]	proc len[T](col: Collection[T]): int		17
 nim	isEmpty	ozark/collection.html#isEmpty,Collection[T]	proc isEmpty[T](col: Collection[T]): bool		21
 nim	first	ozark/collection.html#first,Collection[T]	proc first[T](col: Collection[T]): T		25
-nim	contains	ozark/collection.html#contains,Collection[T],string,string	proc contains[T](col: Collection[T]; key, val: string): bool		29
-nim	items	ozark/collection.html#items.i,Collection[T]	iterator items[T](col: Collection[T]): T		37
-nim	mitems	ozark/collection.html#mitems.i,Collection[T]	iterator mitems[T](col: Collection[T]): var T		42
+nim	`[]`	ozark/collection.html#[],Collection[T],int	proc `[]`[T](col: Collection[T]; index: int): T		29
+nim	get	ozark/collection.html#get,Collection[T],int	proc get[T](col: Collection[T]; index: int): T		33
+nim	getAll	ozark/collection.html#getAll,Collection[T]	proc getAll[T](col: Collection[T]): lent seq[T]		37
+nim	contains	ozark/collection.html#contains,Collection[T],string,string	proc contains[T](col: Collection[T]; key, val: string): bool		42
+nim	items	ozark/collection.html#items.i,Collection[T]	iterator items[T](col: Collection[T]): T		50
+nim	mitems	ozark/collection.html#mitems.i,Collection[T]	iterator mitems[T](col: Collection[T]): var T		55
