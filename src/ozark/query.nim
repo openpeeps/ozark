@@ -35,6 +35,7 @@ macro table*(models: ptr ModelsTable, name: static string): untyped =
 
 proc ozarkSelectResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkWhereResult(sql: static[string], val: string): NimNode {.compileTime.} = newLit(sql)
+proc ozarkWhereInResult(sql: static[string], vals: varargs[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkRawSQLResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkInsertResult(sql: static[string], values: seq[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkLimitResult(sql: static[string], count: int): NimNode {.compileTime.} = newLit(sql)
@@ -94,6 +95,21 @@ macro whereNot*(sql: untyped, col: static string, val: untyped): untyped =
   let selectSql = sql[1].strVal
   result = newCall(bindSym"ozarkWhereResult",
     newLit(selectSql & " WHERE " & col & " != $1"),
+    val
+  )
+
+macro orWhere*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define OR in WHERE clause
+  if sql.kind != nnkCall or sql[0].strVal != "ozarkWhereResult":
+    error("The first argument to `orWhere` must be the result of a `where` macro.")
+  if col.validIdentifier:
+    # todo check if column exists in model
+    discard
+  else:
+    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
+  let whereSql = sql[1].strVal
+  result = newCall(bindSym"ozarkWhereResult",
+    newLit(whereSql & " OR " & col & " = $1"),
     val
   )
 
@@ -195,6 +211,27 @@ macro whereNotEndsLike*(sql: untyped, col: static string, val: untyped): untyped
     nnkInfix.newTree(ident"&", newLit("%"), val)
   )
 
+macro whereIn*(sql: untyped, col: static string, vals: openArray[untyped]): untyped =
+  ## Define WHERE clause with IN operator
+  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
+    error("The first argument to `whereIn` must be the result of a `select` macro.")
+  if col.validIdentifier:
+    # todo check if column exists in model
+    discard
+  else:
+    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
+  let selectSql = sql[1].strVal
+  var placeholders = newSeq[string](vals.len)
+  for i in 0..<vals.len:
+    placeholders[i] = "$" & $(i + 1)
+  result = newCall(
+    bindSym"ozarkWhereInResult",
+    newLit(selectSql & " WHERE " & col & " IN (" & placeholders.join(",") & ")"),
+  )
+  for i in 0..<vals.len:
+    # add the values as additional arguments to the macro result for later use in code generation
+    result.add(vals[i])
+
 template parseSqlQuery(getRowProcName: string, args: seq[NimNode] = @[]) {.dirty.} =
   try:
     let parsedSql = parseSQL(sql[1].strVal)
@@ -270,9 +307,12 @@ macro getAll*(sql: untyped, m: typedesc): untyped =
 macro get*(sql: untyped, m: typedesc): untyped =
   ## Finalize SQL statement. This macro produces the final SQL
   ## string and emits runtime code that maps selected columns into a new instance of `m`
-  if sql.kind != nnkCall or sql[0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult"]:
+  if sql.kind != nnkCall or sql[0].strVal notin ["ozarkWhereResult", "ozarkWhereInResult", "ozarkRawSQLResult"]:
     error("The argument to `get` must be the result of a `where` or `rawSQL` macro.")
-  parseSqlQuery("getRow", @[nnkPrefix.newTree(newCall(ident"$", sql[2]))])
+  if sql[0].strval == "ozarkWhereInResult":
+    parseSqlQuery("getRow", @[nnkPrefix.newTree(sql[2][1])])
+  else:
+    parseSqlQuery("getRow", @[nnkPrefix.newTree(newCall(ident"$", sql[2]))])
 
 macro insert*(tableName: static string, data: untyped): untyped =
   ## Placeholder for INSERT queries

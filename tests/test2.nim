@@ -30,8 +30,13 @@ test "run raw sql queries":
   {.push dynlib: greskewel_lib.}
   initOzarkDatabase("localhost", "postgres", "postgres", "postgres", Port(5432))
   withDB do:
-    Models.rawSQL("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username VARCHAR(50), name VARCHAR(100), email VARCHAR(100))")
-          .exec()
+    Models.rawSQL("""
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50),
+  name VARCHAR(100),
+  email VARCHAR(100)
+)""").exec()
   {.pop.}
 
 test "insert and select data":
@@ -50,6 +55,27 @@ test "insert and select data":
     check res.entries[0].name == "John"
     check res.entries[0].username == "john1232"
     check res.entries[0].email == "test@example.com"
+  {.pop.}
+
+test "where query":
+  {.push dynlib: greskewel_lib.}
+  withDB do:
+    let res = Models.table("users")
+                    .select("name")
+                    .where("name", "John").get(Users)
+    check res.isEmpty == false
+    check res.get(0).name == "John"
+  {.pop.}
+
+test "orWhere query":
+  {.push dynlib: greskewel_lib.}
+  withDB do:
+    let res = Models.table("users")
+                    .select("name")
+                    .where("name", "Ghost")
+                    .orWhere("name", "John").get(Users)
+    check res.isEmpty == false
+    check res.get(0).name == "John"
   {.pop.}
 
 test "whereLike query":
@@ -100,6 +126,15 @@ test "whereNotEndsLike query":
     check res.get(0).name == "John"
   {.pop.}
 
+
+test "whereIn query":
+  {.push dynlib: greskewel_lib.}
+  withDB do:
+    let res = Models.table("users").select("name")
+                    .whereIn("name", ["John", "Ghost"]).get(Users)
+    check res.isEmpty == false
+    check res.get(0).name == "John"
+  {.pop.}
 
 test "close embedded postgres":
   greskew.stop()
