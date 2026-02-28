@@ -68,10 +68,19 @@ macro selectAll*(tableName: untyped): untyped =
   checkTableExists($tableName)
   result = newCall(bindSym"ozarkSelectResult", newLit("SELECT * FROM " & $tableName))
 
-macro where*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause
+
+#
+# WHERE clause macros
+#
+
+# - WHERE caluse Writers
+proc writeWhereLikeStatements(op: static string, sql: NimNode,
+                      infix: NimNode, col: string): NimNode {.compileTime.} =
+  # Writer macro for both `whereLike` and `whereNotLike` to avoid code duplication.
+  # This macro generates the SQL string for the WHERE LIKE/NOT LIKE clause and
+  # also constructs the appropriate infix expression for the value with wildcards
   if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
-    error("The first argument to `where` must be the result of a `select` macro.")
+    error("The first argument to `where` statement must be the result of a `select` macro.")
   if col.validIdentifier:
     # todo check if column exists in model
     discard
@@ -79,142 +88,17 @@ macro where*(sql: untyped, col: static string, val: untyped): untyped =
     raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
   let selectSql = sql[1].strVal
   result = newCall(bindSym"ozarkWhereResult",
-    newLit(selectSql & " WHERE " & col & " = $1"),
-    val
+    newLit(selectSql & " WHERE " & col & " " & op & " $1"),
+    infix
   )
 
-macro whereNot*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with NOT
+proc writeWhereInWhereNotIn(op: static string,
+      sql: NimNode, col: string, vals: NimNode): NimNode {.compileTime.} =
+  # Writer macro for both `whereIn` and `whereNotIn` to avoid code duplication.
+  # This macro generates the SQL string for the WHERE IN/NOT IN clause and
+  # also adds the values as additional arguments to the macro result for later use in code generation
   if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
-    error("The first argument to `whereNot` must be the result of a `select` macro.")
-  if col.validIdentifier:
-    # todo check if column exists in model
-    discard
-  else:
-    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
-  let selectSql = sql[1].strVal
-  result = newCall(bindSym"ozarkWhereResult",
-    newLit(selectSql & " WHERE " & col & " != $1"),
-    val
-  )
-
-macro orWhere*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define OR in WHERE clause
-  if sql.kind != nnkCall or sql[0].strVal != "ozarkWhereResult":
-    error("The first argument to `orWhere` must be the result of a `where` macro.")
-  if col.validIdentifier:
-    # todo check if column exists in model
-    discard
-  else:
-    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
-  let whereSql = sql[1].strVal
-  result = newCall(bindSym"ozarkWhereResult",
-    newLit(whereSql & " OR " & col & " = $1"),
-    val
-  )
-
-macro whereStartsLike*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with LIKE for prefix matching
-  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
-    error("The first argument to `whereLike` must be the result of a `select` macro.")
-  if col.validIdentifier:
-    # todo check if column exists in model
-    discard
-  else:
-    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
-  let selectSql = sql[1].strVal
-  result = newCall(bindSym"ozarkWhereResult",
-    newLit(selectSql & " WHERE " & col & " LIKE $1"),
-    nnkInfix.newTree(ident"&", val, newLit("%"))
-  )
-
-macro whereEndsLike*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with LIKE for suffix matching
-  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
-    error("The first argument to `whereLike` must be the result of a `select` macro.")
-  if col.validIdentifier:
-    # todo check if column exists in model
-    discard
-  else:
-    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
-  let selectSql = sql[1].strVal
-  result = newCall(bindSym"ozarkWhereResult",
-    newLit(selectSql & " WHERE " & col & " LIKE $1"),
-    nnkInfix.newTree(ident"&", newLit("%"), val)
-  )
-
-macro whereLike*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with LIKE for any position
-  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
-    error("The first argument to `whereLikeAny` must be the result of a `select` macro.")
-  if col.validIdentifier:
-    # todo check if column exists in model
-    discard
-  else:
-    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
-  let selectSql = sql[1].strVal
-  result = newCall(bindSym"ozarkWhereResult",
-    newLit(selectSql & " WHERE " & col & " LIKE $1"),
-    nnkInfix.newTree(
-      ident"&",
-      val,
-      newLit("%")
-    )
-  )
-
-macro whereNotLike*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with NOT LIKE for any position
-  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
-    error("The first argument to `whereNotLike` must be the result of a `select` macro.")
-  if col.validIdentifier:
-    # todo check if column exists in model
-    discard
-  else:
-    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
-  let selectSql = sql[1].strVal
-  result = newCall(bindSym"ozarkWhereResult",
-    newLit(selectSql & " WHERE " & col & " NOT LIKE $1;"),
-    nnkInfix.newTree(
-      ident"&",
-      val,
-      newLit("%")
-    )
-  )
-
-macro whereNotStartsLike*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with NOT LIKE for prefix matching
-  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
-    error("The first argument to `whereNotStartsLike` must be the result of a `select` macro.")
-  if col.validIdentifier:
-    # todo check if column exists in model
-    discard
-  else:
-    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
-  let selectSql = sql[1].strVal
-  result = newCall(bindSym"ozarkWhereResult",
-    newLit(selectSql & " WHERE " & col & " NOT LIKE $1;"),
-    nnkInfix.newTree(ident"&", val, newLit("%"))
-  )
-
-macro whereNotEndsLike*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with NOT LIKE for suffix matching
-  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
-    error("The first argument to `whereNotEndsLike` must be the result of a `select` macro.")
-  if col.validIdentifier:
-    # todo check if column exists in model
-    discard
-  else:
-    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
-  let selectSql = sql[1].strVal
-  result = newCall(bindSym"ozarkWhereResult",
-    newLit(selectSql & " WHERE " & col & " NOT LIKE $1;"),
-    nnkInfix.newTree(ident"&", newLit("%"), val)
-  )
-
-macro whereIn*(sql: untyped, col: static string, vals: openArray[untyped]): untyped =
-  ## Define WHERE clause with IN operator
-  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
-    error("The first argument to `whereIn` must be the result of a `select` macro.")
+    error("The first argument to must be the result of a `select` macro.")
   if col.validIdentifier:
     # todo check if column exists in model
     discard
@@ -226,11 +110,99 @@ macro whereIn*(sql: untyped, col: static string, vals: openArray[untyped]): unty
     placeholders[i] = "$" & $(i + 1)
   result = newCall(
     bindSym"ozarkWhereInResult",
-    newLit(selectSql & " WHERE " & col & " IN (" & placeholders.join(",") & ")"),
+    newLit(selectSql & " WHERE " & col & " " & op & " (" & placeholders.join(",") & ")"),
   )
   for i in 0..<vals.len:
-    # add the values as additional arguments to the macro result for later use in code generation
+    # add the values as additional arguments to the
+    # macro result for later use in code generation
     result.add(vals[i])
+
+proc writeWhereStatement(op: static string, sql: NimNode, col: string, val: NimNode): NimNode {.compileTime.} =
+  # Writer macro for simple WHERE clauses (e.g. `where`, `whereNot`) to avoid code duplication.
+  if sql.kind != nnkCall or sql[0].strVal != "ozarkSelectResult":
+    error("The first argument to `where` must be the result of a `select` macro.")
+  if col.validIdentifier:
+    # todo check if column exists in model
+    discard
+  else:
+    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
+  let selectSql = sql[1].strVal
+  result = newCall(bindSym"ozarkWhereResult",
+    newLit(selectSql & " WHERE " & col & " " & op & " $1"),
+    val
+  )
+
+proc writeOrWhereStatement(op: static string, sql: NimNode, col: string, val: NimNode): NimNode {.compileTime.} =
+  # Writer macro for `orWhere` to avoid code duplication with `writeWhereStatement`.
+  # This macro checks that the first argument is a valid `where` result and then
+  # appends the new condition with an OR to the existing SQL string.
+  if sql.kind != nnkCall or sql[0].strVal != "ozarkWhereResult":
+    error("The first argument to `orWhere` must be the result of a `where` macro.")
+  if col.validIdentifier:
+    # todo check if column exists in model
+    discard
+  else:
+    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
+  let whereSql = sql[1].strVal
+  result = newCall(bindSym"ozarkWhereResult",
+    newLit(whereSql & " OR " & col & " " & op & " $1"),
+    val
+  )
+
+# WHERE clause public macros
+macro where*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause
+  writeWhereStatement("=", sql, col, val)
+
+macro whereNot*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause with NOT
+  writeWhereStatement("!=", sql, col, val)
+
+macro orWhere*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define OR in WHERE clause
+  writeOrWhereStatement("=", sql, col, val)
+
+macro orWhereNot*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define OR with NOT in WHERE clause
+  writeOrWhereStatement("!=", sql, col, val)
+
+macro whereStartsLike*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause with LIKE for prefix matching
+  writeWhereLikeStatements("LIKE", sql,
+    nnkInfix.newTree(ident"&", val, newLit("%")), col)
+
+macro whereEndsLike*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause with LIKE for suffix matching
+  writeWhereLikeStatements("LIKE", sql,
+    nnkInfix.newTree(ident"&", newLit("%"), val), col)
+
+macro whereLike*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause with LIKE for any position
+  writeWhereLikeStatements("LIKE", sql,
+    nnkInfix.newTree(ident"&", val, newLit("%")), col)
+
+macro whereNotLike*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause with NOT LIKE for any position
+  writeWhereLikeStatements("NOT LIKE", sql,
+    nnkInfix.newTree(ident"&", val, newLit("%")), col)
+
+macro whereNotStartsLike*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause with `NOT LIKE` for prefix matching
+  writeWhereLikeStatements("NOT LIKE", sql,
+    nnkInfix.newTree(ident"&", val, newLit("%")), col)
+
+macro whereNotEndsLike*(sql: untyped, col: static string, val: untyped): untyped =
+  ## Define WHERE clause with `NOT LIKE` for suffix matching
+  writeWhereLikeStatements("NOT LIKE", sql,
+    nnkInfix.newTree(ident"&", newLit("%"), val), col)
+
+macro whereIn*(sql: untyped, col: static string, vals: openArray[untyped]): untyped =
+  ## Define WHERE clause with IN operator
+  writeWhereInWhereNotIn("IN", sql, col, vals)
+
+macro whereNotIn*(sql: untyped, col: static string, vals: openArray[untyped]): untyped =
+  ## Define WHERE clause with NOT IN operator
+  writeWhereInWhereNotIn("NOT IN", sql, col, vals)
 
 template parseSqlQuery(getRowProcName: string, args: seq[NimNode] = @[]) {.dirty.} =
   try:
