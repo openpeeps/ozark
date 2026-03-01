@@ -5,7 +5,7 @@
 #          https://github.com/openpeeps/ozark
 
 import std/[macros, macrocache, strutils,
-      sequtils, tables, os, random]
+      sequtils, tables, os, random, strformat]
 
 import pkg/db_connector/postgres {.all.}
 import pkg/db_connector/db_postgres {.all.}
@@ -25,7 +25,6 @@ randomize() # initialize random seed for generating unique statement names in `t
 
 template table*(models: ptr ModelsTable, name): untyped = 
   ## Define SQL statement for a table
-  # checkTableExists(name)
   bindSym($name)
 
 template withTableCheck*(name: NimNode, body) =
@@ -47,6 +46,7 @@ proc ozarkWhereInResult(sql: static[string], vals: varargs[string]): NimNode {.c
 proc ozarkRawSQLResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkInsertResult(sql: static[string], values: seq[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkLimitResult(sql: static[string], count: int): NimNode {.compileTime.} = newLit(sql)
+proc ozarkOrderByResult(sql: static[string], col: string, desc: bool): NimNode {.compileTime.} = newLit(sql)
 
 proc ozarkHoldModel[T](t: T) {.compileTime.} =
   var x: T
@@ -63,38 +63,75 @@ template withColumnCheck(model: NimNode, col: string, body) =
     expectKind(x[2][0], nnkObjectTy) # ensure it's an object type
     expectKind(x[2][0][1], nnkOfInherit)
     if x[2][0][1][0] != bindSym"Model":
-      raise newException(OzarkModelDefect, "The first argument must be a model type.")
+      error("The first argument must be a model type.", x[2][0][1][0])
     var withColumnCheckPassed: bool
     for field in x[2][0][2]:
       if $(field[0][1]) == col:
         withColumnCheckPassed = true
         body; break
     if not withColumnCheckPassed:
-      raise newException(OzarkModelDefect,
-        "Column `" & col & "` does not exist in model `" & $model[1] & "`.")
+      error("Column `" & col & "` does not exist in model `" & $model[1] & "`.")
 
+#
+# INSERT and UDATE clause macros 
+#
+macro insert*(tableName, data: untyped): untyped =
+  ## Placeholder for an `INSERT` statement. This macro generates the SQL string for the
+  ## INSERT statement. This macro performs compile-time checks for the existence
+  ## of the specified model and the validity of the column names.
+  withTableCheck tableName:
+    expectKind(data, nnkTableConstr)
+    var cols: seq[string]
+    var values = newNimNode(nnkBracket)
+    var valuesIds: seq[int]
+    var idx = 1
+    for kv in data:
+      let col = $kv[0]
+      withColumnCheck(tableName, col):
+        cols.add(col)
+        values.add(kv[1])
+        valuesIds.add(idx)
+        inc idx
+    result = newCall(
+      bindSym"ozarkInsertResult",
+      newLit("insert into " & getTableName($tableName[1]) &
+            " (" & cols.join(",") & ") VALUES (" & valuesIds.mapIt("$" & $it).join(",") & ")"),
+      nnkPrefix.newTree(ident"@", values)
+    )
+
+
+#
+# SELECT clause macros
+#
 macro select*(tableName: untyped, cols: static openArray[string]): untyped =
-  ## Define `SELECT` clause
+  ## Define `SELECT` clause with specific columns.
   withTableCheck tableName:
     withColumnsCheck tableName, cols:
+      let dbTable = getTableName($tableName[1])
+      let blockIdent = genSym(nskLabel, "ozarkBlock" & dbTable)
       result = nnkBlockStmt.newTree(
-        newEmptyNode(),
-        newCall(bindSym"ozarkHoldModel", tableName),
-        newCall(bindSym"ozarkSelectResult",
-          newLit("SELECT " & cols.join() & " FROM " & getTableName($tableName[1]))
+        blockIdent,
+        newStmtList(
+          newCall(bindSym"ozarkHoldModel", tableName),
+          newCall(bindSym"ozarkSelectResult",
+            newLit("SELECT " & cols.join(",") & " FROM " & dbTable)
+          )
         )
       )
+
 
 macro select*(tableName: untyped, col: static string): untyped =
   ## Define SELECT clause
   withTableCheck tableName:
     withColumnCheck tableName, col:
+      let dbTable = getTableName($tableName[1])
+      let blockIdent = genSym(nskLabel, "ozarkBlock" & "_" & dbTable)
       result = nnkBlockStmt.newTree(
-        newEmptyNode(),
+        blockIdent,
         newStmtList(
           newCall(bindSym"ozarkHoldModel", tableName),
           newCall(bindSym"ozarkSelectResult",
-            newLit("SELECT " & col & " FROM " & getTableName($tableName[1]))
+            newLit("SELECT " & col & " FROM " & dbTable)
           )
         )
       )
@@ -102,12 +139,14 @@ macro select*(tableName: untyped, col: static string): untyped =
 macro selectAll*(tableName: untyped): untyped =
   ## Define SELECT * clause
   withTableCheck tableName:
+    let dbTable = getTableName($tableName[1])
+    let blockIdent = genSym(nskLabel, "ozarkBlock" & dbTable)
     result = nnkBlockStmt.newTree(
-      newEmptyNode(),
+      blockIdent,
       newStmtList(
         newCall(bindSym"ozarkHoldModel", tableName),
         newCall(bindSym"ozarkSelectResult",
-          newLit("SELECT * FROM " & getTableName($tableName[1]))
+          newLit("SELECT * FROM " & dbTable)
         )
       )
     )
@@ -122,13 +161,13 @@ proc writeWhereLikeStatements(op: static string, sql: NimNode,
   # Writer macro for both `whereLike` and `whereNotLike` to avoid code duplication.
   # This macro generates the SQL string for the WHERE LIKE/NOT LIKE clause and
   # also constructs the appropriate infix expression for the value with wildcards
-  if sql.kind != nnkBlockExpr or sql[1][1][0].strVal != "ozarkSelectResult":
+  if sql.kind != nnkBlockExpr or sql[1][^1][0].strVal != "ozarkSelectResult":
     error("The first argument to `where` statement must be the result of a `select` macro.")
   withColumnCheck(sql[1][0][1], col):
-    let selectSql = sql[1][1][1].strVal
-    sql[1][1][0] = bindSym"ozarkWhereResult"
-    sql[1][1][1].strVal = sql[1][1][1].strVal & " WHERE " & col & " " & op & " $1"
-    sql[1][1].add(infix)
+    let selectSql = sql[1][^1][1].strVal
+    sql[1][^1][0] = bindSym"ozarkWhereResult"
+    sql[1][^1][1].strVal = sql[1][^1][1].strVal & " WHERE " & col & " " & op & " $1"
+    sql[1][^1].add(infix)
     result = sql
 
 proc writeWhereInWhereNotIn(op: static string,
@@ -136,116 +175,145 @@ proc writeWhereInWhereNotIn(op: static string,
   # Writer macro for both `whereIn` and `whereNotIn` to avoid code duplication.
   # This macro generates the SQL string for the WHERE IN/NOT IN clause and
   # also adds the values as additional arguments to the macro result for later use in code generation
-  if sql.kind != nnkBlockExpr or sql[1][1][0].strVal!= "ozarkSelectResult":
-    error("The first argument to must be the result of a `select` macro.")
-  withColumnCheck(sql[1][0][1], col):
+  if sql.kind != nnkBlockExpr or sql[1][^1][0].strVal notin ["ozarkSelectResult", "ozarkWhereResult"]:
+    error("The first argument to `WHERE` clause must be the result of a `select` macro.")
+  withColumnCheck(sql[1][^2][1], col):
+    let calledMacro = sql[1][^1][0].strVal
     var placeholders = newSeq[string](vals.len)
-    for i in 0..<vals.len:
+    let ozarkOrmVar = genSym(nskLet, "OzarkORMInValuesPlaceholder")
+    let ozarkOrmCountArgs = genSym(nskLet, "OzarkORMInValuesCount")
+    for i in 0..<placeholders.len:
       placeholders[i] = "$" & $(i + 1)
-    let selectSql = sql[1][1][1].strVal
-    sql[1][1][0] = bindSym"ozarkWhereInResult"
-    sql[1][1][1].strVal = sql[1][1][1].strVal & " WHERE " & col & " " & op & " (" & placeholders.join(",") & ")"
-    for i in 0..<vals.len:
-      # add the values as additional arguments to the
-      # macro result for later use in code generation
-      sql[1][1].add(vals[i])
+    sql[1][^1][0] = bindSym"ozarkWhereInResult"
+    # update the SQL string to include a placeholder for th
+    # list of values and also add the values as additional arguments
+    # to the macro result for later use in code generation
+    let initSql = sql[1][^1][1].strVal
+    var len: int
+    if sql[1][^1].len == 3 and sql[1][^1][2].kind == nnkHiddenStdConv:
+      sql[1][^1][2][1].add(vals) # add the values as additional arguments to the macro
+      len = sql[1][^1][2][1].len
+    else:
+      sql[1][^1].add(vals) # add the values as additional arguments to the macro
+      len = 1
+    sql[1][^1][1].strVal = initSql & (
+        if calledMacro == "ozarkWhereResult":
+          " AND " & col & " " & op & " ($" & $(len) & ")"
+        else:
+        " WHERE " & col & " " & op & " ($" & $(len) & ")"
+      )
     result = sql
 
 proc writeWhereStatement(op: static string, sql: NimNode,
       col: string, val: NimNode): NimNode {.compileTime.} =
   # Writer macro for simple WHERE clauses (e.g. `where`, `whereNot`) to avoid code duplication.
-  if sql.kind != nnkBlockExpr or sql[1][1][0].strVal != "ozarkSelectResult":
-    error("The first argument to `where` must be the result of a `select` macro.")
-  withColumnCheck(sql[1][0][1], col):
-    sql[1][1][0] = bindSym"ozarkWhereResult"
-    sql[1][1][1].strVal = sql[1][1][1].strVal & " WHERE " & col & " " & op & " $1"
-    sql[1][1].add(val)
-    result = sql
+  if sql.kind != nnkBlockExpr or sql[1][^1][0].strVal notin ["ozarkSelectResult", "ozarkWhereResult"]:
+    error("The first argument to `WHERE` must be the result of a `select` macro.", sql)
+  if sql[1][^1][0].strVal == "ozarkWhereResult":
+    # if it's already a where result, we need to
+    # append the new condition with an AND
+    withColumnCheck(sql[1][^2][1], col):
+      sql[1][^1][0] = bindSym"ozarkWhereResult"
+      let len = sql[1][^1][2][1].len + 1
+      sql[1][^1][1].strVal = sql[1][^1][1].strVal & " AND " & col & " " & op & " $" & $(len)
+      sql[1][^1][^1][1].add(val) # add to the current varargs list
+  else:
+    withColumnCheck(sql[1][^2][1], col):
+      sql[1][^1][0] = bindSym"ozarkWhereResult"
+      sql[1][^1][1].strVal = sql[1][^1][1].strVal & " WHERE " & col & " " & op & " $1"
+      sql[1][^1].add(val)
+  result = sql
 
 proc writeOrWhereStatement(op: static string,
       sql: NimNode, col: string, val: NimNode): NimNode {.compileTime.} =
   # Writer macro for `orWhere` to avoid code duplication with `writeWhereStatement`.
   # This macro checks that the first argument is a valid `where` result and then
   # appends the new condition with an OR to the existing SQL string.
-  if sql.kind != nnkBlockExpr or sql[1][1][0].strVal != "ozarkWhereResult":
+  if sql.kind != nnkBlockExpr or sql[1][^1][0].strVal != "ozarkWhereResult":
     error("The first argument to `orWhere` must be the result of a `where` macro.")
-  withColumnCheck(sql[1][0][1], col):
-    let len = sql[1][1][2][1].len + 1 # calculate the new param index based on existing params
-    sql[1][1][1].strVal = sql[1][1][1].strVal & " OR " & col & " " & op & " $" & $(len)
-    sql[1][1][2][1].add(val)
+  withColumnCheck(sql[1][^2][1], col):
+    let len = sql[1][^1][2][1].len + 1 # calculate the new param index based on existing params
+    sql[1][^1][1].strVal = sql[1][^1][1].strVal & " OR " & col & " " & op & " $" & $(len)
+    sql[1][^1][2][1].add(val)
     result = sql
 
 # WHERE clause public macros
 macro where*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause
+  ## Define `WHERE` clause
   writeWhereStatement("=", sql, col, val)
 
 macro whereNot*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with NOT
+  ## Define `WHERE` clause with `NOT`
   writeWhereStatement("!=", sql, col, val)
 
 macro orWhere*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define OR in WHERE clause
+  ## Define `OR` in `WHERE` clause
   writeOrWhereStatement("=", sql, col, val)
 
 macro orWhereNot*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define OR with NOT in WHERE clause
+  ## Define a `OR` condition with `NOT` in `WHERE` clause
   writeOrWhereStatement("!=", sql, col, val)
 
 macro whereStartsLike*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with LIKE for prefix matching
+  ## Define `WHERE` clause with `LIKE` for prefix matching
   writeWhereLikeStatements("LIKE", sql,
     nnkInfix.newTree(ident"&", val, newLit("%")), col)
 
 macro whereEndsLike*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with LIKE for suffix matching
+  ## Define `WHERE` clause with `LIKE` for suffix matching
   writeWhereLikeStatements("LIKE", sql,
     nnkInfix.newTree(ident"&", newLit("%"), val), col)
 
 macro whereLike*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with LIKE for any position
+  ## Define WHERE clause with `LIKE` for any position
   writeWhereLikeStatements("LIKE", sql,
     nnkInfix.newTree(ident"&", val, newLit("%")), col)
 
 macro whereNotLike*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with NOT LIKE for any position
+  ## Define WHERE clause with `NOT LIKE` for any position
   writeWhereLikeStatements("NOT LIKE", sql,
     nnkInfix.newTree(ident"&", val, newLit("%")), col)
 
 macro whereNotStartsLike*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with `NOT LIKE` for prefix matching
+  ## Define `WHERE` clause with `NOT LIKE` for prefix matching
   writeWhereLikeStatements("NOT LIKE", sql,
     nnkInfix.newTree(ident"&", val, newLit("%")), col)
 
 macro whereNotEndsLike*(sql: untyped, col: static string, val: untyped): untyped =
-  ## Define WHERE clause with `NOT LIKE` for suffix matching
+  ## Define `WHERE` clause with `NOT LIKE` for suffix matching
   writeWhereLikeStatements("NOT LIKE", sql,
     nnkInfix.newTree(ident"&", newLit("%"), val), col)
 
-macro whereIn*(sql: untyped, col: static string, vals: openArray[untyped]): untyped =
-  ## Define WHERE clause with IN operator
+macro whereIn*(sql: untyped, col: static string, vals: untyped): untyped =
+  ## Define `WHERE` clause with `IN` operator
   writeWhereInWhereNotIn("IN", sql, col, vals)
 
-macro whereNotIn*(sql: untyped, col: static string, vals: openArray[untyped]): untyped =
-  ## Define WHERE clause with NOT IN operator
+macro whereNotIn*(sql: untyped, col: static string, vals: untyped): untyped =
+  ## Define `WHERE` clause with `NOT IN` operator
   writeWhereInWhereNotIn("NOT IN", sql, col, vals)
 
-template parseSqlQuery(getRowProcName: string, args: seq[NimNode] = @[]) {.dirty.} =
+#
+# SQL Query Validator
+#
+proc parseSqlQuery(sql: NimNode, getRowProcName: string,
+            args: seq[NimNode] = @[]): NimNode {.compileTime.} =
+  # Compile-time procedure to validate the SQL query and 
+  # generate the appropriate runtime code to execute it and
+  # map the results to model instances. This procedure is called by the `get` and `getAll` macros.
   try:
-    let parsedSql = parseSQL(sql[1][1][1].strVal)
-    # extract selected column names from parsedSql AST
+    let parsedSql = parseSQL(sql[1][^1][1].strVal)
+    let m = sql[1][^2][1][1]
     var colNames: seq[string]
-    let top = parsedSql.sons[0]
-    let selectNode = top
-    let selectList = selectNode.sons[0]
+    let
+      top = parsedSql.sons[0]
+      selectNode = top
+      selectList = selectNode.sons[0]
     for c in selectList.sons:
       if c.kind == nkIdent and c.strVal == "*":
         colNames.add("*")
       else:
-        if c.len > 0:
-          colNames.add(c[0].strVal)
-        else:
-          colNames.add(c.strVal)
+        if c.len > 0: colNames.add(c[0].strVal)
+        else: colNames.add(c.strVal)
 
     # generate code to assign columns to model instance fields
     var idx = 0
@@ -288,64 +356,49 @@ template parseSqlQuery(getRowProcName: string, args: seq[NimNode] = @[]) {.dirty
           randId.repr
         ]
     result = macros.parseStmt(runtimeCode) # parse the generated code into a NimNode
+    result[0][0] = sql[0] # the original block identifier
   except SqlParseError as e:
-    raise newException(OzarkModelDefect, "SQL Parsing Error: " & e.msg)
+    error("SQL parsing error: " & e.msg, sql[1][^1][1])
 
+#
+# Public API for finalizing and 
+# executing SQL queries
+#
 macro getAll*(sql: untyped): untyped =
   ## Finalize and get all results of the SQL statement.
   ## This macro produce the final SQL string and wraps it in a runtime call
   ## to execute it and return all rows via `instantRows`
-  if sql.kind != nnkBlockExpr or sql[1][1][0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult", "ozarkLimitResult"]:
+  if sql.kind != nnkBlockExpr or sql[1][^1][0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult", "ozarkLimitResult"]:
     error("The argument to `getAll` must be the result of a `where` macro.")
-  let m = sql[1][0][1][1] # extract the model type from the macro arguments for later use in code generation
-  let v = sql[1][1][2]    # extract the additional arguments (e.g. for WHERE IN) from the macro arguments for later use in code generation
-  parseSqlQuery("instantRows", @[v])
+  let v = sql[1][^1][2]    # extract the additional arguments (e.g. for WHERE IN) from the macro arguments for later use in code generation
+  sql.parseSqlQuery("instantRows", @[v])
 
 macro get*(sql: untyped): untyped =
   ## Finalize SQL statement. This macro produces the final SQL
   ## string and emits runtime code that maps selected columns into a new instance of `m`
-  if sql.kind != nnkBlockExpr or sql[1][1][0].strVal notin ["ozarkWhereResult", "ozarkWhereInResult", "ozarkRawSQLResult", "ozarkLimitResult"]:
-    error("The argument to `get` must be the result of a `where` macro.")
-  let m = sql[1][0][1][1] # extract the model type from the macro arguments for later use in code generation
-  if sql[1][1][0].strval == "ozarkWhereInResult":
+  var runtimeCode: NimNode
+  let calledMacro = sql[1][^1][0].strVal
+  if sql.kind != nnkBlockExpr or
+          calledMacro notin ["ozarkWhereResult", "ozarkRawSQLResult",
+                                "ozarkWhereInResult", "ozarkLimitResult"]:
+    error("The argument to `get` must be the result of a `where` macro. Got " & calledMacro, sql)
+  if calledMacro == "ozarkWhereInResult":
     var vals: seq[NimNode]
-    for n in sql[1][1][2][1]:
+    for n in sql[1][^1][2][1]:
       vals.add(n)
-    parseSqlQuery("getRow", vals)
+    result = sql.parseSqlQuery("getRow", vals)
   else:
-    let v = sql[1][1][2]    # extract the additional arguments (e.g. for WHERE IN) from the macro arguments for later use in code generation
-    parseSqlQuery("getRow", @[v])
+    let v = sql[1][^1][2]
+    result = sql.parseSqlQuery("getRow", @[v])
 
-macro insert*(tableName, data: untyped): untyped =
-  ## Placeholder for INSERT queries
+macro exists*(tableName: untyped) =
+  ## Search in the current table for a record matching
+  ## the specified values. This is a placeholder for an `EXISTS` query.
   withTableCheck tableName:
-    expectKind(data, nnkTableConstr)
-    var cols: seq[string]
-    var values = newNimNode(nnkBracket)
-    var valuesIds: seq[int]
-    var idx = 1
-    for kv in data:
-      # var idx = genSym(nskVar, "v")
-      let col = $kv[0]
-      if col.validIdentifier:
-        # todo check if column exists in model
-        # todo check for NOT NULL columns without default values
-        cols.add(col)
-        values.add(kv[1])
-        valuesIds.add(idx)
-        inc idx
-      else:
-        raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
     result = newCall(
-      bindSym"ozarkInsertResult",
-      newLit("insert into " & getTableName($tableName[1]) & " (" & cols.join(",") & ") VALUES (" & valuesIds.mapIt("$" & $it).join(",") & ")"),
-      nnkPrefix.newTree(ident"@", values)
+      bindSym"ozarkRawSQLResult",
+      newLit("SELECT EXISTS(SELECT 1 FROM " & getTableName($tableName[1]) & " WHERE $1)"),
     )
-
-# macro exists*(tableName: static string) =
-#   ## Search in the current table for a record matching
-#   ## the specified values. This is a placeholder for an `EXISTS` query.
-#   checkTableExists(tableName)
 
 macro limit*(sql: untyped, count: untyped): untyped =
   ## Placeholder for a `LIMIT` clause in SQL queries.
@@ -357,18 +410,16 @@ macro limit*(sql: untyped, count: untyped): untyped =
       count
     )
 
-# macro orderBy*(sql: untyped, col: static string, desc: bool = false): untyped =
-#   ## Placeholder for an `ORDER BY` clause in SQL queries.
-#   if sql.kind != nnkCall or sql[0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult"]:
-#     error("The argument to `orderBy` must be the result of a `where` macro.")
-#   if col.validIdentifier:
-#     # todo check if column exists in model
-#     discard
-#   else:
-#     raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
-#   result = newCall(bindSym"ozarkLimitResult",
-#       newLit(sql[1].strVal & " ORDER BY " & col & (if desc: " DESC" else: ""))
-#     )
+macro orderBy*(sql: untyped, col: static string, desc: static bool = false): untyped =
+  ## Placeholder for an `ORDER BY` clause in SQL queries.
+  if sql.kind != nnkCall or sql[0].strVal notin ["ozarkWhereResult"]:
+    error("The argument to `orderBy` must be the result of a `where` macro.")
+  withColumnCheck(sql[1][0][1], col):
+    result =
+      newCall(
+        bindSym"ozarkOrderByResult",
+        newLit(sql[1].strVal & " ORDER BY " & col & (if desc: " DESC" else: ""))
+      )
 
 macro rawSQL*(models: ptr ModelsTable, sql: static string, values: varargs[untyped]): untyped =
   ## Allows raw SQL queries without losing safety of
@@ -447,5 +498,4 @@ macro execGet*(sql: untyped): untyped =
   except SqlParseError as e:
     raise newException(OzarkModelDefect, "SQL Parsing Error: " & e.msg)
 
-proc `$`*(sql: SqlQuery): string =
-  return string(sql)
+proc `$`*(sql: SqlQuery): string = string(sql)

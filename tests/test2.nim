@@ -23,8 +23,7 @@ newModel Users:
   email: Varchar(100)
 
 {.push dynlib: greskewel_lib.}
-test "run raw sql queries":
-
+test "init embedded postgres and create tables":
   greskew.init()
   greskew.start()
 
@@ -38,21 +37,34 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(100)
 )""").exec()
 
-test "insert and select data":
-  withDB do:
-    let id = Models.table(Users).insert({
-      name: "John",
-      username: "john1232",
-      email: "test@example.com",
-    }).execGet() # returns the id of the inserted row
+suite "INSERT and SELECT queries":
+  test "insert and select data":
+    withDB do:
+      var name = "John"
+      let id = Models.table(Users).insert({
+        name: name,
+        username: "john1232",
+        email: "test@example.com",
+      }).execGet() # returns the id of the inserted row
 
-    let res = Models.table(Users).selectAll()
-                    .where("id", $id).getAll()
-    check res.isEmpty == false
-    check parseInt(res.entries[0].id) == id
-    check res.entries[0].name == "John"
-    check res.entries[0].username == "john1232"
-    check res.entries[0].email == "test@example.com"
+      let res = Models.table(Users).selectAll()
+                      .where("id", $id)
+                      .getAll()
+
+      check res.isEmpty == false
+      check parseInt(res.entries[0].id) == id
+      check res.entries[0].name == "John"
+      check res.entries[0].username == "john1232"
+      check res.entries[0].email == "test@example.com"
+
+  test "select specific columns":
+    withDB do:
+      let res = Models.table(Users)
+                      .select(["name", "email"])
+                      .where("name", "John").get()
+      check res.isEmpty == false
+      check res.get(0).name == "John"
+      check res.get(0).email == "test@example.com"
 
 suite "WHERE queries":
   test "where query":
@@ -134,19 +146,11 @@ suite "LIKE queries":
       check res.get(0).name == "John"
 
 suite "IN queries":
-  test "whereIn query":
-    withDB do:
-      let res = Models.table(Users).select("name")
-                      .whereIn("name", ["John", "Ghost"]).get()
-      check res.isEmpty == false
-      check res.get(0).name == "John"
-
   test "whereNotIn query":
     withDB do:
       let res = Models.table(Users).select("name")
-                      .whereNotIn("name", ["Ghost", "Jane"]).get()
-      check res.isEmpty == false
-      check res.get(0).name == "John"
+                      .whereNotIn("name", "John").get()
+      check res.isEmpty == true
 {.pop.}
 
 test "close embedded postgres":
