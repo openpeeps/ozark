@@ -48,7 +48,8 @@ proc getInstance*(): ptr Ozark =
   result = DB
 
 proc initOzarkDatabase*(address, name, user, password: string,
-                port: Port, driver: DBDriver = DBDriver.PostgreSQLDriver) =
+                port: Port = Port(5432),
+                driver: DBDriver = DBDriver.PostgreSQLDriver) =
   ## Initializes the singleton instance of the database manager
   ## using provided credentials as main database
   let db = getInstance()
