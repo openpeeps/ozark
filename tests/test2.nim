@@ -29,17 +29,15 @@ test "init embedded postgres and create tables":
 
   initOzarkDatabase("localhost", "postgres", "postgres", "postgres", Port(5432))
   withDB do:
-    Models.rawSQL("""
-CREATE TABLE IF NOT EXISTS users (
-  id SERIAL PRIMARY KEY,
-  username VARCHAR(50),
-  name VARCHAR(100),
-  email VARCHAR(100)
-)""").exec()
+    Models.table(Users).prepareTable().exec()
+    Models.table(Users).dropTable(cascade = true).exec()
+    Models.table(Users).prepareTable().exec()
+
+  initOzarkPool(15)
 
 suite "INSERT and SELECT queries":
   test "insert and select data":
-    withDB do:
+    withDBPool do:
       var name = "John"
       let id = Models.table(Users).insert({
         name: name,
@@ -58,7 +56,7 @@ suite "INSERT and SELECT queries":
       check res.entries[0].email == "test@example.com"
 
   test "select specific columns":
-    withDB do:
+    withDBPool do:
       let res = Models.table(Users)
                       .select(["name", "email"])
                       .where("name", "John").get()
@@ -68,7 +66,7 @@ suite "INSERT and SELECT queries":
 
 suite "WHERE queries":
   test "where query":
-    withDB do:
+    withDBPool do:
       let res = Models.table(Users)
                       .select("name")
                       .where("name", "John").get()
@@ -76,14 +74,14 @@ suite "WHERE queries":
       # check res.get(0).name == "John"
 
   test "whereNot query":
-    withDB do:
+    withDBPool do:
       let res = Models.table(Users)
                       .select("name")
                       .whereNot("name", "John").get()
       check res.isEmpty
 
   test "orWhere query":
-    withDB do:
+    withDBPool do:
       let res = Models.table(Users)
                       .select("name")
                       .where("name", "Ghost")
@@ -92,7 +90,7 @@ suite "WHERE queries":
       check res.get(0).name == "John"
   
   test "orWhereNot query":
-    withDB do:
+    withDBPool do:
       let res = Models.table(Users)
                       .select("name")
                       .whereNot("name", "John")
@@ -103,14 +101,14 @@ suite "WHERE queries":
 
 suite "LIKE queries":
   test "like query":
-    withDB do:
+    withDBPool do:
       let res = Models.table(Users).select("name")
                       .whereLike("name", "Jo").get()
       check res.isEmpty == false
       check res.get(0).name == "John"
 
   test "whereStartsLike query":
-    withDB do:
+    withDBPool do:
       let res = Models.table(Users).select("name")
                       .whereStartsLike("name", "Jo").get()
       check res.isEmpty == false
@@ -118,28 +116,28 @@ suite "LIKE queries":
   
 
   test "whereEndsLike query":
-    withDB do:
+    withDBPool do:
       let res = Models.table(Users).select("name")
                       .whereEndsLike("name", "hn").get()
       check res.isEmpty == false
       check res.get(0).name == "John"
   
   test "whereNotLike query":
-    withDB do:
+    withDBPool do:
       let res = Models.table(Users).select("name")
                       .whereNot("name", "Ghost").get()
       check res.isEmpty == false
       check res.get(0).name == "John"
 
   test "wereNotStartsLike query":
-    withDB do:
+    withDBPool do:
       let res = Models.table(Users).select("name")
                       .whereNotStartsLike("name", "Gh").get()
       check res.isEmpty == false
       check res.get(0).name == "John"
 
   test "whereNotEndsLike query":
-    withDB do:
+    withDBPool do:
       let res = Models.table(Users).select("name")
                       .whereNotEndsLike("name", "st").get()
       check res.isEmpty == false
@@ -147,7 +145,7 @@ suite "LIKE queries":
 
 suite "IN queries":
   test "whereNotIn query":
-    withDB do:
+    withDBPool do:
       let res = Models.table(Users).select("name")
                       .whereNotIn("name", "John").get()
       check res.isEmpty == true

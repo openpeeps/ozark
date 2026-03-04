@@ -4,7 +4,7 @@
 #          Made by Humans from OpenPeeps
 #          https://github.com/openpeeps/ozark
 
-import std/[macros, net, strutils, tables]
+import std/[macros, net, strutils, tables, locks, os]
 
 import pkg/threading/once
 import pkg/db_connector/db_postgres
@@ -14,28 +14,27 @@ export Port, strVal, `%`
 
 type
   DBConnectionPool* = ref object
-    connections*: seq[DBConn]
-    busyConnections*: seq[DBConn]
+    connections*: seq[DBConn]      # available
+    busyConnections*: seq[DBConn]  # checked-out
+    maxSize*: int
+    lock: Lock
 
   DBDriver* = enum
     PostgreSQLDriver
     MYSQLDriver
     SQLiteDriver
 
-  DBConnection = ref object
-    driver: DBDriver
+  DBConnection* = ref object
+    driver*: DBDriver
     address*, name*, user*, password*: string
-    # dbConn: DBConn
-    # pool: DBConnectionPool
-    port: Port
+    port*: Port
 
-  DBConnections = OrderedTableRef[string, DBConnection]
+  DBConnections* = OrderedTableRef[string, DBConnection]
 
   Ozark = object
     dbs: DBConnections
-      # holds credentials for multiple Database Connections
     maindb: DBConnection
-      # credentials for the main database connection
+    mainPool: DBConnectionPool
 
 var
   DB: ptr Ozark
@@ -45,13 +44,12 @@ proc getInstance*(): ptr Ozark =
   ## Get the singleton instance of the database manager
   once(o):
     DB = createShared(Ozark)
+    DB[].dbs = newOrderedTable[string, DBConnection]() # init map
   result = DB
 
 proc initOzarkDatabase*(address, name, user, password: string,
                 port: Port = Port(5432),
                 driver: DBDriver = DBDriver.PostgreSQLDriver) =
-  ## Initializes the singleton instance of the database manager
-  ## using provided credentials as main database
   let db = getInstance()
   db[].maindb = DBConnection(
     address: address,
@@ -102,5 +100,93 @@ macro withDatabase*(id: static string, body: untyped) =
                 db[id].password, db[$id].name)
     defer:
       dbcon.close()
+    block:
+      `body`
+
+
+proc openConn(cfg: DBConnection): DBConn =
+  case cfg.driver
+  of PostgreSQLDriver:
+    open(cfg.address, cfg.user, cfg.password, cfg.name)
+  else:
+    raise newException(ValueError, "Only PostgreSQL driver pool is currently implemented.")
+
+proc initOzarkPool*(size: Positive = 10) =
+  ## Initialize main DB connection pool.
+  let db = getInstance()
+  assert db[].maindb != nil, "Main DB credentials not initialized. Call initOzarkDatabase first."
+
+  var pool = DBConnectionPool(
+    maxSize: size.int,
+    connections: @[],
+    busyConnections: @[]
+  )
+  initLock(pool.lock)
+
+  for _ in 0..<size.int:
+    pool.connections.add(openConn(db[].maindb))
+
+  db[].mainPool = pool
+
+proc closeOzarkPool*() =
+  ## Close all pooled connections.
+  let db = getInstance()
+  if db[].mainPool.isNil: return
+
+  acquire(db[].mainPool.lock)
+  defer: release(db[].mainPool.lock)
+
+  for c in db[].mainPool.connections:
+    c.close()
+  for c in db[].mainPool.busyConnections:
+    c.close()
+
+  db[].mainPool.connections.setLen(0)
+  db[].mainPool.busyConnections.setLen(0)
+
+proc acquireConn*(pool: DBConnectionPool, timeoutMs: int = 5000): DBConn =
+  ## Borrow one connection from pool, waiting up to timeoutMs.
+  let stepMs = 10
+  var waited = 0
+  while waited <= timeoutMs:
+    acquire(pool.lock)
+    if pool.connections.len > 0:
+      result = pool.connections.pop()
+      pool.busyConnections.add(result)
+      release(pool.lock)
+      return
+    release(pool.lock)
+    sleep(stepMs)
+    inc(waited, stepMs)
+
+  raise newException(ValueError, "Timed out waiting for a DB connection from pool.")
+
+proc releaseConn*(pool: DBConnectionPool, conn: DBConn) =
+  ## Return a connection to pool.
+  acquire(pool.lock)
+  defer: release(pool.lock)
+
+  var idx = -1
+  for i, c in pool.busyConnections:
+    if c == conn:
+      idx = i
+      break
+
+  if idx >= 0:
+    pool.busyConnections.del(idx)
+    pool.connections.add(conn)
+
+macro withDBPool*(body: untyped) =
+  ## Run queries using a pooled connection.
+  result = newStmtList()
+  add result, quote do:
+    let db = getInstance()
+    assert db != nil, "Database manager not initialized. Call initOzarkDatabase first."
+    assert db[].mainPool != nil, "DB pool not initialized. Call initOzarkPool first."
+
+    let dbcon {.inject.} = acquireConn(db[].mainPool)
+    defer:
+      releaseConn(db[].mainPool, dbcon)
+
     block:
       `body`
