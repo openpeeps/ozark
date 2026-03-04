@@ -4,7 +4,7 @@
 #          Made by Humans from OpenPeeps
 #          https://github.com/openpeeps/ozark
 
-import std/[macros, macrocache, strutils,
+import std/[macros, macrocache, strutils, options,
       sequtils, tables, os, random, strformat]
 
 import pkg/db_connector/postgres {.all.}
@@ -43,10 +43,11 @@ template withColumnsCheck(model: NimNode, cols: openArray[string], body) =
 proc ozarkSelectResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkWhereResult(sql: static[string], val: varargs[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkWhereInResult(sql: static[string], vals: varargs[string]): NimNode {.compileTime.} = newLit(sql)
-proc ozarkRawSQLResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
+proc ozarkRawSQLResult(sql: static[string], vals: varargs[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkInsertResult(sql: static[string], values: seq[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkLimitResult(sql: static[string], count: int): NimNode {.compileTime.} = newLit(sql)
 proc ozarkOrderByResult(sql: static[string], col: string, desc: bool): NimNode {.compileTime.} = newLit(sql)
+proc ozarkCreateTableResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
 
 proc ozarkHoldModel[T](t: T) {.compileTime.} =
   var x: T
@@ -71,6 +72,49 @@ template withColumnCheck(model: NimNode, col: string, body) =
         body; break
     if not withColumnCheckPassed:
       error("Column `" & col & "` does not exist in model `" & $model[1] & "`.")
+
+macro prepareTable*(modelName): untyped =
+  ## Compile-time macro to prepare a model's table in the database.
+  ## 
+  ## This macro generates the SQL string for creating the table based
+  ## on the model definition and executes it at compile time to ensure
+  ## the table exists before any queries are made against it.
+  withTableCheck(modelName):
+    let tableName = getTableName($modelName[1])
+    let schema = SqlSchemas[tableName]
+    let id = genSym(nskType, "ozarkModel" & tableName)
+    var types: seq[SqlNode]
+    for k, v in StaticSchemas[tableName]:
+      if v.kind == nnkTypeSection:
+        for f in v[0][2][0][2]:
+          let fieldName = f[0][1].strVal
+          types.add(schema[fieldName])
+    result = newCall(
+      bindSym"ozarkCreateTableResult",
+      newLit(
+        "CREATE TABLE IF NOT EXISTS " & tableName & " (" &
+        types.map(proc(t: SqlNode): string =
+          var colDef = t[0].strVal & " "
+          if t[1].kind == nkIdent:
+            # handle simple data types without parameters like INTEGER or TEXT
+            colDef &= t[1].strVal
+          elif t[1].kind == nkCall:
+            # handle data types with parameters like VARCHAR(255)
+            colDef &= t[1][0].strVal & "(" & 
+              t[1].sons[1..^1].mapIt($it.strVal).join(", ") & ")"
+          colDef
+        ).join(", ") & ")"
+      )
+    )
+
+macro dropTable*(modelName): untyped =
+  ## Compile-time macro to drop a model's table from the database.
+  withTableCheck(modelName):
+    let tableName = getTableName($modelName[1])
+    result = newCall(
+      bindSym"ozarkRawSQLResult",
+      newLit("DROP TABLE IF EXISTS " & tableName),
+    )
 
 #
 # INSERT and UDATE clause macros 
@@ -445,15 +489,37 @@ macro rawSQL*(models: ptr ModelsTable, sql: static string, values: varargs[untyp
 macro exec*(sql: untyped) =
   ## Finalize and execute an SQL statement that doesn't
   ## return results (e.g. INSERT, UPDATE, DELETE).
-  if sql.kind != nnkCall or sql[0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult", "ozarkInsertResult"]:
+  if sql.kind != nnkCall or sql[0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult", "ozarkInsertResult", "ozarkCreateTableResult"]:
     error("The argument to `exec` must be the result of a `where`, `rawSQL`, or `insert` macro.")
   try:
-    let sqlNode = parseSQL(sql[1].strVal)
-    result = newCall(
-      ident"exec",
-      ident"dbcon",
-      newCall(ident"SqlQuery", newLit($sqlNode))
-    )
+    let sqlNode = parseSQL($sql[1])
+    case sqlNode.sons[0].kind
+    of nkInsert:
+      let randId = genSym(nskVar, "id")
+      let stub = staticRead("private" / "stubs" / "execSql.nim")
+      result = macros.parseStmt(stub % [
+              $sql[1],
+              (
+                if sql[2][1].len > 0: 
+                  ", " & 
+                  $sql[2][1].mapIt(it.repr).join(",")
+                else: ""
+              ),
+              randId.repr,
+              $(sql[2][1]).len
+        ])
+    of nkCreateTable, nkCreateTableIfNotExists:
+      let randId = genSym(nskVar, "id")
+      let stub = staticRead("private" / "stubs" / "execSql.nim")
+      result = macros.parseStmt(stub % [
+              $sql[1],
+              "",
+              randId.repr,
+              "0"
+        ])
+    of nkDelete:
+      discard # todo
+    else: discard 
   except SqlParseError as e:
     raise newException(OzarkModelDefect, "SQL Parsing Error: " & e.msg)
 
