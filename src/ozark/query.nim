@@ -107,13 +107,15 @@ macro prepareTable*(modelName): untyped =
       )
     )
 
-macro dropTable*(modelName): untyped =
+macro dropTable*(modelName: untyped, cascade: static bool = false): untyped =
   ## Compile-time macro to drop a model's table from the database.
   withTableCheck(modelName):
     let tableName = getTableName($modelName[1])
     result = newCall(
       bindSym"ozarkRawSQLResult",
-      newLit("DROP TABLE IF EXISTS " & tableName),
+      newLit("DROP TABLE IF EXISTS " & tableName & (
+        if cascade: " CASCADE" else: ""
+      )),
     )
 
 #
@@ -509,6 +511,15 @@ macro exec*(sql: untyped) =
               $(sql[2][1]).len
         ])
     of nkCreateTable, nkCreateTableIfNotExists:
+      let randId = genSym(nskVar, "id")
+      let stub = staticRead("private" / "stubs" / "execSql.nim")
+      result = macros.parseStmt(stub % [
+              $sql[1],
+              "",
+              randId.repr,
+              "0"
+        ])
+    of nkDropTable, nkDropTableIfExists, nkDropIfExists:
       let randId = genSym(nskVar, "id")
       let stub = staticRead("private" / "stubs" / "execSql.nim")
       result = macros.parseStmt(stub % [
