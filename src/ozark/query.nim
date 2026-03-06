@@ -45,10 +45,11 @@ proc ozarkWhereResult(sql: static[string], val: varargs[string]): NimNode {.comp
 proc ozarkWhereInResult(sql: static[string], vals: varargs[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkRawSQLResult(sql: static[string], vals: varargs[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkInsertResult(sql: static[string], values: seq[string]): NimNode {.compileTime.} = newLit(sql)
+proc ozarkUpdateResult(sql: static[string], values: seq[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkLimitResult(sql: static[string], count: int): NimNode {.compileTime.} = newLit(sql)
 proc ozarkOrderByResult(sql: static[string], col: string, desc: bool): NimNode {.compileTime.} = newLit(sql)
 proc ozarkCreateTableResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
-
+proc ozarkRemoveResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkHoldModel[T](t: T) {.compileTime.} =
   var x: T
 
@@ -145,6 +146,55 @@ macro insert*(tableName, data: untyped): untyped =
       nnkPrefix.newTree(ident"@", values)
     )
 
+macro removeRow*(tableName: untyped): untyped =
+  ## Placeholder for a `DELETE` statement. This macro generates the SQL string for the
+  ## DELETE statement. This macro performs compile-time checks for the existence
+  ## of the specified model.
+  let dbTable = getTableName($tableName[1])
+  let blockIdent = genSym(nskLabel, "ozarkBlock" & dbTable)
+  withTableCheck tableName:
+    result = nnkBlockStmt.newTree(
+      blockIdent,
+      newStmtList(
+        newCall(bindSym"ozarkHoldModel", tableName),
+        newCall(
+          bindSym"ozarkRemoveResult",
+          newLit("DELETE FROM " & getTableName($tableName[1]))
+        )
+      )
+    )
+
+macro update*(tableName, data: untyped): untyped =
+  ## Placeholder for an `UPDATE` statement. This macro generates the SQL string for the
+  ## UPDATE statement. This macro performs compile-time checks for the existence
+  ## of the specified model and the validity of the column names.
+  withTableCheck tableName:
+    expectKind(data, nnkTableConstr)
+    var setClauses: seq[string]
+    var values = newNimNode(nnkBracket)
+    var valuesIds: seq[int]
+    var idx = 1
+    for kv in data:
+      let col = $kv[0]
+      withColumnCheck(tableName, col):
+        setClauses.add(col & " = $" & $idx)
+        values.add(kv[1])
+        valuesIds.add(idx)
+        inc idx
+    let dbTable = getTableName($tableName[1])
+    let blockIdent = genSym(nskLabel, "ozarkBlock" & dbTable)
+    result = nnkBlockStmt.newTree(
+      blockIdent,
+      newStmtList(
+        newCall(bindSym"ozarkHoldModel", tableName),
+        newCall(
+          bindSym"ozarkUpdateResult",
+          newLit("update " & getTableName($tableName[1]) &
+                " set " & setClauses.join(", ")),
+          nnkPrefix.newTree(ident"@", values)
+        )
+      )
+    )
 
 #
 # SELECT clause macros
@@ -208,7 +258,7 @@ proc writeWhereLikeStatements(op: static string, sql: NimNode,
   # This macro generates the SQL string for the WHERE LIKE/NOT LIKE clause and
   # also constructs the appropriate infix expression for the value with wildcards
   if sql.kind != nnkBlockExpr or sql[1][^1][0].strVal != "ozarkSelectResult":
-    error("The first argument to `where` statement must be the result of a `select` macro.")
+    error("The first argument to `where` statement must be the result of a `select` macro. Got " & $sql[1][^1][0])
   withColumnCheck(sql[1][0][1], col):
     let selectSql = sql[1][^1][1].strVal
     sql[1][^1][0] = bindSym"ozarkWhereResult"
@@ -253,16 +303,24 @@ proc writeWhereInWhereNotIn(op: static string,
 proc writeWhereStatement(op: static string, sql: NimNode,
       col: string, val: NimNode): NimNode {.compileTime.} =
   # Writer macro for simple WHERE clauses (e.g. `where`, `whereNot`) to avoid code duplication.
-  if sql.kind != nnkBlockExpr or sql[1][^1][0].strVal notin ["ozarkSelectResult", "ozarkWhereResult"]:
-    error("The first argument to `WHERE` must be the result of a `select` macro.", sql)
-  if sql[1][^1][0].strVal == "ozarkWhereResult":
-    # if it's already a where result, we need to
-    # append the new condition with an AND
+  if sql.kind != nnkBlockExpr or sql[1][^1][0].strVal notin ["ozarkSelectResult", "ozarkWhereResult", "ozarkUpdateResult", "ozarkRemoveResult"]:
+    error("The first argument to `WHERE` must be the result of a `select` macro. Got " & $sql[1][^1][0], sql)
+  if sql[1][^1][0].strVal in ["ozarkWhereResult"]:
+    # if it's already a where result, we need to append to the existing
+    # SQL string and add the new value as an additional argument
     withColumnCheck(sql[1][^2][1], col):
       sql[1][^1][0] = bindSym"ozarkWhereResult"
       let len = sql[1][^1][2][1].len + 1
       sql[1][^1][1].strVal = sql[1][^1][1].strVal & " AND " & col & " " & op & " $" & $(len)
       sql[1][^1][^1][1].add(val) # add to the current varargs list
+  elif sql[1][^1][0].strVal == "ozarkUpdateResult":
+    # if it's an update result, we need to append to the existing
+    # SQL string and add the new value as an additional argument
+    withColumnCheck(sql[1][^2][1], col):
+      sql[1][^1][0] = bindSym"ozarkWhereResult"
+      let len = sql[1][^1][2][1].len + 1
+      sql[1][^1][1].strVal = sql[1][^1][1].strVal & " WHERE " & col & " " & op & " $" & $(len)
+      sql[1][^1][2][1].add(val) # add to the current varargs list
   else:
     withColumnCheck(sql[1][^2][1], col):
       sql[1][^1][0] = bindSym"ozarkWhereResult"
@@ -491,8 +549,15 @@ macro rawSQL*(models: ptr ModelsTable, sql: static string, values: varargs[untyp
 macro exec*(sql: untyped) =
   ## Finalize and execute an SQL statement that doesn't
   ## return results (e.g. INSERT, UPDATE, DELETE).
-  if sql.kind != nnkCall or sql[0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult", "ozarkInsertResult", "ozarkCreateTableResult"]:
-    error("The argument to `exec` must be the result of a `where`, `rawSQL`, or `insert` macro.")
+  var sql = sql
+  if sql.kind != nnkCall or
+      sql[0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult",
+                      "ozarkInsertResult", "ozarkCreateTableResult",
+                      "ozarkRemoveResult"]:
+    if sql.kind != nnkBlockExpr:
+      error("The argument to `exec` must be the result of a `where`, `rawSQL`, or `insert`/`update` macro. Got " & $sql[1][^1][0], sql)
+    else:
+      sql = sql[1][^1] # if it's a block expression, we need to extract the last statement which should be the SQL result
   try:
     let sqlNode = parseSQL($sql[1])
     case sqlNode.sons[0].kind
