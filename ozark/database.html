@@ -16,10 +16,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.6">
+<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.8">
 
 <!-- JS -->
-<script type="text/javascript" src="../dochack.js?v=2.2.6"></script>
+<script type="text/javascript" src="../dochack.js?v=2.2.8"></script>
 </head>
 <body>
   <div class="document" id="documentId">
@@ -55,9 +55,15 @@
   <details open>
     <summary><a class="reference reference-toplevel" href="#7" id="57">Types</a></summary>
     <ul class="simple simple-toc-section">
-      <li><a class="reference" href="#DBConnectionPool" title="DBConnectionPool = ref object
+      <li><a class="reference" href="#DBConnection" title="DBConnection = ref object
+  driver*: DBDriver
+  address*, name*, user*, password*: string
+  port*: Port">DBConnection</a></li>
+<li><a class="reference" href="#DBConnectionPool" title="DBConnectionPool = ref object
   connections*: seq[DbConn]
-  busyConnections*: seq[DbConn]">DBConnectionPool</a></li>
+  busyConnections*: seq[DbConn]
+  maxSize*: int">DBConnectionPool</a></li>
+<li><a class="reference" href="#DBConnections" title="DBConnections = OrderedTableRef[string, DBConnection]">DBConnections</a></li>
 <li><a class="reference" href="#DBDriver" title="DBDriver = enum
   PostgreSQLDriver, MYSQLDriver, SQLiteDriver">DBDriver</a></li>
 
@@ -72,8 +78,16 @@
   <li><a class="reference" href="#%5B%5D%3D%2COzark%2Cstring%2CDBConnection" title="`[]=`(db: Ozark; id: string; dbCon: DBConnection)">`[]=`(db: Ozark; id: string; dbCon: DBConnection)</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">acquireConn
+  <li><a class="reference" href="#acquireConn%2CDBConnectionPool%2Cint" title="acquireConn(pool: DBConnectionPool; timeoutMs: int = 5000): DbConn">acquireConn(pool: DBConnectionPool; timeoutMs: int = 5000): DbConn</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">add
   <li><a class="reference" href="#add%2COzark%2Cstring%2CDBConnection" title="add(db: Ozark; id: string; dbCon: DBConnection)">add(db: Ozark; id: string; dbCon: DBConnection)</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">closeOzarkPool
+  <li><a class="reference" href="#closeOzarkPool" title="closeOzarkPool()">closeOzarkPool()</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">getInstance
@@ -81,9 +95,19 @@
 
 </ul>
 <ul class="simple nested-toc-section">initOzarkDatabase
-  <li><a class="reference" href="#initOzarkDatabase%2Cstring%2Cstring%2Cstring%2Cstring%2CPort%2CDBDriver" title="initOzarkDatabase(address, name, user, password: string; port: Port;
-                  driver: DBDriver = DBDriver.PostgreSQLDriver)">initOzarkDatabase(address, name, user, password: string; port: Port;
+  <li><a class="reference" href="#initOzarkDatabase%2Cstring%2Cstring%2Cstring%2Cstring%2CPort%2CDBDriver" title="initOzarkDatabase(address, name, user, password: string;
+                  port: Port = Port(5432);
+                  driver: DBDriver = DBDriver.PostgreSQLDriver)">initOzarkDatabase(address, name, user, password: string;
+                  port: Port = Port(5432);
                   driver: DBDriver = DBDriver.PostgreSQLDriver)</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">initOzarkPool
+  <li><a class="reference" href="#initOzarkPool%2CPositive" title="initOzarkPool(size: Positive = 10)">initOzarkPool(size: Positive = 10)</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">releaseConn
+  <li><a class="reference" href="#releaseConn%2CDBConnectionPool%2CDbConn" title="releaseConn(pool: DBConnectionPool; conn: DbConn)">releaseConn(pool: DBConnectionPool; conn: DbConn)</a></li>
 
 </ul>
 
@@ -102,6 +126,10 @@
   <li><a class="reference" href="#withDB.m%2Cuntyped" title="withDB(body: untyped)">withDB(body: untyped)</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">withDBPool
+  <li><a class="reference" href="#withDBPool.m%2Cuntyped" title="withDBPool(body: untyped)">withDBPool(body: untyped)</a></li>
+
+</ul>
 
     </ul>
   </details>
@@ -118,10 +146,30 @@
     <div class="section" id="7">
   <h1><a class="toc-backref" href="#7">Types</a></h1>
   <dl class="item">
-    <div id="DBConnectionPool">
+    <div id="DBConnection">
+  <dt><pre><a href="database.html#DBConnection"><span class="Identifier">DBConnection</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
+  <span class="Identifier">driver</span><span class="Operator">*</span><span class="Other">:</span> <a href="database.html#DBDriver"><span class="Identifier">DBDriver</span></a>
+  <span class="Identifier">address</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">user</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">password</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Identifier">port</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Port</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="DBConnectionPool">
   <dt><pre><a href="database.html#DBConnectionPool"><span class="Identifier">DBConnectionPool</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
   <span class="Identifier">connections</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">DbConn</span><span class="Other">]</span>
-  <span class="Identifier">busyConnections</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">DbConn</span><span class="Other">]</span></pre></dt>
+  <span class="Identifier">busyConnections</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">DbConn</span><span class="Other">]</span>
+  <span class="Identifier">maxSize</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="DBConnections">
+  <dt><pre><a href="database.html#DBConnections"><span class="Identifier">DBConnections</span></a> <span class="Other">=</span> <span class="Identifier">OrderedTableRef</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="database.html#DBConnection"><span class="Identifier">DBConnection</span></a><span class="Other">]</span></pre></dt>
   <dd>
     
     
@@ -145,7 +193,7 @@
   <dl class="item">
     <div id="[]=-procs-all">
   <div id="[]=,Ozark,string,DBConnection">
-  <dt><pre><span class="Keyword">proc</span> <a href="#%5B%5D%3D%2COzark%2Cstring%2CDBConnection"><span class="Identifier">`[]=`</span></a><span class="Other">(</span><span class="Identifier">db</span><span class="Other">:</span> <span class="Identifier">Ozark</span><span class="Other">;</span> <span class="Identifier">id</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">dbCon</span><span class="Other">:</span> <span class="Identifier">DBConnection</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+  <dt><pre><span class="Keyword">proc</span> <a href="#%5B%5D%3D%2COzark%2Cstring%2CDBConnection"><span class="Identifier">`[]=`</span></a><span class="Other">(</span><span class="Identifier">db</span><span class="Other">:</span> <span class="Identifier">Ozark</span><span class="Other">;</span> <span class="Identifier">id</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">dbCon</span><span class="Other">:</span> <a href="database.html#DBConnection"><span class="Identifier">DBConnection</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
     <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
@@ -155,13 +203,36 @@
 </div>
 
 </div>
+<div id="acquireConn-procs-all">
+  <div id="acquireConn,DBConnectionPool,int">
+  <dt><pre><span class="Keyword">proc</span> <a href="#acquireConn%2CDBConnectionPool%2Cint"><span class="Identifier">acquireConn</span></a><span class="Other">(</span><span class="Identifier">pool</span><span class="Other">:</span> <a href="database.html#DBConnectionPool"><span class="Identifier">DBConnectionPool</span></a><span class="Other">;</span> <span class="Identifier">timeoutMs</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">=</span> <span class="DecNumber">5000</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">DbConn</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">TimeEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Borrow one connection from pool, waiting up to timeoutMs.
+    
+  </dd>
+</div>
+
+</div>
 <div id="add-procs-all">
   <div id="add,Ozark,string,DBConnection">
-  <dt><pre><span class="Keyword">proc</span> <a href="#add%2COzark%2Cstring%2CDBConnection"><span class="Identifier">add</span></a><span class="Other">(</span><span class="Identifier">db</span><span class="Other">:</span> <span class="Identifier">Ozark</span><span class="Other">;</span> <span class="Identifier">id</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">dbCon</span><span class="Other">:</span> <span class="Identifier">DBConnection</span><span class="Other">)</span> {.<span class="Identifier">inline</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+  <dt><pre><span class="Keyword">proc</span> <a href="#add%2COzark%2Cstring%2CDBConnection"><span class="Identifier">add</span></a><span class="Other">(</span><span class="Identifier">db</span><span class="Other">:</span> <span class="Identifier">Ozark</span><span class="Other">;</span> <span class="Identifier">id</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">dbCon</span><span class="Other">:</span> <a href="database.html#DBConnection"><span class="Identifier">DBConnection</span></a><span class="Other">)</span> {.<span class="Identifier">inline</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
     <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
     Add new database connection credentials
+    
+  </dd>
+</div>
+
+</div>
+<div id="closeOzarkPool-procs-all">
+  <div id="closeOzarkPool">
+  <dt><pre><span class="Keyword">proc</span> <a href="#closeOzarkPool"><span class="Identifier">closeOzarkPool</span></a><span class="Other">(</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Close all pooled connections.
     
   </dd>
 </div>
@@ -180,12 +251,37 @@
 </div>
 <div id="initOzarkDatabase-procs-all">
   <div id="initOzarkDatabase,string,string,string,string,Port,DBDriver">
-  <dt><pre><span class="Keyword">proc</span> <a href="#initOzarkDatabase%2Cstring%2Cstring%2Cstring%2Cstring%2CPort%2CDBDriver"><span class="Identifier">initOzarkDatabase</span></a><span class="Other">(</span><span class="Identifier">address</span><span class="Other">,</span> <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">user</span><span class="Other">,</span> <span class="Identifier">password</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">port</span><span class="Other">:</span> <span class="Identifier">Port</span><span class="Other">;</span>
+  <dt><pre><span class="Keyword">proc</span> <a href="#initOzarkDatabase%2Cstring%2Cstring%2Cstring%2Cstring%2CPort%2CDBDriver"><span class="Identifier">initOzarkDatabase</span></a><span class="Other">(</span><span class="Identifier">address</span><span class="Other">,</span> <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">user</span><span class="Other">,</span> <span class="Identifier">password</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+                       <span class="Identifier">port</span><span class="Other">:</span> <span class="Identifier">Port</span> <span class="Other">=</span> <span class="Identifier">Port</span><span class="Other">(</span><span class="DecNumber">5432</span><span class="Other">)</span><span class="Other">;</span>
                        <span class="Identifier">driver</span><span class="Other">:</span> <a href="database.html#DBDriver"><span class="Identifier">DBDriver</span></a> <span class="Other">=</span> <a href="database.html#DBDriver"><span class="Identifier">DBDriver</span></a><span class="Other">.</span><span class="Identifier">PostgreSQLDriver</span><span class="Other">)</span> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    Initializes the singleton instance of the database manager using provided credentials as main database
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="initOzarkPool-procs-all">
+  <div id="initOzarkPool,Positive">
+  <dt><pre><span class="Keyword">proc</span> <a href="#initOzarkPool%2CPositive"><span class="Identifier">initOzarkPool</span></a><span class="Other">(</span><span class="Identifier">size</span><span class="Other">:</span> <span class="Identifier">Positive</span> <span class="Other">=</span> <span class="DecNumber">10</span><span class="Other">)</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">DbError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DbEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Initialize main DB connection pool.
+    
+  </dd>
+</div>
+
+</div>
+<div id="releaseConn-procs-all">
+  <div id="releaseConn,DBConnectionPool,DbConn">
+  <dt><pre><span class="Keyword">proc</span> <a href="#releaseConn%2CDBConnectionPool%2CDbConn"><span class="Identifier">releaseConn</span></a><span class="Other">(</span><span class="Identifier">pool</span><span class="Other">:</span> <a href="database.html#DBConnectionPool"><span class="Identifier">DBConnectionPool</span></a><span class="Other">;</span> <span class="Identifier">conn</span><span class="Other">:</span> <span class="Identifier">DbConn</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Return a connection to pool.
     
   </dd>
 </div>
@@ -204,6 +300,7 @@
     
     <p>Use the specified database context to run database queries.</p>
 <p>This macro will open a connection to the database, execute the body, and then close the connection.</p>
+<p>For more efficient connection management, consider using <tt class="docutils literal"><span class="pre"><span class="Identifier">withDBPool</span></span></tt> instead.</p>
 
     
   </dd>
@@ -217,7 +314,19 @@
     
     <p>Use the current database context to run database queries.</p>
 <p>This macro will open a connection to the database, execute the body, and then close the connection.</p>
+<p>For more efficient connection management, consider using <tt class="docutils literal"><span class="pre"><span class="Identifier">withDBPool</span></span></tt> instead.</p>
 
+    
+  </dd>
+</div>
+
+</div>
+<div id="withDBPool-macros-all">
+  <div id="withDBPool.m,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#withDBPool.m%2Cuntyped"><span class="Identifier">withDBPool</span></a><span class="Other">(</span><span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span></pre></dt>
+  <dd>
+    
+    Run queries using a pooled connection.
     
   </dd>
 </div>
@@ -233,7 +342,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-02-21 12:31:44 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-03-06 22:08:28 UTC</small>
       </div>
     </div>
   </div>

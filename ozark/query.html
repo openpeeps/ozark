@@ -16,10 +16,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.6">
+<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.8">
 
 <!-- JS -->
-<script type="text/javascript" src="../dochack.js?v=2.2.6"></script>
+<script type="text/javascript" src="../dochack.js?v=2.2.8"></script>
 </head>
 <body>
   <div class="document" id="documentId">
@@ -83,7 +83,11 @@
   <details open>
     <summary><a class="reference reference-toplevel" href="#17" id="67">Macros</a></summary>
     <ul class="simple simple-toc-section">
-      <ul class="simple nested-toc-section">exec
+      <ul class="simple nested-toc-section">dropTable
+  <li><a class="reference" href="#dropTable.m%2Cuntyped%2Cstaticbool" title="dropTable(modelName: untyped; cascade: static bool = false): untyped">dropTable(modelName: untyped; cascade: static bool = false): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">exec
   <li><a class="reference" href="#exec.m%2Cuntyped" title="exec(sql: untyped)">exec(sql: untyped)</a></li>
 
 </ul>
@@ -92,27 +96,47 @@
 
 </ul>
 <ul class="simple nested-toc-section">exists
-  <li><a class="reference" href="#exists.m%2Cstaticstring" title="exists(tableName: static string)">exists(tableName: static string)</a></li>
+  <li><a class="reference" href="#exists.m%2Cuntyped" title="exists(tableName: untyped)">exists(tableName: untyped)</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">get
-  <li><a class="reference" href="#get.m%2Cuntyped%2Ctypedesc" title="get(sql: untyped; m: typedesc): untyped">get(sql: untyped; m: typedesc): untyped</a></li>
+  <li><a class="reference" href="#get.m%2Cuntyped" title="get(sql: untyped): untyped">get(sql: untyped): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">getAll
-  <li><a class="reference" href="#getAll.m%2Cuntyped%2Ctypedesc" title="getAll(sql: untyped; m: typedesc): untyped">getAll(sql: untyped; m: typedesc): untyped</a></li>
+  <li><a class="reference" href="#getAll.m%2Cuntyped" title="getAll(sql: untyped): untyped">getAll(sql: untyped): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">insert
-  <li><a class="reference" href="#insert.m%2Cstaticstring%2Cuntyped" title="insert(tableName: static string; data: untyped): untyped">insert(tableName: static string; data: untyped): untyped</a></li>
+  <li><a class="reference" href="#insert.m%2Cuntyped%2Cuntyped" title="insert(tableName, data: untyped): untyped">insert(tableName, data: untyped): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">limit
   <li><a class="reference" href="#limit.m%2Cuntyped%2Cuntyped" title="limit(sql: untyped; count: untyped): untyped">limit(sql: untyped; count: untyped): untyped</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">orderBy
+  <li><a class="reference" href="#orderBy.m%2Cuntyped%2Cstaticstring%2Cstaticbool" title="orderBy(sql: untyped; col: static string; desc: static bool = false): untyped">orderBy(sql: untyped; col: static string; desc: static bool = false): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orWhere
+  <li><a class="reference" href="#orWhere.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhere(sql: untyped; col: static string; val: untyped): untyped">orWhere(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orWhereNot
+  <li><a class="reference" href="#orWhereNot.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhereNot(sql: untyped; col: static string; val: untyped): untyped">orWhereNot(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">prepareTable
+  <li><a class="reference" href="#prepareTable.m" title="prepareTable(modelName): untyped">prepareTable(modelName): untyped</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">rawSQL
   <li><a class="reference" href="#rawSQL.m%2Cptr.ModelsTable%2Cstaticstring%2Cvarargs%5Buntyped%5D" title="rawSQL(models: ptr ModelsTable; sql: static string; values: varargs[untyped]): untyped">rawSQL(models: ptr ModelsTable; sql: static string; values: varargs[untyped]): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">removeRow
+  <li><a class="reference" href="#removeRow.m%2Cuntyped" title="removeRow(tableName: untyped): untyped">removeRow(tableName: untyped): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">select
@@ -124,8 +148,8 @@
   <li><a class="reference" href="#selectAll.m%2Cuntyped" title="selectAll(tableName: untyped): untyped">selectAll(tableName: untyped): untyped</a></li>
 
 </ul>
-<ul class="simple nested-toc-section">table
-  <li><a class="reference" href="#table.m%2Cptr.ModelsTable%2Cstaticstring" title="table(models: ptr ModelsTable; name: static string): untyped">table(models: ptr ModelsTable; name: static string): untyped</a></li>
+<ul class="simple nested-toc-section">update
+  <li><a class="reference" href="#update.m%2Cuntyped%2Cuntyped" title="update(tableName, data: untyped): untyped">update(tableName, data: untyped): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">where
@@ -134,6 +158,10 @@
 </ul>
 <ul class="simple nested-toc-section">whereEndsLike
   <li><a class="reference" href="#whereEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereEndsLike(sql: untyped; col: static string; val: untyped): untyped">whereEndsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">whereIn
+  <li><a class="reference" href="#whereIn.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereIn(sql: untyped; col: static string; vals: untyped): untyped">whereIn(sql: untyped; col: static string; vals: untyped): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">whereLike
@@ -148,6 +176,10 @@
   <li><a class="reference" href="#whereNotEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereNotEndsLike(sql: untyped; col: static string; val: untyped): untyped">whereNotEndsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">whereNotIn
+  <li><a class="reference" href="#whereNotIn.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereNotIn(sql: untyped; col: static string; vals: untyped): untyped">whereNotIn(sql: untyped; col: static string; vals: untyped): untyped</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">whereNotLike
   <li><a class="reference" href="#whereNotLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereNotLike(sql: untyped; col: static string; val: untyped): untyped">whereNotLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
 
@@ -158,6 +190,22 @@
 </ul>
 <ul class="simple nested-toc-section">whereStartsLike
   <li><a class="reference" href="#whereStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereStartsLike(sql: untyped; col: static string; val: untyped): untyped">whereStartsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+
+    </ul>
+  </details>
+</li>
+<li>
+  <details open>
+    <summary><a class="reference reference-toplevel" href="#18" id="68">Templates</a></summary>
+    <ul class="simple simple-toc-section">
+      <ul class="simple nested-toc-section">table
+  <li><a class="reference" href="#table.t%2Cptr.ModelsTable%2C" title="table(models: ptr ModelsTable; name): untyped">table(models: ptr ModelsTable; name): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">withTableCheck
+  <li><a class="reference" href="#withTableCheck.t%2CNimNode%2C" title="withTableCheck(name: NimNode; body)">withTableCheck(name: NimNode; body)</a></li>
 
 </ul>
 
@@ -225,7 +273,18 @@
 <div class="section" id="17">
   <h1><a class="toc-backref" href="#17">Macros</a></h1>
   <dl class="item">
-    <div id="exec-macros-all">
+    <div id="dropTable-macros-all">
+  <div id="dropTable.m,untyped,staticbool">
+  <dt><pre><span class="Keyword">macro</span> <a href="#dropTable.m%2Cuntyped%2Cstaticbool"><span class="Identifier">dropTable</span></a><span class="Other">(</span><span class="Identifier">modelName</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">cascade</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">bool</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Compile-time macro to drop a model's table from the database.
+    
+  </dd>
+</div>
+
+</div>
+<div id="exec-macros-all">
   <div id="exec.m,untyped">
   <dt><pre><span class="Keyword">macro</span> <a href="#exec.m%2Cuntyped"><span class="Identifier">exec</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span></pre></dt>
   <dd>
@@ -250,8 +309,8 @@
 
 </div>
 <div id="exists-macros-all">
-  <div id="exists.m,staticstring">
-  <dt><pre><span class="Keyword">macro</span> <a href="#exists.m%2Cstaticstring"><span class="Identifier">exists</span></a><span class="Other">(</span><span class="Identifier">tableName</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">)</span></pre></dt>
+  <div id="exists.m,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#exists.m%2Cuntyped"><span class="Identifier">exists</span></a><span class="Other">(</span><span class="Identifier">tableName</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span></pre></dt>
   <dd>
     
     Search in the current table for a record matching the specified values. This is a placeholder for an <tt class="docutils literal"><span class="pre"><span class="Identifier">EXISTS</span></span></tt> query.
@@ -261,8 +320,8 @@
 
 </div>
 <div id="get-macros-all">
-  <div id="get.m,untyped,typedesc">
-  <dt><pre><span class="Keyword">macro</span> <a href="#get.m%2Cuntyped%2Ctypedesc"><span class="Identifier">get</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">m</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <div id="get.m,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#get.m%2Cuntyped"><span class="Identifier">get</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
     Finalize SQL statement. This macro produces the final SQL string and emits runtime code that maps selected columns into a new instance of <tt class="docutils literal"><span class="pre"><span class="Identifier">m</span></span></tt>
@@ -272,8 +331,8 @@
 
 </div>
 <div id="getAll-macros-all">
-  <div id="getAll.m,untyped,typedesc">
-  <dt><pre><span class="Keyword">macro</span> <a href="#getAll.m%2Cuntyped%2Ctypedesc"><span class="Identifier">getAll</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">m</span><span class="Other">:</span> <span class="Identifier">typedesc</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <div id="getAll.m,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#getAll.m%2Cuntyped"><span class="Identifier">getAll</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
     Finalize and get all results of the SQL statement. This macro produce the final SQL string and wraps it in a runtime call to execute it and return all rows via <tt class="docutils literal"><span class="pre"><span class="Identifier">instantRows</span></span></tt>
@@ -283,11 +342,11 @@
 
 </div>
 <div id="insert-macros-all">
-  <div id="insert.m,staticstring,untyped">
-  <dt><pre><span class="Keyword">macro</span> <a href="#insert.m%2Cstaticstring%2Cuntyped"><span class="Identifier">insert</span></a><span class="Other">(</span><span class="Identifier">tableName</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <div id="insert.m,untyped,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#insert.m%2Cuntyped%2Cuntyped"><span class="Identifier">insert</span></a><span class="Other">(</span><span class="Identifier">tableName</span><span class="Other">,</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
-    Placeholder for INSERT queries
+    Placeholder for an <tt class="docutils literal"><span class="pre"><span class="Identifier">INSERT</span></span></tt> statement. This macro generates the SQL string for the INSERT statement. This macro performs compile-time checks for the existence of the specified model and the validity of the column names.
     
   </dd>
 </div>
@@ -304,6 +363,52 @@
 </div>
 
 </div>
+<div id="orderBy-macros-all">
+  <div id="orderBy.m,untyped,staticstring,staticbool">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orderBy.m%2Cuntyped%2Cstaticstring%2Cstaticbool"><span class="Identifier">orderBy</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">desc</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">bool</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Placeholder for an <tt class="docutils literal"><span class="pre"><span class="Identifier">ORDER</span> <span class="Identifier">BY</span></span></tt> clause in SQL queries.
+    
+  </dd>
+</div>
+
+</div>
+<div id="orWhere-macros-all">
+  <div id="orWhere.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orWhere.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhere</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Keyword">OR</span></span></tt> in <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause
+    
+  </dd>
+</div>
+
+</div>
+<div id="orWhereNot-macros-all">
+  <div id="orWhereNot.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orWhereNot.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhereNot</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define a <tt class="docutils literal"><span class="pre"><span class="Keyword">OR</span></span></tt> condition with <tt class="docutils literal"><span class="pre"><span class="Keyword">NOT</span></span></tt> in <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause
+    
+  </dd>
+</div>
+
+</div>
+<div id="prepareTable-macros-all">
+  <div id="prepareTable.m">
+  <dt><pre><span class="Keyword">macro</span> <a href="#prepareTable.m"><span class="Identifier">prepareTable</span></a><span class="Other">(</span><span class="Identifier">modelName</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    <p>Compile-time macro to prepare a model's table in the database.</p>
+<p>This macro generates the SQL string for creating the table based on the model definition and executes it at compile time to ensure the table exists before any queries are made against it.</p>
+
+    
+  </dd>
+</div>
+
+</div>
 <div id="rawSQL-macros-all">
   <div id="rawSQL.m,ptr.ModelsTable,staticstring,varargs[untyped]">
   <dt><pre><span class="Keyword">macro</span> <a href="#rawSQL.m%2Cptr.ModelsTable%2Cstaticstring%2Cvarargs%5Buntyped%5D"><span class="Identifier">rawSQL</span></a><span class="Other">(</span><span class="Identifier">models</span><span class="Other">:</span> <span class="Keyword">ptr</span> <a href="model.html#ModelsTable"><span class="Identifier">ModelsTable</span></a><span class="Other">;</span> <span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span>
@@ -311,6 +416,17 @@
   <dd>
     
     Allows raw SQL queries without losing safety of model checks (table name/column names) and SQL validation at compile time
+    
+  </dd>
+</div>
+
+</div>
+<div id="removeRow-macros-all">
+  <div id="removeRow.m,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#removeRow.m%2Cuntyped"><span class="Identifier">removeRow</span></a><span class="Other">(</span><span class="Identifier">tableName</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Placeholder for a <tt class="docutils literal"><span class="pre"><span class="Identifier">DELETE</span></span></tt> statement. This macro generates the SQL string for the DELETE statement. This macro performs compile-time checks for the existence of the specified model.
     
   </dd>
 </div>
@@ -329,7 +445,7 @@
   <dt><pre><span class="Keyword">macro</span> <a href="#select.m%2Cuntyped%2CstaticopenArray%5Bstring%5D"><span class="Identifier">select</span></a><span class="Other">(</span><span class="Identifier">tableName</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">cols</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
-    Define SELECT clause
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">SELECT</span></span></tt> clause with specific columns.
     
   </dd>
 </div>
@@ -346,12 +462,12 @@
 </div>
 
 </div>
-<div id="table-macros-all">
-  <div id="table.m,ptr.ModelsTable,staticstring">
-  <dt><pre><span class="Keyword">macro</span> <a href="#table.m%2Cptr.ModelsTable%2Cstaticstring"><span class="Identifier">table</span></a><span class="Other">(</span><span class="Identifier">models</span><span class="Other">:</span> <span class="Keyword">ptr</span> <a href="model.html#ModelsTable"><span class="Identifier">ModelsTable</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+<div id="update-macros-all">
+  <div id="update.m,untyped,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#update.m%2Cuntyped%2Cuntyped"><span class="Identifier">update</span></a><span class="Other">(</span><span class="Identifier">tableName</span><span class="Other">,</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
-    Define SQL statement for a table
+    Placeholder for an <tt class="docutils literal"><span class="pre"><span class="Identifier">UPDATE</span></span></tt> statement. This macro generates the SQL string for the UPDATE statement. This macro performs compile-time checks for the existence of the specified model and the validity of the column names.
     
   </dd>
 </div>
@@ -362,7 +478,7 @@
   <dt><pre><span class="Keyword">macro</span> <a href="#where.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">where</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
-    Define WHERE clause
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause
     
   </dd>
 </div>
@@ -373,7 +489,18 @@
   <dt><pre><span class="Keyword">macro</span> <a href="#whereEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereEndsLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
-    Define WHERE clause with LIKE for suffix matching
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause with <tt class="docutils literal"><span class="pre"><span class="Identifier">LIKE</span></span></tt> for suffix matching
+    
+  </dd>
+</div>
+
+</div>
+<div id="whereIn-macros-all">
+  <div id="whereIn.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereIn.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereIn</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause with <tt class="docutils literal"><span class="pre"><span class="Keyword">IN</span></span></tt> operator
     
   </dd>
 </div>
@@ -384,7 +511,7 @@
   <dt><pre><span class="Keyword">macro</span> <a href="#whereLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
-    Define WHERE clause with LIKE for any position
+    Define WHERE clause with <tt class="docutils literal"><span class="pre"><span class="Identifier">LIKE</span></span></tt> for any position
     
   </dd>
 </div>
@@ -395,7 +522,7 @@
   <dt><pre><span class="Keyword">macro</span> <a href="#whereNot.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereNot</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
-    Define WHERE clause with NOT
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause with <tt class="docutils literal"><span class="pre"><span class="Keyword">NOT</span></span></tt>
     
   </dd>
 </div>
@@ -406,7 +533,18 @@
   <dt><pre><span class="Keyword">macro</span> <a href="#whereNotEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereNotEndsLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
-    Define WHERE clause with NOT LIKE for suffix matching
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause with <tt class="docutils literal"><span class="pre"><span class="Keyword">NOT</span> <span class="Identifier">LIKE</span></span></tt> for suffix matching
+    
+  </dd>
+</div>
+
+</div>
+<div id="whereNotIn-macros-all">
+  <div id="whereNotIn.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereNotIn.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereNotIn</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause with <tt class="docutils literal"><span class="pre"><span class="Keyword">NOT</span> <span class="Keyword">IN</span></span></tt> operator
     
   </dd>
 </div>
@@ -417,7 +555,7 @@
   <dt><pre><span class="Keyword">macro</span> <a href="#whereNotLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereNotLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
-    Define WHERE clause with NOT LIKE for any position
+    Define WHERE clause with <tt class="docutils literal"><span class="pre"><span class="Keyword">NOT</span> <span class="Identifier">LIKE</span></span></tt> for any position
     
   </dd>
 </div>
@@ -428,7 +566,7 @@
   <dt><pre><span class="Keyword">macro</span> <a href="#whereNotStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereNotStartsLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
-    Define WHERE clause with NOT LIKE for prefix matching
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause with <tt class="docutils literal"><span class="pre"><span class="Keyword">NOT</span> <span class="Identifier">LIKE</span></span></tt> for prefix matching
     
   </dd>
 </div>
@@ -439,7 +577,35 @@
   <dt><pre><span class="Keyword">macro</span> <a href="#whereStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereStartsLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Identifier">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
-    Define WHERE clause with LIKE for prefix matching
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause with <tt class="docutils literal"><span class="pre"><span class="Identifier">LIKE</span></span></tt> for prefix matching
+    
+  </dd>
+</div>
+
+</div>
+
+  </dl>
+</div>
+<div class="section" id="18">
+  <h1><a class="toc-backref" href="#18">Templates</a></h1>
+  <dl class="item">
+    <div id="table-templates-all">
+  <div id="table.t,ptr.ModelsTable,">
+  <dt><pre><span class="Keyword">template</span> <a href="#table.t%2Cptr.ModelsTable%2C"><span class="Identifier">table</span></a><span class="Other">(</span><span class="Identifier">models</span><span class="Other">:</span> <span class="Keyword">ptr</span> <a href="model.html#ModelsTable"><span class="Identifier">ModelsTable</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define SQL statement for a table
+    
+  </dd>
+</div>
+
+</div>
+<div id="withTableCheck-templates-all">
+  <div id="withTableCheck.t,NimNode,">
+  <dt><pre><span class="Keyword">template</span> <a href="#withTableCheck.t%2CNimNode%2C"><span class="Identifier">withTableCheck</span></a><span class="Other">(</span><span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">;</span> <span class="Identifier">body</span><span class="Other">)</span></pre></dt>
+  <dd>
+    
+    Check if a model with the given name exists in the Models table.
     
   </dd>
 </div>
@@ -455,7 +621,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-02-21 12:31:44 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-03-06 22:08:28 UTC</small>
       </div>
     </div>
   </div>
