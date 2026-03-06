@@ -73,38 +73,48 @@ macro withDB*(body: untyped) =
   ## 
   ## This macro will open a connection to the database,
   ## execute the body, and then close the connection.
+  ## 
+  ## For more efficient connection management, consider using `withDBPool` instead.
   result = newStmtList()
   add result, quote do:
-    let db = getInstance()
-    assert db != nil, "Database manager not initialized. Call initDBManager first."
-    let dbcon {.inject.} =
-        open(db[].maindb.address, db[].maindb.user,
-                db[].maindb.password, db[].maindb.name)
-    defer:
-      dbcon.close()
     block:
-      `body`
+      # This block ensures that multiple withDB calls can be nested without
+      # interfering with each other's connections.
+      let db = getInstance()
+      assert db != nil, "Database manager not initialized. Call initDBManager first."
+      let dbcon {.inject.} =
+          open(db[].maindb.address, db[].maindb.user,
+                  db[].maindb.password, db[].maindb.name)
+      defer:
+        dbcon.close()
+      block:
+        `body`
 
 macro withDatabase*(id: static string, body: untyped) =
   ## Use the specified database context to run database queries.
   ## 
   ## This macro will open a connection to the database,
   ## execute the body, and then close the connection.
+  ## 
+  ## For more efficient connection management, consider using `withDBPool` instead.
   result = newStmtList()
   add result, quote do:
-    let db = getInstance()
-    assert db != nil, "Database manager not initialized. Call initDBManager first."
-    assert db.hasKey(id), "Database connection with id `" & id & "` not found."
-    let dbcon {.inject.} =
-        open(db[id].address, db[$id].user,
-                db[id].password, db[$id].name)
-    defer:
-      dbcon.close()
     block:
-      `body`
-
+      # ensure multiple withDB calls can be nested without interfering with
+      # each other's connections.
+      let db = getInstance()
+      assert db != nil, "Database manager not initialized. Call initDBManager first."
+      assert db.hasKey(id), "Database connection with id `" & id & "` not found."
+      let dbcon {.inject.} =
+          open(db[id].address, db[$id].user,
+                  db[id].password, db[$id].name)
+      defer:
+        dbcon.close()
+      block:
+        `body`
 
 proc openConn(cfg: DBConnection): DBConn =
+  # Currently only supports PostgreSQL, but can be extended to support other databases
   case cfg.driver
   of PostgreSQLDriver:
     open(cfg.address, cfg.user, cfg.password, cfg.name)
@@ -180,13 +190,11 @@ macro withDBPool*(body: untyped) =
   ## Run queries using a pooled connection.
   result = newStmtList()
   add result, quote do:
-    let db = getInstance()
-    assert db != nil, "Database manager not initialized. Call initOzarkDatabase first."
-    assert db[].mainPool != nil, "DB pool not initialized. Call initOzarkPool first."
-
-    let dbcon {.inject.} = acquireConn(db[].mainPool)
-    defer:
-      releaseConn(db[].mainPool, dbcon)
-
     block:
+      let db = getInstance()
+      assert db != nil, "Database manager not initialized. Call initOzarkDatabase first."
+      assert db[].mainPool != nil, "DB pool not initialized. Call initOzarkPool first."
+      let dbcon {.inject.} = acquireConn(db[].mainPool)
+      defer:
+        releaseConn(db[].mainPool, dbcon)
       `body`
