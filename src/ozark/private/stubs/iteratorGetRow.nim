@@ -1,5 +1,5 @@
 block:
-  let sqlPrepared = prepare(dbcon, "ozark_instant_$7", SqlQuery("$1"), $6)
+  let sqlPrepared = ensurePrepared(dbcon, "ozark_instant_$7", SqlQuery("$1"), $6)
   var
     row = getRow(dbcon, sqlPrepared$5)
     isEmpty = true

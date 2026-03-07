@@ -21,6 +21,8 @@ export SqlQuery, mapIt
 type
   OzarkModelDefect* = object of CatchableError
 
+const preparedQueryStatements = CacheTable"preparedQueryStatements"
+
 randomize() # initialize random seed for generating unique statement names in `tryInsertID`
 
 template table*(models: ptr ModelsTable, name): untyped = 
@@ -472,10 +474,17 @@ macro getAll*(sql: untyped): untyped =
   ## Finalize and get all results of the SQL statement.
   ## This macro produce the final SQL string and wraps it in a runtime call
   ## to execute it and return all rows via `instantRows`
-  if sql.kind != nnkBlockExpr or sql[1][^1][0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult", "ozarkLimitResult"]:
+  if sql.kind != nnkBlockExpr or sql[1][^1][0].strVal notin [
+        "ozarkWhereResult", "ozarkRawSQLResult",
+        "ozarkLimitResult", "ozarkOrderByResult",
+        "ozarkSelectResult"
+    ]:
     error("The argument to `getAll` must be the result of a `where` macro.")
-  let v = sql[1][^1][2]    # extract the additional arguments (e.g. for WHERE IN) from the macro arguments for later use in code generation
-  sql.parseSqlQuery("instantRows", @[v])
+  if sql[1][^1][0].strVal == "ozarkSelectResult":
+    result = sql.parseSqlQuery("instantRows")
+  else:
+    let v = sql[1][^1][2]    # extract the additional arguments (e.g. for WHERE IN) from the macro arguments for later use in code generation
+    result = sql.parseSqlQuery("instantRows", @[v])
 
 macro get*(sql: untyped): untyped =
   ## Finalize SQL statement. This macro produces the final SQL
@@ -546,6 +555,15 @@ macro rawSQL*(models: ptr ModelsTable, sql: static string, values: varargs[untyp
   except SqlParseError as e:
     raise newException(OzarkModelDefect, "SQL Parsing Error: " & e.msg)
 
+type PreparedKey = tuple[conn: pointer, name: string]
+var preparedRtCache {.threadvar.}: Table[PreparedKey, SqlPrepared]
+
+proc ensurePrepared*(db: DbConn, name: string, sql: SqlQuery, nParams: int): SqlPrepared =
+  let key: PreparedKey = (cast[pointer](db), name)
+  if key notin preparedRtCache:
+    preparedRtCache[key] = prepare(db, name, sql, nParams)
+  result = preparedRtCache[key]
+
 macro exec*(sql: untyped) =
   ## Finalize and execute an SQL statement that doesn't
   ## return results (e.g. INSERT, UPDATE, DELETE).
@@ -561,7 +579,7 @@ macro exec*(sql: untyped) =
   try:
     let sqlNode = parseSQL($sql[1])
     case sqlNode.sons[0].kind
-    of nkInsert:
+    of nkInsert, nkDelete:
       let randId = genSym(nskVar, "id")
       let stub = staticRead("private" / "stubs" / "execSql.nim")
       result = macros.parseStmt(stub % [
@@ -574,6 +592,20 @@ macro exec*(sql: untyped) =
               ),
               randId.repr,
               $(sql[2][1]).len
+        ])
+    of nkUpdate:
+      let randId = genSym(nskVar, "id")
+      let stub = staticRead("private" / "stubs" / "execSql.nim")
+      result = macros.parseStmt(stub % [
+              $sql[1],
+              (
+                if sql[2][1][1].len > 0: 
+                  ", " & 
+                  $sql[2][1][1].mapIt(it.repr).join(",")
+                else: ""
+              ),
+              randId.repr,
+              $(sql[2][1][1]).len # bracket len
         ])
     of nkCreateTable, nkCreateTableIfNotExists:
       let randId = genSym(nskVar, "id")
@@ -593,8 +625,6 @@ macro exec*(sql: untyped) =
               randId.repr,
               "0"
         ])
-    of nkDelete:
-      discard # todo
     else: discard 
   except SqlParseError as e:
     raise newException(OzarkModelDefect, "SQL Parsing Error: " & e.msg)

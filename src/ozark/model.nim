@@ -238,12 +238,9 @@ proc parseObjectField(tableName: string, field, fieldIdent: NimNode) =
 
   for p in pragmas:
     colDefNode.add(newNode(nkIdent, pragmaToConstraint(p)))
-
   if defaultSql.isSome:
     colDefNode.add(newNode(nkIdent, "DEFAULT " & defaultSql.get))
-
   SqlSchemas[tableName][$fieldName] = colDefNode
-
 
 macro newModel*(id, fields: untyped) =
   ## Macro for defining a new model at compile time.
@@ -252,7 +249,8 @@ macro newModel*(id, fields: untyped) =
   result = newNimNode(nnkStmtList)
   let tableName = getTableName($id)
   if StaticSchemas.hasKey(tableName):
-    raise newException(ValueError, "Model with id '" & $id & "' already exists.")
+    result = StaticSchemas[tableName]
+    return # Model already defined, skip redefinition (allows for multiple imports without conflicts)
   var modelFields = newNimNode(nnkRecList)
   # var modelSchema = newTable[string, SqlNode]()
   SqlSchemas[tableName] = newTable[string, SqlNode]()
