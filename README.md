@@ -25,56 +25,88 @@
 ## Examples
 
 ### Connecting to the database
-Initialize the database connection with the given parameters. Once initialized, you can use `withDB` scope to execute queries using the default connection. _todo multiple connections and connection pooling coming soon._
+Initialize the database connection with the given parameters
+
 ```nim
 import ozark/database
 
 initOzarkDatabase("localhost", "mydb", "myuser", "mypassword", 5432.Port)
 ```
 
-#### Define a model
+#### `withDB` or `withDBPool`
+Use `withDB` to execute queries then automatically close the connection after the block is executed. Use `withDBPool` to execute queries using a connection pool for better performance in concurrent scenarios.
+
+```nim
+withDB do:
+  # execute queries here
+
+withDBPool do:
+  # execute queries here
+```
+
+### Define a Model
 Define a model by creating a new type that inherits from `Model` and specifying the fields with their types. See Ozark's Types documentation for supported field types and options. 
 
 ```nim
 import ozark/model
 
-newModel User:
+newModel Users:
   id: Serial
+  username: Varchar(50)
   name: Varchar(100)
-  age: Int
+  email: Varchar(100)
+
+newModel Subscription:
+  id: Serial
+  user_id: Users.id
+  plan: Varchar(50)
+  status: Varchar(20)
+  created_at: TimestampTz
+  updated_at: TimestampTz
+```
+
+### Create the tables
+TO create a database table you can use the `prepareTable` macro.
+```nim
+withDB do:
+  Models.table(Users).prepareTable().exec()
+```
+
+#### Drop a table
+```nim
+withDB do:
+  Models.table(Users).dropTable(cascade = true).exec()
 ```
 
 ### Querying the database
 For simple queries, you can use the macro-based query builder. The query builder provides a fluent API for constructing SQL queries in a type-safe way. The generated SQL is validated at compile time to catch errors early.
 
+#### Insert data
 ```nim
 import ozark/query
 
-withDB do:
-  let id = User.insert({name: "Alice", age: 30}).execGet()
-  let results: Collection[User] =
-    Models.table("users").select("*")
-          .where("id", id)
-            # you can also use .where("id", "=", id) for more complex conditions
-          .get(User)
-            # the get macro will execute the query and return
-            # a Collection of User instances.
-  
-  assert results.len == 1
-  
-  # getting the first result from the collection
-  let user: User = results.first()
-  
-  assert user.getId == "1"
-  assert user.getName == "Alice"
-  assert user.getAge == "30"
+withDBPool do:
+  let id = Models.table(Users).insert({
+    name: "John Doe",
+    username: "johndoe",
+    email: "johndoe@example.com",
+  }).execGet() # returns the id of the inserted row
+```
+
+#### Select Query
+```nim
+withDBPool do:
+  let res = Models.table(Users)
+                  .select(["name", "email"])
+                  .where("name", "John")
+                  .get()
 ```
 
 ### Querying with raw SQL
 When things are getting too complex for the query builder, you can use `rawSQL` to write raw SQL queries while still benefiting from **compile-time validation** & **type safety**. The `rawSQL` macro allows you to write raw SQL queries with **parameter binding** to **prevent SQL injection attacks**.
 
 ```nim
-Models.table("users")
+Models.table(Users)
       .rawSQL("SELECT * FROM users WHERE name = ?", "Alice")
       .get(Users)
 ```
