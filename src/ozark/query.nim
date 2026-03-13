@@ -556,7 +556,7 @@ macro rawSQL*(models: ptr ModelsTable, sql: static string, values: varargs[untyp
     raise newException(OzarkModelDefect, "SQL Parsing Error: " & e.msg)
 
 type PreparedKey = tuple[conn: pointer, name: string]
-var preparedRtCache {.threadvar.}: Table[PreparedKey, SqlPrepared]
+var preparedRtCache {.global.}: TableRef[PreparedKey, SqlPrepared] = newTable[PreparedKey, SqlPrepared]()
 
 proc ensurePrepared*(db: DbConn, name: string, sql: SqlQuery, nParams: int): SqlPrepared =
   let key: PreparedKey = (cast[pointer](db), name)
