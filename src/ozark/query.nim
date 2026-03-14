@@ -68,13 +68,33 @@ template withColumnCheck(model: NimNode, col: string, body) =
     expectKind(x[2][0][1], nnkOfInherit)
     if x[2][0][1][0] != bindSym"Model":
       error("The first argument must be a model type.", x[2][0][1][0])
-    var withColumnCheckPassed: bool
+    var checkPassed: bool
     for field in x[2][0][2]:
       if $(field[0][1]) == col:
-        withColumnCheckPassed = true
+        checkPassed = true
         body; break
-    if not withColumnCheckPassed:
+    if not checkPassed:
       error("Column `" & col & "` does not exist in model `" & $model[1] & "`.")
+
+template withColumn(x: NimNode, col: string, body) =
+  if col == "*":
+    body # allow all columns, no need to check for existence
+  elif not col.validIdentifier:
+    raise newException(OzarkModelDefect, "Invalid column name `" & col & "`")
+  else:
+    expectKind(x, nnkTypeDef)   # ensure it's a type definition
+    expectKind(x[2], nnkRefTy)  # ensure it's a ref object
+    expectKind(x[2][0], nnkObjectTy) # ensure it's an object type
+    # expectKind(x[2][0][1], nnkOfInherit)
+    # if x[2][0][1][0] != bindSym"Model":
+    #   error("The first argument must be a model type.", x[2][0][1][0])
+    var checkPassed: bool
+    for field in x[2][0][2]:
+      if $(field[0][1]) == col:
+        checkPassed = true
+        body; break
+    if not checkPassed:
+      error("Column `" & col & "` does not exist in model `" & $x[0][1] & "`.")
 
 macro prepareTable*(modelName): untyped =
   ## Compile-time macro to prepare a model's table in the database.
@@ -504,6 +524,76 @@ macro get*(sql: untyped): untyped =
     let v = sql[1][^1][2]
     result = sql.parseSqlQuery("getRow", @[v])
 
+proc validateSqlNodes(nodes: seq[SqlNode], colNames: var seq[string]) {.compileTime.} =
+  # Walk through the parsed SQL nodes and perform checks to ensure
+  # that the specified table names and column names exist in the models.
+  for sqlNode in nodes:
+    case sqlNode.kind
+    of nkSelect:
+      # we must check the columns (if any are specified) and the
+      # table name in the FROM clause to ensure they exist in the models
+      let tableName = getTableName(sqlNode.sons[1].sons[0].sons[0].strVal)
+      if sqlNode.sons[0].sons[0].kind != nkIdent:
+        for col in sqlNode.sons[0].sons:
+          let typeDef = StaticSchemas[tableName][0][0]
+          withColumn(typeDef, col.sons[0].strVal):
+            colNames.add(col.sons[0].strVal)
+    else: discard
+
+macro getWith*(sql: untyped, toModelIdent: untyped): untyped =
+  ## Finalize a RAW SQL statement. This macro produces the final SQL
+  ## string and emits runtime code that maps selected columns into
+  ## a new instance of the specified model type.
+  ## 
+  ## This is used in conjunction with the `rawSQL` macro. For getting the
+  ## raw results when using `rawSQL`, use the `getRaw` macro instead.
+  var runtimeCode: NimNode
+  let calledMacro = sql[1][1][0].strVal
+  if calledMacro != "ozarkRawSQLResult":
+    error("The first argument to `getWith` must be the result of a `rawSQL` macro. Got " & calledMacro, sql)
+  try:
+    let parsedSql = parseSQL(sql[1][1][1].strVal)
+    
+    var colNames: seq[string]
+    validateSqlNodes(parsedSql.sons, colNames)
+
+    let tableName = getTableName(toModelIdent.strVal)
+    let model = StaticSchemas[tableName][0][0]
+    let args = sql[1][1][^1][1][1]
+    
+    var idx = 0
+    var assigns: seq[string]
+    for colName in colNames:
+      if colName != "*":
+        assigns.add("inst." & colName & " = row[" & $idx & "]")
+      else:
+        # assign all columns to fields with matching names
+        for field in model[2][0][2]:
+          assigns.add("inst." & $(field[0][1]) & " = row[" & $idx & "]")
+      inc idx # increment the column index for the next assignment
+
+      # generate the runtime code that fetches the row and applies
+      # the generated assignments
+      let randId = genSym(nskVar, "id")
+      let runtimeCode =
+        staticRead("private" / "stubs" / "iteratorGetRow.nim") % [
+          $parsedSql, 
+          toModelIdent.strVal,
+          assigns.join("\n    "),
+          "getRow",
+          (if args.len > 0: "," & args.mapIt(it.repr).join(",") else: ""),
+          (if args.len > 0: $args.len else: "0"),
+          randId.repr
+        ]
+      result = macros.parseStmt(runtimeCode)
+  except SqlParseError as e:
+    error("SQL parsing error: " & e.msg, sql)
+
+macro getRaw*(sql: untyped): untyped =
+  ## Finalize a RAW SQL statement. This macro produces the final SQL
+  ## string and emits runtime code that returns the raw results as a sequence of sequences of strings.
+  discard # TODO
+
 macro exists*(tableName: untyped) =
   ## Search in the current table for a record matching
   ## the specified values. This is a placeholder for an `EXISTS` query.
@@ -546,11 +636,20 @@ macro rawSQL*(models: ptr ModelsTable, sql: static string, values: varargs[untyp
       let fromNode = sqlNode.sons[0].sons[1]
       assert fromNode.kind == nkFrom
       for table in fromNode.sons:
-        withTableCheck ident(table[0].strVal):
-          discard
+        if not StaticSchemas.hasKey(getTableName(table[0].strVal)):
+          raise newException(OzarkModelDefect, "Unknown model `" & $table[0].strVal & "`")
     else: discard
-    result = newCall(
-      bindSym"ozarkRawSQLResult", newLit(sql)
+    let blockIdent = genSym(nskLabel, "ozarkBlockRawSQL")
+    result = nnkBlockStmt.newTree(
+      blockIdent,
+      newStmtList(
+        newCall(bindSym"ozarkHoldModel", nil),
+        newCall(
+          bindSym"ozarkRawSQLResult",
+          newLit(sql),
+          nnkPrefix.newTree(ident"@", values)
+        )
+      )
     )
   except SqlParseError as e:
     raise newException(OzarkModelDefect, "SQL Parsing Error: " & e.msg)
