@@ -42,18 +42,33 @@ template withColumnsCheck(model: NimNode, cols: openArray[string], body) =
       discard
   body
 
-proc ozarkSelectResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
-proc ozarkWhereResult(sql: static[string], val: varargs[string]): NimNode {.compileTime.} = newLit(sql)
-proc ozarkWhereInResult(sql: static[string], vals: varargs[string]): NimNode {.compileTime.} = newLit(sql)
+proc ozarkSelectResult*(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
+proc ozarkWhereResult*(sql: static[string], val: varargs[string]): NimNode {.compileTime.} = newLit(sql)
+proc ozarkWhereInResult*(sql: static[string], vals: varargs[string]): NimNode {.compileTime.} = newLit(sql)
 proc ozarkRawSQLResult(sql: static[string], vals: varargs[string]): NimNode {.compileTime.} = newLit(sql)
-proc ozarkInsertResult(sql: static[string], values: seq[string]): NimNode {.compileTime.} = newLit(sql)
-proc ozarkUpdateResult(sql: static[string], values: seq[string]): NimNode {.compileTime.} = newLit(sql)
-proc ozarkLimitResult(sql: static[string], count: int): NimNode {.compileTime.} = newLit(sql)
-proc ozarkOrderByResult(sql: static[string], col: string, desc: bool): NimNode {.compileTime.} = newLit(sql)
-proc ozarkCreateTableResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
-proc ozarkRemoveResult(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
-proc ozarkHoldModel[T](t: T) {.compileTime.} =
+proc ozarkInsertResult*(sql: static[string], values: seq[string]): NimNode {.compileTime.} = newLit(sql)
+proc ozarkUpdateResult*(sql: static[string], values: seq[string]): NimNode {.compileTime.} = newLit(sql)
+proc ozarkLimitResult*(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
+proc ozarkOrderByResult*(sql: static[string], vals: varargs[string]): NimNode {.compileTime.} = newLit(sql)
+proc ozarkCreateTableResult*(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
+proc ozarkRemoveResult*(sql: static[string]): NimNode {.compileTime.} = newLit(sql)
+proc ozarkHoldModel*[T](t: T) {.compileTime.} =
   var x: T
+
+proc ozarkHoldModel*[T: typedesc](t: T) {.compileTime.} =
+  var x: T
+
+macro extractSQL*(sql: NimNode): untyped =
+  ## Extracts the SQL `NimNode` to string for use in code generation
+  result = newLit(sql.repr)
+
+macro fromSQL*(sql: untyped): untyped =
+  ## Macro to parse a resumed SQL string back into a NimNode for further manipulation
+  ## This is used in the `where` macros to allow chaining multiple clauses based on runtime computations.
+  let sqlStrNode = sql.getImpl()
+  var parseStmtNode = parseStmt(sqlStrNode[^1].strVal)
+  parseStmtNode[0][1][0][1].insert(0, newEmptyNode())
+  result = parseStmtNode[0]
 
 template withColumnCheck(model: NimNode, col: string, body) =
   if col == "*":
@@ -363,6 +378,11 @@ proc writeOrWhereStatement(op: static string,
     sql[1][^1][2][1].add(val)
     result = sql
 
+template getSqlImpl() {.dirty.} = 
+  var sql = sql
+  if sql.kind == nnkSym:
+    sql = sql.getImpl()[2] # handle the case where the macro is called with a symbol instead of a block (e.g. `where x = 5` instead of `where(select(...), x = 5)`)
+
 # WHERE clause public macros
 macro where*(sql: untyped, col: static string, val: untyped): untyped =
   ## Define `WHERE` clause
@@ -499,7 +519,7 @@ macro getAll*(sql: untyped): untyped =
         "ozarkLimitResult", "ozarkOrderByResult",
         "ozarkSelectResult"
     ]:
-    error("The argument to `getAll` must be the result of a `where` macro.")
+    error("The argument to `getAll` must be the result of a `where` macro.", sql)
   if sql[1][^1][0].strVal == "ozarkSelectResult":
     result = sql.parseSqlQuery("instantRows")
   else:
@@ -605,24 +625,46 @@ macro exists*(tableName: untyped) =
 
 macro limit*(sql: untyped, count: untyped): untyped =
   ## Placeholder for a `LIMIT` clause in SQL queries.
-  if sql.kind != nnkCall or sql[0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult"]:
-    error("The argument to `get` must be the result of a `where` macro.")
-  result = newCall(
-      bindSym"ozarkLimitResult",
-      newLit(sql[1].strVal & " LIMIT ?"),
-      count
-    )
+  if sql.kind != nnkBlockExpr or sql[1][1][0].strVal notin [
+      "ozarkWhereResult", "ozarkRawSQLResult", "ozarkOrderByResult", "ozarkSelectResult"]:
+    error("The argument to `limit` must be the result of a `select`, `where`", sql)
+  let len = sql[1][^1][2][1].len + 1
+  # sql[1][^1][1].strVal = sql[1][^1][1].strVal & " AND " & col & " " & op & " $" & $(len)
+  sql[1][^1][^1][1].add(count) # add to the current varargs list
+  sql[1][1] = newCall(
+    bindSym"ozarkLimitResult",
+    newLit(sql[1][1][1].strVal & " LIMIT $" & $(len))
+  )
+  result = sql
 
-macro orderBy*(sql: untyped, col: static string, desc: static bool = false): untyped =
+type
+  Order* = enum
+    Desc, Asc
+
+macro orderDescBy*(sql: untyped, cols: static openArray[string]): untyped =
   ## Placeholder for an `ORDER BY` clause in SQL queries.
-  if sql.kind != nnkCall or sql[0].strVal notin ["ozarkWhereResult"]:
-    error("The argument to `orderBy` must be the result of a `where` macro.")
-  withColumnCheck(sql[1][0][1], col):
-    result =
-      newCall(
-        bindSym"ozarkOrderByResult",
-        newLit(sql[1].strVal & " ORDER BY " & col & (if desc: " DESC" else: ""))
-      )
+  if sql[1][1].kind != nnkCall or sql[1][1][0].strVal notin ["ozarkWhereResult", "ozarkSelectResult"]:
+    error("The argument to `orderDescBy` must be the result of a `where` macro.")
+  withColumnsCheck(sql[1][0][1], cols):
+    let blockIdent = genSym(nskLabel, "ozarkBlockOrderBy")
+    var vals: seq[NimNode]
+    var newCallNode = newCall(bindSym"ozarkOrderByResult")
+    let totalParam =
+      if sql[1][^1].len > 2 and sql[1][^1][2].kind == nnkHiddenStdConv:
+        # if there are already parameters (e.g. from a WHERE IN clause), we need to calculate
+        # the new parameter index based on the existing parameters
+        newCallNode.add(sql[1][^1][2]) # add the existing parameters to the new call node
+        sql[1][^1][2][1].len # the number of params inside a nnkBracket node
+      else:
+        0
+    var idx: seq[int]
+    for i, col in cols:
+      newCallNode.add(newLit(col))
+      idx.add(i + totalParam + 1) # +1 because SQL parameters are 1-indexed
+
+    newCallNode[1] = newLit(sql[1][1][1].strVal & " ORDER BY " & idx.mapIt("$" & $it).join(", "))
+    sql[1][1] = newCallNode
+    result = sql
 
 macro rawSQL*(models: ptr ModelsTable, sql: static string, values: varargs[untyped]): untyped =
   ## Allows raw SQL queries without losing safety of
