@@ -442,7 +442,7 @@ macro whereNotIn*(sql: untyped, col: static string, vals: untyped): untyped =
 # SQL Query Validator
 #
 proc parseSqlQuery(sql: NimNode, getRowProcName: string,
-            args: seq[NimNode] = @[]): NimNode {.compileTime.} =
+            args: NimNode = newEmptyNode()): NimNode {.compileTime.} =
   # Compile-time procedure to validate the SQL query and 
   # generate the appropriate runtime code to execute it and
   # map the results to model instances. This procedure is called by the `get` and `getAll` macros.
@@ -523,8 +523,7 @@ macro getAll*(sql: untyped): untyped =
   if sql[1][^1][0].strVal == "ozarkSelectResult":
     result = sql.parseSqlQuery("instantRows")
   else:
-    let v = sql[1][^1][2]    # extract the additional arguments (e.g. for WHERE IN) from the macro arguments for later use in code generation
-    result = sql.parseSqlQuery("instantRows", @[v])
+    result = sql.parseSqlQuery("instantRows", sql[1][^1][2][1])
 
 macro get*(sql: untyped): untyped =
   ## Finalize SQL statement. This macro produces the final SQL
@@ -536,13 +535,9 @@ macro get*(sql: untyped): untyped =
                                 "ozarkWhereInResult", "ozarkLimitResult"]:
     error("The argument to `get` must be the result of a `where` macro. Got " & calledMacro, sql)
   if calledMacro == "ozarkWhereInResult":
-    var vals: seq[NimNode]
-    for n in sql[1][^1][2][1]:
-      vals.add(n)
-    result = sql.parseSqlQuery("getRow", vals)
+    result = sql.parseSqlQuery("getRow", sql[1][^1][2][1])
   else:
-    let v = sql[1][^1][2]
-    result = sql.parseSqlQuery("getRow", @[v])
+    result = sql.parseSqlQuery("getRow", sql[1][^1][2][1])
 
 proc validateSqlNodes(nodes: seq[SqlNode], colNames: var seq[string]) {.compileTime.} =
   # Walk through the parsed SQL nodes and perform checks to ensure
@@ -647,22 +642,28 @@ macro orderDescBy*(sql: untyped, cols: static openArray[string]): untyped =
     error("The argument to `orderDescBy` must be the result of a `where` macro.")
   withColumnsCheck(sql[1][0][1], cols):
     let blockIdent = genSym(nskLabel, "ozarkBlockOrderBy")
-    var vals: seq[NimNode]
     var newCallNode = newCall(bindSym"ozarkOrderByResult")
     let totalParam =
       if sql[1][^1].len > 2 and sql[1][^1][2].kind == nnkHiddenStdConv:
         # if there are already parameters (e.g. from a WHERE IN clause), we need to calculate
         # the new parameter index based on the existing parameters
-        newCallNode.add(sql[1][^1][2]) # add the existing parameters to the new call node
         sql[1][^1][2][1].len # the number of params inside a nnkBracket node
       else:
         0
+    
     var idx: seq[int]
-    for i, col in cols:
-      newCallNode.add(newLit(col))
-      idx.add(i + totalParam + 1) # +1 because SQL parameters are 1-indexed
+    var argsNode =
+      if totalParam == 0:
+        newEmptyNode()
+      else:
+        sql[1][^1][2]
+    
+    newCallNode.insert(1, newLit(sql[1][1][1].strVal &
+      " ORDER BY " & cols.join(", ") & " DESC"))
+    
+    if argsNode.kind != nnkEmpty:
+      newCallNode.add(argsNode)
 
-    newCallNode[1] = newLit(sql[1][1][1].strVal & " ORDER BY " & idx.mapIt("$" & $it).join(", "))
     sql[1][1] = newCallNode
     result = sql
 
