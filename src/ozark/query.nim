@@ -7,14 +7,15 @@
 import std/[macros, macrocache, strutils, options,
       sequtils, tables, os, random, strformat]
 
+import pkg/parsesql
 import pkg/db_connector/postgres {.all.}
 import pkg/db_connector/db_postgres {.all.}
 import pkg/db_connector/db_common {.all.}
 
-import pkg/parsesql
-
 import ./model, ./collection
 import ./private/types
+
+include ./runtime_helpers
 
 export SqlQuery, mapIt
 
@@ -454,6 +455,33 @@ macro whereNotIn*(sql: untyped, col: static string, vals: untyped): untyped =
 #
 # SQL Query Validator
 #
+proc countSqlArgs(args: NimNode): int {.compileTime.} =
+  case args.kind
+  of nnkEmpty:
+    0
+  of nnkBracket:
+    args.len
+  of nnkHiddenStdConv:
+    if args.len > 1 and args[1].kind == nnkBracket: args[1].len else: 1
+  else:
+    1
+
+proc appendSqlArgs(callNode: var NimNode, args: NimNode) {.compileTime.} =
+  case args.kind
+  of nnkEmpty:
+    discard
+  of nnkBracket:
+    for a in args:
+      callNode.add(a)
+  of nnkHiddenStdConv:
+    if args.len > 1 and args[1].kind == nnkBracket:
+      for a in args[1]:
+        callNode.add(a)
+    else:
+      callNode.add(args)
+  else:
+    callNode.add(args)
+
 proc parseSqlQuery(sql: NimNode, getRowProcName: string,
             args: NimNode = newEmptyNode()): NimNode {.compileTime.} =
   # Compile-time procedure to validate the SQL query and 
@@ -476,46 +504,82 @@ proc parseSqlQuery(sql: NimNode, getRowProcName: string,
 
     # generate code to assign columns to model instance fields
     var idx = 0
-    var assigns: seq[string]
+    var assigns = newStmtList()
     for cn in colNames:
       if cn != "*":
-        assigns.add("inst." & cn & " = row[" & $idx & "]")
+        # assigns.add("inst." & cn & " = row[" & $idx & "]")
+        assigns.add(
+          nnkAsgn.newTree(
+            nnkDotExpr.newTree(ident("inst"), ident(cn)),
+            nnkBracketExpr.newTree(ident("row"), newLit(idx))
+          )
+        )
       else:
         # assign all columns to fields with matching names
         let modelFields = getTypeImpl(m)[0].getTypeImpl[1]
         for field in getImpl(m)[2][0][2]:
-          assigns.add("inst." & $(field[0][1]) & " = row[" & $idx & "]")
+          # assigns.add("inst." & $(field[0][1]) & " = row[" & $idx & "]")
+          assigns.add(
+            nnkAsgn.newTree(
+              nnkDotExpr.newTree(ident("inst"), field[0][1]),
+              nnkBracketExpr.newTree(ident("row"), newLit(idx))
+            )
+          )
       inc idx
     
-    # Create the runtime code that fetches the row and
-    # applies the generated assignments
-    var runtimeCode: string
+    # validate the number of SQL arguments and generate
+    # the appropriate runtime code to execute the query and
+    # map results to model instances.
+    let nParams = countSqlArgs(args)
     if getRowProcName == "getRow":
-      let randId = genSym(nskVar, "id")
-      runtimeCode =
-        staticRead("private" / "stubs" / "iteratorGetRow.nim") % [
-          $parsedSql, 
-          $(m.getImpl[0][1]),
-          assigns.join("\n    "),
-          getRowProcName,
-          (if args.len > 0: "," & args.mapIt(it.repr).join(",") else: ""),
-          (if args.len > 0: $args.len else: "0"),
-          randId.repr
-        ]
+      result = newCall(
+        nnkBracketExpr.newTree(
+          bindSym"getRowToModel",
+          ident($(m.getImpl[0][1]))
+        ),
+        ident"dbcon",
+        newCall(bindSym"SqlQuery", newLit($parsedSql)),
+        newLit(nParams),
+      )
+      appendSqlArgs(result, args)
+      result.add(
+        nnkLambda.newTree(
+          newEmptyNode(),
+          newEmptyNode(),
+          newEmptyNode(),
+          nnkFormalParams.newTree(
+            newEmptyNode(),
+            nnkIdentDefs.newTree(
+              ident("inst"),
+              ident($(m.getImpl[0][1])),
+              newEmptyNode()
+            ),
+            nnkIdentDefs.newTree(
+              ident("row"),
+              nnkBracketExpr.newTree(
+                ident("seq"),
+                ident("string")
+              ),
+              newEmptyNode()
+            )
+          ),
+          newEmptyNode(),
+          newEmptyNode(),
+          assigns
+        )
+      )
     else:
-      let randId = genSym(nskVar, "id")
-      runtimeCode =
-        staticRead("private" / "stubs" / "iteratorInstantRows.nim") % [
-          $parsedSql,
-          $(m.getImpl[0][1]),
-          colNames.mapIt("\"" & it & "\"").join(","),
-          getRowProcName,
-          (if args.len > 0: "," & args.mapIt(it.repr).join(",") else: ""),
-          (if args.len > 0: $args.len else: "0"),
-          randId.repr
-        ]
-    result = macros.parseStmt(runtimeCode) # parse the generated code into a NimNode
-    result[0][0] = sql[0] # the original block identifier
+      result = newCall(
+        nnkBracketExpr.newTree(
+          bindSym"instantRowsToModels",
+          ident($(m.getImpl[0][1]))
+        ),
+        ident"dbcon",
+        newCall(bindSym"SqlQuery", newLit($parsedSql)),
+        newLit(colNames),
+        newLit(nParams)
+      )
+      appendSqlArgs(result, args)
   except SqlParseError as e:
     error("SQL parsing error: " & e.msg, sql[1][^1][1])
 
@@ -751,15 +815,6 @@ macro rawSQL*(models: ptr ModelsTable, sql: static string, values: varargs[untyp
     )
   except SqlParseError as e:
     raise newException(OzarkModelDefect, "SQL Parsing Error: " & e.msg)
-
-type PreparedKey = tuple[conn: pointer, name: string]
-var preparedRtCache {.global.}: TableRef[PreparedKey, SqlPrepared] = newTable[PreparedKey, SqlPrepared]()
-
-proc ensurePrepared*(db: DbConn, name: string, sql: SqlQuery, nParams: int): SqlPrepared =
-  let key: PreparedKey = (cast[pointer](db), name)
-  if key notin preparedRtCache:
-    preparedRtCache[key] = prepare(db, name, sql, nParams)
-  result = preparedRtCache[key]
 
 macro exec*(sql: untyped) =
   ## Finalize and execute an SQL statement that doesn't
