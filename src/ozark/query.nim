@@ -127,22 +127,35 @@ macro prepareTable*(modelName): untyped =
         for f in v[0][2][0][2]:
           let fieldName = f[0][1].strVal
           types.add(schema[fieldName])
+
+    var compositePkCols: seq[string] # to hold column names for composite primary keys
+    let columnDefs = types.map(proc(t: SqlNode): string =
+      var colDef = t[0].strVal & " "
+      if t[1].kind == nkIdent:
+        colDef &= t[1].strVal
+      elif t[1].kind == nkCall:
+        colDef &= t[1][0].strVal & "(" & 
+          t[1].sons[1..^1].mapIt($it.strVal).join(", ") & ")"
+      # handle column constraints
+      if t.len > 2:
+        for i in 2..<t.len:
+          if t[i].kind == nkPrimaryKey:
+            # if it's a primary key constraint, we need to
+            # add the column name to the compositePkCols list
+            compositePkCols.add(t[0].strVal)
+          else:
+            colDef &= " " & $t[i]
+      colDef
+    )
+    var sql = "CREATE TABLE IF NOT EXISTS " & tableName & " (" &
+      columnDefs.join(", ")
+    if compositePkCols.len > 0:
+      sql &= ", PRIMARY KEY (" & compositePkCols.join(", ") & ")"
+    sql &= ")"
+
     result = newCall(
       bindSym"ozarkCreateTableResult",
-      newLit(
-        "CREATE TABLE IF NOT EXISTS " & tableName & " (" &
-        types.map(proc(t: SqlNode): string =
-          var colDef = t[0].strVal & " "
-          if t[1].kind == nkIdent:
-            # handle simple data types without parameters like INTEGER or TEXT
-            colDef &= t[1].strVal
-          elif t[1].kind == nkCall:
-            # handle data types with parameters like VARCHAR(255)
-            colDef &= t[1][0].strVal & "(" & 
-              t[1].sons[1..^1].mapIt($it.strVal).join(", ") & ")"
-          colDef
-        ).join(", ") & ")"
-      )
+      newLit(sql)
     )
 
 macro dropTable*(modelName: untyped, cascade: static bool = false): untyped =
@@ -540,20 +553,71 @@ macro get*(sql: untyped): untyped =
     result = sql.parseSqlQuery("getRow", sql[1][^1][2][1])
 
 proc validateSqlNodes(nodes: seq[SqlNode], colNames: var seq[string]) {.compileTime.} =
-  # Walk through the parsed SQL nodes and perform checks to ensure
-  # that the specified table names and column names exist in the models.
   for sqlNode in nodes:
     case sqlNode.kind
     of nkSelect:
-      # we must check the columns (if any are specified) and the
-      # table name in the FROM clause to ensure they exist in the models
-      let tableName = getTableName(sqlNode.sons[1].sons[0].sons[0].strVal)
-      if sqlNode.sons[0].sons[0].kind != nkIdent:
-        for col in sqlNode.sons[0].sons:
-          let typeDef = StaticSchemas[tableName][0][0]
-          withColumn(typeDef, col.sons[0].strVal):
-            colNames.add(col.sons[0].strVal)
-    else: discard
+      let selectColumns = sqlNode.sons[0]
+      let fromClause = sqlNode.sons[1]
+      let tableName =
+        if fromClause.sons.len > 0 and fromClause.sons[0].sons.len > 0:
+          getTableName(fromClause.sons[0].sons[0].strVal)
+        else:
+          ""
+
+      for colPair in selectColumns.sons:
+        let col = colPair.sons[0]
+        let hasAlias = colPair.sons.len > 1 and colPair.sons[1].kind == nkIdent
+        let aliasName = if hasAlias: colPair.sons[1].strVal else: ""
+
+        case col.kind
+        of nkIdent:
+          if col.strVal == "*" and tableName.len > 0:
+            let typeDef = StaticSchemas[tableName][0][0]
+            for field in typeDef[2][0][2]:
+              colNames.add($(field[0][1]))
+          elif tableName.len > 0:
+            let typeDef = StaticSchemas[tableName][0][0]
+            withColumn(typeDef, col.strVal):
+              colNames.add(col.strVal)
+          elif hasAlias:
+            colNames.add(aliasName)
+
+        of nkDot:
+          let tbl = col.sons[0].strVal
+          let field = col.sons[1].strVal
+          if field == "*":
+            let typeDef = StaticSchemas[getTableName(tbl)][0][0]
+            for f in typeDef[2][0][2]:
+              colNames.add($(f[0][1]))
+          else:
+            let typeDef = StaticSchemas[getTableName(tbl)][0][0]
+            withColumn(typeDef, field):
+              colNames.add(field)
+
+        of nkPrGroup, nkSelect:
+          # Scalar subquery in SELECT list: output column is the alias.
+          # Still recurse for validation, but do not use inner selected names as output columns.
+          var dummyCols: seq[string]
+          validateSqlNodes(@[col], dummyCols)
+          if hasAlias:
+            colNames.add(aliasName)
+
+        else:
+          # Computed expression / function call with alias.
+          if hasAlias:
+            colNames.add(aliasName)
+
+      for fromItem in fromClause.sons:
+        for sub in fromItem.sons:
+          if sub.kind in {nkSelect, nkPrGroup}:
+            var dummyCols: seq[string]
+            validateSqlNodes(@[sub], dummyCols)
+
+    else:
+      for child in sqlNode.sons:
+        if child.kind in {nkSelect, nkPrGroup}:
+          var dummyCols: seq[string]
+          validateSqlNodes(@[child], dummyCols)
 
 macro getWith*(sql: untyped, toModelIdent: untyped): untyped =
   ## Finalize a RAW SQL statement. This macro produces the final SQL
@@ -566,41 +630,28 @@ macro getWith*(sql: untyped, toModelIdent: untyped): untyped =
   let calledMacro = sql[1][1][0].strVal
   if calledMacro != "ozarkRawSQLResult":
     error("The first argument to `getWith` must be the result of a `rawSQL` macro. Got " & calledMacro, sql)
+
   try:
     let parsedSql = parseSQL(sql[1][1][1].strVal)
-    
     var colNames: seq[string]
     validateSqlNodes(parsedSql.sons, colNames)
 
-    let tableName = getTableName(toModelIdent.strVal)
-    let model = StaticSchemas[tableName][0][0]
+    # generate the runtime code that fetches the row and applies
+    # the generated assignments
     let args = sql[1][1][^1][1][1]
-    
-    var idx = 0
-    var assigns: seq[string]
-    for colName in colNames:
-      if colName != "*":
-        assigns.add("inst." & colName & " = row[" & $idx & "]")
-      else:
-        # assign all columns to fields with matching names
-        for field in model[2][0][2]:
-          assigns.add("inst." & $(field[0][1]) & " = row[" & $idx & "]")
-      inc idx # increment the column index for the next assignment
-
-      # generate the runtime code that fetches the row and applies
-      # the generated assignments
-      let randId = genSym(nskVar, "id")
-      let runtimeCode =
-        staticRead("private" / "stubs" / "iteratorGetRow.nim") % [
-          $parsedSql, 
-          toModelIdent.strVal,
-          assigns.join("\n    "),
-          "getRow",
-          (if args.len > 0: "," & args.mapIt(it.repr).join(",") else: ""),
-          (if args.len > 0: $args.len else: "0"),
-          randId.repr
-        ]
-      result = macros.parseStmt(runtimeCode)
+    let randId = genSym(nskVar, "id")
+    let runtimeCode =
+      staticRead("private" / "stubs" / "iteratorInstantRows.nim") % [
+        $parsedSql, 
+        toModelIdent.strVal,
+        colNames.mapIt("\"" & it & "\"").join(","),
+        "instantRows",
+        (if args.len > 0: "," & args.mapIt(it.repr).join(",") else: ""),
+        (if args.len > 0: $args.len else: "0"),
+        randId.repr
+      ]
+    result = macros.parseStmt(runtimeCode)
+    # echo result.repr
   except SqlParseError as e:
     error("SQL parsing error: " & e.msg, sql)
 
@@ -660,7 +711,7 @@ macro orderDescBy*(sql: untyped, cols: static openArray[string]): untyped =
     
     newCallNode.insert(1, newLit(sql[1][1][1].strVal &
       " ORDER BY " & cols.join(", ") & " DESC"))
-    
+
     if argsNode.kind != nnkEmpty:
       newCallNode.add(argsNode)
 
@@ -683,6 +734,7 @@ macro rawSQL*(models: ptr ModelsTable, sql: static string, values: varargs[untyp
           raise newException(OzarkModelDefect, "Unknown model `" & $table[0].strVal & "`")
     else: discard
     let blockIdent = genSym(nskLabel, "ozarkBlockRawSQL")
+
     result = nnkBlockStmt.newTree(
       blockIdent,
       newStmtList(
@@ -690,7 +742,10 @@ macro rawSQL*(models: ptr ModelsTable, sql: static string, values: varargs[untyp
         newCall(
           bindSym"ozarkRawSQLResult",
           newLit(sql),
-          nnkPrefix.newTree(ident"@", values)
+          nnkPrefix.newTree(ident"@",
+            if values.len > 0: values
+            else: nnkBracket.newTree()
+          )
         )
       )
     )

@@ -4,28 +4,36 @@
 #          Made by Humans from OpenPeeps
 #          https://github.com/openpeeps/ozark
 
-import std/[macros, macrocache, tables, strutils, options, sequtils]
+import std/[macros, macrocache, tables,
+          json, strutils, options, sequtils]
 
 import pkg/threading/once
-import pkg/[parsesql, voodoo/setget]
+import pkg/[parsesql, jsony, voodoo/setget]
 
 import ./private/types
 export tables, setget
 
 type
   Model* = object of RootObj
+    ## Base type for all models. Each model defined with `newModel` will inherit from this type.
+    extra*: Table[string, string]
 
   SchemaTable* = OrderedTableRef[string, ref Model]
-    ## A cache table that holds all models defined at compile-time.
+    ## A cache table that holds all models
 
   ModelsTable* = object
-    ## A global table that holds all models defined at compile-time.
+    ## A global table that holds all models
     ## Also, models defined at runtime will be added here.
     schemas*: SchemaTable
 
+  RuntimeSchemas* = ref object
+    schemas*: TableRef[string, TableRef[string, SqlNode]]
+      ## A global table that holds the SQL schema definitions
+      ## for all models defined at runtime
+
 var
   Models*: ptr ModelsTable
-    ## A global table that holds all models defined at compile-time.
+    ## A global table that holds all models
     ## Also, models defined at runtime will be added here.
   o = createOnce()
 
@@ -34,7 +42,10 @@ const
     ## A cache table that holds all models defined at compile-time.
     ## This allows us to determine if a model exists at compile-time
     ## and also to access its schema definition.
+
 var SqlSchemas* {.compileTime.} = newTable[string, newTable[string, SqlNode]()]()
+var RuntimeSqlSchemas* = newTable[string, newTable[string, SqlNode]()]()
+  # A global table that holds the SQL schema definitions for all models defined at runtime
 
 proc initModels() =
   # Initialize the Models singleton
@@ -64,7 +75,6 @@ proc getTableName*(id: string): string =
       add result, c.toLowerAscii
     else:
       add result, c
-
 
 proc toSqlDefaultLiteral(n: NimNode): string =
   ## Converts Nim literal nodes to SQL literal text.
@@ -106,8 +116,8 @@ proc parseFieldDecl(field: NimNode): tuple[fieldCall: NimNode, defaultSql: Optio
 
 proc parseFieldHead(head: NimNode): tuple[name: NimNode, pragmas: seq[string]] =
   ## Parses:
-  ##   id
-  ##   username {.notnull, unique.}
+  ##   id: Serial
+  ##   username {.notnull, unique.}: Varchar(50)
   case head.kind
   of nnkIdent:
     result.name = head
@@ -181,31 +191,33 @@ proc parseDatatypeExpr(typeExpr: NimNode): (DataType, Option[seq[string]]) =
   of nnkDotExpr:
     let tableName = getTableName(typeExpr[0].strVal)
     if StaticSchemas.hasKey(tableName):
-        let refSchema = SqlSchemas[tableName]
+      let refSchema = SqlSchemas[tableName]
+      if refSchema.hasKey(typeExpr[1].strVal):
         if refSchema.hasKey(typeExpr[1].strVal):
-          if refSchema.hasKey(typeExpr[1].strVal):
-            let refFieldNode = refSchema[typeExpr[1].strVal]
-            result[0] = parseEnum[DataType](refFieldNode[1].strVal.toLowerAscii)
-            result[1] = none(seq[string])
-          else:
-            error("Referenced field '" & typeExpr[1].strVal & "' not found in model '" &
-              typeExpr[0].strVal & "'. Make sure to define the referenced field before using it.", typeExpr[1])
+          let refFieldNode = refSchema[typeExpr[1].strVal]
+          result[0] = parseEnum[DataType](refFieldNode[1].strVal.toLowerAscii)
+          result[1] = none(seq[string])
         else:
-          error("Referenced model '" & typeExpr[0].strVal &
-              "' not found for field '" &
-              typeExpr[1].strVal &
-              "'. Make sure to define the referenced model before using it.",
-            typeExpr[0])
+          error("Referenced field '" & typeExpr[1].strVal & "' not found in model '" &
+            typeExpr[0].strVal & "'. Make sure to define the referenced field before using it.", typeExpr[1])
+      else:
+        error("Referenced model '" & typeExpr[0].strVal &
+            "' not found for field '" &
+            typeExpr[1].strVal &
+            "'. Make sure to define the referenced model before using it.",
+          typeExpr[0])
   else:
     error("Invalid datatype expression: " & typeExpr.repr, typeExpr)
 
-proc pragmaToConstraint(p: string): string =
+proc pragmaToConstraint(p: string): SqlNode =
   ## Map Nim pragmas to SQL constraint tokens.
   case p
-  of "notnull": "NOT NULL"
-  of "unique": "UNIQUE"
-  of "pk", "primarykey": "PRIMARY KEY"
-  else: p.toUpperAscii
+  of "notnull": newNode(nkNotNull)
+  of "unique": newNode(nkUnique)
+  of "pk", "primarykey": newNode(nkPrimaryKey)
+  of "fk", "foreignkey": newNode(nkForeignKey)
+  of "nullable": newNode(nkNull)
+  else: newNode(nkNone)
 
 proc parseObjectField(tableName: string, field, fieldIdent: NimNode) =
   ## Parses one `newModel` field:
@@ -227,6 +239,7 @@ proc parseObjectField(tableName: string, field, fieldIdent: NimNode) =
   let colDefNode = SqlNode(kind: nkColumnDef)
   colDefNode.add(newNode(nkIdent, $fieldName))
 
+  # Handle data type with parameters (e.g. Varchar(50)) and simple types (e.g. Serial)
   if datatype[1].isNone:
     colDefNode.add(newNode(nkIdent, $datatype[0]))
   else:
@@ -236,10 +249,23 @@ proc parseObjectField(tableName: string, field, fieldIdent: NimNode) =
       colDefCall.add(newNode(nkIntegerLit, param))
     colDefNode.add(colDefCall)
 
+  # Add REFERENCES if this is a model reference
+  if typeExpr.kind == nnkDotExpr:
+    let refTable = getTableName(typeExpr[0].strVal)
+    let refField = typeExpr[1].strVal
+    var nkRefNode = newNode(nkReferences)
+    var nkRefColNode = newNode(nkColumnReference)
+    nkRefColNode.add(newNode(nkIdent, refTable))
+    nkRefColNode.add(newNode(nkIdent, refField))
+    nkRefNode.add(nkRefColNode)
+    colDefNode.add(nkRefNode)
+
   for p in pragmas:
-    colDefNode.add(newNode(nkIdent, pragmaToConstraint(p)))
+    colDefNode.add(pragmaToConstraint(p))
   if defaultSql.isSome:
-    colDefNode.add(newNode(nkIdent, "DEFAULT " & defaultSql.get))
+    var defaultNode = newNode(nkDefault)
+    defaultNode.sons.add(newNode(nkIdent, defaultSql.get))
+    colDefNode.add(defaultNode)
   SqlSchemas[tableName][$fieldName] = colDefNode
 
 macro newModel*(id, fields: untyped) =
@@ -263,7 +289,7 @@ macro newModel*(id, fields: untyped) =
       modelFields.add(fieldIdent)
     else:
       raise newException(ValueError, "Invalid field declaration: " & field.repr)
-
+  
   result = newStmtList(
     nnkTypeSection.newTree(
       nnkTypeDef.newTree(
@@ -301,3 +327,28 @@ macro newModel*(id, fields: untyped) =
   # this allows us to determine if a model exists at compile-time
   # and also to access its schema definition.
   StaticSchemas[tableName] = result
+
+#
+# Runtime API for managing models defined at runtime (e.g. by plugins)
+#
+proc unserializeSchemas*(jsonSchema: string): RuntimeSchemas = 
+  ## Unserializes a JSON string containing model schema definitions and registers them
+  ## in the global RuntimeSqlSchemas table. This allows models defined at runtime
+  ## (e.g. by plugins) to be integrated into the application's schema management system.
+  if jsonSchema.len > 0:
+    return fromJson(jsonSchema, RuntimeSchemas)
+
+when compileOption("app", "lib"):
+  macro serializeSchemas*(stmt: typed) =
+    ## Macro to serialize the SQL schema definitions of all
+    ## models defined at compile-time to JSON
+    if SqlSchemas.len == 0: error("No models defined to export.")
+    nnkLetSection.newTree(
+      nnkIdentDefs.newTree(
+        newIdentNode("serializedSchemas"),
+        newEmptyNode(),
+        newLit(toJson(
+          %*{"schemas": SqlSchemas}
+        ))
+      )
+    )

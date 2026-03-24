@@ -22,6 +22,11 @@ newModel Users:
   name: Varchar(100)
   email: Varchar(100)
 
+newModel Subscriptions:
+  id: Serial
+  user_id: Users.id
+  plan: Varchar(50)
+
 {.push dynlib: greskewel_lib.}
 test "init embedded postgres and create tables":
   greskew.init()
@@ -32,6 +37,7 @@ test "init embedded postgres and create tables":
     Models.table(Users).prepareTable().exec()
     Models.table(Users).dropTable(cascade = true).exec()
     Models.table(Users).prepareTable().exec()
+    Models.table(Subscriptions).prepareTable().exec()
 
   initOzarkPool(15)
 
@@ -185,6 +191,13 @@ suite "RAW queries":
       let res = Models.rawSQL("SELECT name FROM users WHERE name = $1", "Alice")
                        .getWith(Users)
       assert res.isEmpty
+  test "raw query with subqueries":
+    withDBPool do:
+      let res = Models.rawSQL("""
+SELECT 
+  users.*,
+  (SELECT COUNT(*) FROM subscriptions WHERE subscriptions.user_id = users.id) AS subscriptions_count
+FROM users ORDER BY users.id DESC LIMIT 20 OFFSET 0;""").getWith(Users)
 {.pop.}
 
 
