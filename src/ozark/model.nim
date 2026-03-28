@@ -27,7 +27,7 @@ type
     schemas*: SchemaTable
 
   RuntimeSchemas* = ref object
-    schemas*: TableRef[string, TableRef[string, SqlNode]]
+    schemas*: OrderedTableRef[string, OrderedTableRef[string, SqlNode]]
       ## A global table that holds the SQL schema definitions
       ## for all models defined at runtime
 
@@ -43,8 +43,8 @@ const
     ## This allows us to determine if a model exists at compile-time
     ## and also to access its schema definition.
 
-var SqlSchemas* {.compileTime.} = newTable[string, newTable[string, SqlNode]()]()
-var RuntimeSqlSchemas* = newTable[string, newTable[string, SqlNode]()]()
+var SqlSchemas* {.compileTime.} = newOrderedTable[string, newOrderedTable[string, SqlNode]()]()
+var RuntimeSqlSchemas* = newOrderedTable[string, newOrderedTable[string, SqlNode]()]()
   # A global table that holds the SQL schema definitions for all models defined at runtime
 
 proc initModels() =
@@ -279,7 +279,7 @@ macro newModel*(id, fields: untyped) =
     return # Model already defined, skip redefinition (allows for multiple imports without conflicts)
   var modelFields = newNimNode(nnkRecList)
   # var modelSchema = newTable[string, SqlNode]()
-  SqlSchemas[tableName] = newTable[string, SqlNode]()
+  SqlSchemas[tableName] = newOrderedTable[string, SqlNode]()
   for field in fields:
     var fieldIdent = newNimNode(nnkIdentDefs)
     if field.kind == nnkCall:
@@ -288,7 +288,8 @@ macro newModel*(id, fields: untyped) =
       fieldIdent.add(newEmptyNode())
       modelFields.add(fieldIdent)
     else:
-      raise newException(ValueError, "Invalid field declaration: " & field.repr)
+      raise newException(ValueError,
+        "Invalid field declaration: " & field.repr)
   
   result = newStmtList(
     nnkTypeSection.newTree(
