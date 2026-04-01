@@ -129,7 +129,7 @@ macro prepareTable*(modelName): untyped =
           let fieldName = f[0][1].strVal
           types.add(schema[fieldName])
 
-    var compositePkCols: seq[string] # to hold column names for composite primary keys
+    var compositePkCols: seq[string] # to hold column names for primary keys
     let columnDefs = types.map(proc(t: SqlNode): string =
       var colDef = t[0].strVal & " "
       if t[1].kind == nkIdent:
@@ -137,19 +137,26 @@ macro prepareTable*(modelName): untyped =
       elif t[1].kind == nkCall:
         colDef &= t[1][0].strVal & "(" & 
           t[1].sons[1..^1].mapIt($it.strVal).join(", ") & ")"
-      # handle column constraints
       if t.len > 2:
         for i in 2..<t.len:
           if t[i].kind == nkPrimaryKey:
-            # if it's a primary key constraint, we need to
-            # add the column name to the compositePkCols list
             compositePkCols.add(t[0].strVal)
           else:
             colDef &= " " & $t[i]
       colDef
     )
-    var sql = "CREATE TABLE IF NOT EXISTS " & tableName & " (" &
-      columnDefs.join(", ")
+
+    # fallback if no `{.pk.}` pragma is explicitly declared,
+    # use `id` when present, as the primary key column by convention
+    # otherwise the table will be created without a primary key, which
+    # is not ideal but still functional for basic queries
+    if compositePkCols.len == 0:
+      for t in types:
+        if t[0].strVal == "id":
+          compositePkCols.add("id")
+          break
+
+    var sql = "CREATE TABLE IF NOT EXISTS " & tableName & " (" & columnDefs.join(", ")
     if compositePkCols.len > 0:
       sql &= ", PRIMARY KEY (" & compositePkCols.join(", ") & ")"
     sql &= ")"

@@ -23,7 +23,7 @@ newModel Users:
   email: Varchar(100)
 
 newModel Subscriptions:
-  id: Serial
+  id {.pk.}: Serial
   user_id: Users.id
   plan: Varchar(50)
 
