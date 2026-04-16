@@ -699,8 +699,8 @@ macro getWith*(sql: untyped, toModelIdent: untyped): untyped =
   ## raw results when using `rawSQL`, use the `getRaw` macro instead.
   var runtimeCode: NimNode
   let calledMacro = sql[1][1][0].strVal
-  if calledMacro != "ozarkRawSQLResult":
-    error("The first argument to `getWith` must be the result of a `rawSQL` macro. Got " & calledMacro, sql)
+  # if calledMacro != "ozarkRawSQLResult":
+  #   error("The first argument to `getWith` must be the result of a `rawSQL` macro. Got " & calledMacro, sql)
 
   try:
     let parsedSql = parseSQL(sql[1][1][1].strVal)

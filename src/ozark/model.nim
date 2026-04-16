@@ -5,10 +5,11 @@
 #          https://github.com/openpeeps/ozark
 
 import std/[macros, macrocache, tables,
-          json, strutils, options, sequtils]
+        strutils, options, sequtils]
 
 import pkg/threading/once
-import pkg/[parsesql, jsony, voodoo/setget]
+import pkg/[parsesql, voodoo/setget]
+import pkg/openparser/json
 
 import ./private/types
 export tables, setget

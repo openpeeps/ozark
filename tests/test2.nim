@@ -1,9 +1,7 @@
-import os, unittest, strutils
+import os, unittest, strutils, times
 
 const pqlibPath = currentSourcePath().parentDir / "greskewelbox" / "bin" / "16.9.0" / "darwin" / "lib"
 const greskewel_lib = pqlibPath / "libpq.dylib"
-
-{.passL: "-Wl,-rpath," & pqlibPath.}
 
 import pkg/db_connector/db_postgres
 import pkg/greskewel
@@ -17,15 +15,22 @@ var greskew = initEmbeddedPostgres(
 )
 
 newModel Users:
-  id: Serial
-  username: Varchar(50)
+  id {.pk.}: Serial
+  username {.unique.}: Varchar(50)
   name: Varchar(100)
-  email: Varchar(100)
+  email {.notnull, unique.}: Varchar(100)
+  created_at {.notnull.}: TimestampTz
+
+newModel SubscriptionPlan:
+  id {.pk.}: Serial
+  name {.notnull, unique.}: Varchar(50)
+  price {.notnull.}: Money
 
 newModel Subscriptions:
   id {.pk.}: Serial
   user_id: Users.id
-  plan: Varchar(50)
+  plan {.notnull.}: SubscriptionPlan.id
+  created_at {.notnull.}: TimestampTz
 
 {.push dynlib: greskewel_lib.}
 test "init embedded postgres and create tables":
@@ -37,6 +42,7 @@ test "init embedded postgres and create tables":
     Models.table(Users).prepareTable().exec()
     Models.table(Users).dropTable(cascade = true).exec()
     Models.table(Users).prepareTable().exec()
+    Models.table(SubscriptionPlan).prepareTable().exec()
     Models.table(Subscriptions).prepareTable().exec()
 
   initOzarkPool(15)
@@ -48,6 +54,7 @@ suite "INSERT and SELECT queries":
         name: "John Doe",
         username: "johndoe",
         email: "johndoe@example.com",
+        created_at: $now()
       }).execGet() # returns the id of the inserted row
 
       let res = Models.table(Users).selectAll()
@@ -199,7 +206,6 @@ SELECT
   (SELECT COUNT(*) FROM subscriptions WHERE subscriptions.user_id = users.id) AS subscriptions_count
 FROM users ORDER BY users.id DESC LIMIT 20 OFFSET 0;""").getWith(Users)
 {.pop.}
-
 
 test "close embedded postgres":
   greskew.stop()
