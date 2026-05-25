@@ -4,15 +4,19 @@
 #          Made by Humans from OpenPeeps
 #          https://github.com/openpeeps/ozark
 
-import std/[tables, sequtils, hashes, strutils]
+## This module implements the runtime logic for the PostgreSQL driver, including
+## managing prepared statements and mapping query results to model instances. It provides the core functionality that
+## allows Ozark to execute SQL queries and return results as instances of user-defined
+
+import std/[tables, sequtils, hashes, strutils, times]
 import pkg/db_connector/[postgres, db_postgres, db_common]
 
-import ./collection, ./model
+import ../collection, ../model
 
 type
   PreparedKey* = tuple[conn: pointer, stmtName: string]
 
-var preparedRtCache* {.global.}: TableRef[PreparedKey, SqlPrepared] = newTable[PreparedKey, SqlPrepared]()
+var ozarkPreparedQueriesCache* {.global.}: TableRef[PreparedKey, SqlPrepared] = newTable[PreparedKey, SqlPrepared]()
   ## A runtime cache for prepared SQL statements, keyed
   ## by a combination of the database connection pointer
   ## and a unique name for the prepared statement. This allows
@@ -28,9 +32,10 @@ proc ensurePrepared*(db: DbConn, name: string, sql: SqlQuery, nParams: int): Sql
   ## deterministic name from SQL
   let stmtName = stmtNameFor(sql, nParams)
   let key: PreparedKey = (cast[pointer](db), stmtName)
-  if key notin preparedRtCache:
-    preparedRtCache[key] = prepare(db, stmtName, sql, nParams)
-  result = preparedRtCache[key]
+  if key notin ozarkPreparedQueriesCache:
+    ozarkPreparedQueriesCache[key] = prepare(db, stmtName, sql, nParams)
+  result = ozarkPreparedQueriesCache[key]
+
 proc instantRowsToModels*[T](
   dbcon: DbConn,
   sql: SqlQuery,
@@ -94,3 +99,42 @@ proc getRowToModel*[T](
     assignProc(inst, row)
     results.entries.add(inst)
   results
+
+
+proc toDbValue*(v: bool): string =
+  ## Convert a boolean value to a string representation suitable for database storage.
+  if v: "t" else: "f"
+
+proc toDbValue*(v: string): string =
+  ## Convert a string value to a form suitable for database storage, handling nil values.
+  for i in 0..<v.len:
+    case v[i]
+    of 't':
+      if i + 3 == v.len and v[i..i+3] == "true":
+        return "t"
+    of 'f':
+      if i + 4 == v.len and v[i..i+4] == "false":
+        return "f"
+    else: discard
+  v
+
+proc fromDBValue*[T](v: string): T =
+  ## Convert a string value from the database into the specified type T.
+  when T is bool:
+    if v == "t": return true
+    if v == "f": return false
+    else:
+      raise newException(ValueError, "Cannot convert value `" & v & "` to bool")
+  elif T is DateTime:
+    return parse(v, "yyyy-MM-dd HH:mm:sszz")
+  elif T is string:
+    return v
+  else:
+    raise newException(ValueError, "Unsupported type for fromDBValue: " & $T)
+
+
+proc toDbValue*(v: DateTime): string =
+  ## PostgreSQL expects `yyyy-MM-dd HH:mm:sszz`
+  const pgFmt = "yyyy-MM-dd HH:mm:sszz"
+  v.format(pgFmt)
+  

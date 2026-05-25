@@ -5,6 +5,10 @@
 #          https://github.com/openpeeps/ozark
 import ./model
 
+## The Collection module defines a simple collection type that can hold a sequence of
+## items of any model type. It provides a way to work with results from database queries as collections
+## of model instances, with utility methods for accessing and iterating over the items.
+
 type
   Collection*[T] = object
     ## A simple collection type that can hold

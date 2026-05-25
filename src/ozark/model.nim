@@ -8,10 +8,10 @@ import std/[macros, macrocache, tables,
         strutils, options, sequtils]
 
 import pkg/threading/once
-import pkg/[parsesql, voodoo/setget]
-import pkg/openparser/json
+import pkg/[voodoo/setget]
+import pkg/openparser/[sql, json]
 
-import ./private/types
+import ./driver/private/types
 export tables, setget
 
 type

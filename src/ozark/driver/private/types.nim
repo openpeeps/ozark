@@ -3,6 +3,10 @@
 # (c) 2026 George Lemon | MIT License
 #          Made by Humans from OpenPeeps
 #          https://github.com/openpeeps/ozark
+
+import std/macros
+import pkg/openparser/sql
+
 type
   DataType* = enum
     BigInt = "int8"
@@ -48,3 +52,38 @@ type
     TsVector = "tsvector"
     Uuid = "uuid"
     Enum = "enum"
+
+    # SQLite-specific types
+    Integer = "integer"
+    Blob = "blob"
+
+proc countSqlArgs*(args: NimNode): int {.compileTime.} =
+  case args.kind
+  of nnkEmpty:
+    0
+  of nnkBracket:
+    args.len
+  of nnkHiddenStdConv:
+    if args.len > 1 and args[1].kind == nnkBracket:
+      args[1].len
+    else: 1
+  else:
+    1
+
+proc appendSqlArgs*(callNode: var NimNode, args: NimNode) {.compileTime.} =
+  case args.kind
+  of nnkEmpty:
+    discard
+  of nnkBracket:
+    for a in args:
+      callNode.add(a)
+  of nnkHiddenStdConv:
+    if args.len > 1 and args[1].kind == nnkBracket:
+      for a in args[1]:
+        callNode.add(a)
+    else:
+      callNode.add(args)
+  else:
+    callNode.add(args)
+
+proc getDriverType*(n: NimNode): SqlDriver = SqlDriver(n[1][1].intval)

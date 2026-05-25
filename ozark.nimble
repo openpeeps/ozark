@@ -15,7 +15,7 @@ requires "db_connector"
 requires "threading"
 
 # temporary until we have a stable release of parsesql
-requires "https://github.com/georgelemon/parsesql#vgelemon"
+# requires "https://github.com/georgelemon/parsesql#vgelemon"
 # requires "parsesql"
 
 requires "openparser"
