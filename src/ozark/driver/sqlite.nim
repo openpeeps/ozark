@@ -420,12 +420,12 @@ macro getAll*(sql: untyped): untyped =
 
 macro get*(sql: untyped): untyped =
   ## Finalize SQL statement. This macro produces the final SQL
-  ## string and emits runtime code that maps selected columns into a new instance of `m`
+  ## string and emits runtime code that maps selected columns into
+  ## the specified model type.
   var runtimeCode: NimNode
   let calledMacro = sql[1][^1][0].strVal
   if sql.kind != nnkBlockExpr or
-          calledMacro notin ["ozarkWhereResult", "ozarkRawSQLResult",
-                                "ozarkWhereInResult", "ozarkLimitResult"]:
+          calledMacro notin ["ozarkWhereResult", "ozarkRawSQLResult", "ozarkWhereInResult", "ozarkLimitResult"]:
     error("The argument to `get` must be the result of a `where` macro. Got " & calledMacro, sql)
   if calledMacro == "ozarkWhereInResult":
     result = sql.parseSqlQuery("getRow", sql[1][^1][2][1])
@@ -675,8 +675,6 @@ macro exec*(sql: untyped) =
               randId.repr,
               $(sql[2][1][1]).len # bracket len
         ])
-      echo result.repr
-      echo result.treeRepr
     of nkCreateTable, nkCreateTableIfNotExists:
       let randId = genSym(nskVar, "id")
       let stub = staticRead("private" / "stubs" / "execSql.nim")

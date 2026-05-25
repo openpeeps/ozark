@@ -160,7 +160,8 @@ suite "IN queries":
   test "whereNotIn query":
     withDBPool do:
       let res = Models.table(Users).select("name")
-                      .whereNotIn("name", "John Doe").get()
+                      .whereNotIn("name", ["John Doe"])
+                      .get()
       check res.isEmpty == true
 
 # suite "Resumable Queries":

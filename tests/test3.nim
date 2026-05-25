@@ -26,7 +26,7 @@ suite "SQLite driver tests":
     initOzarkDatabase("mytest.db")
     withDB do:
       Models.table(Users).prepareTable().exec()
-      # Models.table(Users).dropTable(cascade = true).exec()
+      Models.table(Users).dropTable(cascade = true).exec()
       Models.table(Users).prepareTable().exec()
       Models.table(SubscriptionPlan).prepareTable().exec()
       Models.table(Subscriptions).prepareTable().exec()
@@ -61,23 +61,24 @@ suite "SQLite driver tests":
     withDBPool do:
       let res = Models.table(Users)
                       .select("name")
-                      .where("name", "Jane Doe").get()
+                      .where("username", "johndoe").get()
       check res.isEmpty == false
+      
       let likeRes = Models.table(Users)
                          .select("name")
-                         .whereLike("name", "Ja").get()
+                         .whereLike("name", "Jo").get()
       check likeRes.isEmpty == false
-      check likeRes.get(0).name == "Jane Doe"
+      check likeRes.get(0).name == "John Doe"
 
   test "in and not in queries (sqlite)":
     withDBPool do:
       let res = Models.table(Users)
                       .select("name")
-                      .whereIn("name", ["Jane Doe"]).get()
+                      .whereIn("name", ["John Doe"]).get()
       check res.isEmpty == false
       let notInRes = Models.table(Users)
                          .select("name")
-                         .whereNotIn("name", ["Jane Doe"]).get()
+                         .whereNotIn("name", ["John Doe"]).get()
       check notInRes.isEmpty == true
 
   # test "raw query (sqlite)":

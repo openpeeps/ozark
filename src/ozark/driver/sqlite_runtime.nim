@@ -156,28 +156,21 @@ proc instantRowsToModels*[T](dbcon: DbConn, sql: SqlQuery, colNames: seq[string]
   finalize(stmtPrepared)
   results
 
-proc getRowToModel*[T](
-  dbcon: DbConn,
-  sql: SqlQuery,
-  nParams: int,
-  params: varargs[string, `$`],
-  assignProc: proc(inst: T, row: seq[string])
-): Collection[T] =
+proc getRowToModel*[T](dbcon: DbConn, sql: SqlQuery, nParams: int, params: varargs[string, `$`],
+                    assignProc: proc(inst: T, row: seq[string])): Collection[T] =
   ## Execute a SQL query that is expected to return a single row,
   ## and map that row to an instance of the specified model type T
   # let sqlPrepared = ensurePrepared(dbcon, "", sql, nParams)
   var
     row = getRow(dbcon, sql, params)
     isEmpty = true
-    results: Collection[T]
   for v in row:
     isEmpty = isEmpty and v.len == 0
   if row.len > 0 and not isEmpty:
     var inst = new(T)
     assignProc(inst, row)
-    results.entries.add(inst)
-  results
-
+    result.entries.add(inst)
+  result
 
 proc toDbValue*(v: bool): string =
   ## Convert a boolean value to a form suitable for SQLite (1 for true, 0 for false)

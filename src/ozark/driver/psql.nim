@@ -371,8 +371,7 @@ macro get*(sql: untyped): untyped =
   var runtimeCode: NimNode
   let calledMacro = sql[1][^1][0].strVal
   if sql.kind != nnkBlockExpr or
-          calledMacro notin ["ozarkWhereResult", "ozarkRawSQLResult",
-                                "ozarkWhereInResult", "ozarkLimitResult"]:
+          calledMacro notin ["ozarkWhereResult", "ozarkRawSQLResult", "ozarkWhereInResult", "ozarkLimitResult"]:
     error("The argument to `get` must be the result of a `where` macro. Got " & calledMacro, sql)
   if calledMacro == "ozarkWhereInResult":
     result = sql.parseSqlQuery("getRow", sql[1][^1][2][1])
@@ -601,7 +600,7 @@ macro exec*(sql: untyped) =
               (
                 if sql[2][1].len > 0: 
                   ", " & 
-                  $sql[2][1].mapIt(it.repr).join(",")
+                  $sql[2][1][1].mapIt("toDbValue(" & it.repr & ")").join(",")
                 else: ""
               ),
               randId.repr,
@@ -615,7 +614,7 @@ macro exec*(sql: untyped) =
               (
                 if sql[2][1][1].len > 0: 
                   ", " & 
-                  $sql[2][1][1].mapIt(it.repr).join(",")
+                  $sql[2][1][1].mapIt("toDbValue(" & it.repr & ")").join(",")
                 else: ""
               ),
               randId.repr,
