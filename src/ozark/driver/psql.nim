@@ -600,7 +600,7 @@ macro exec*(sql: untyped) =
               (
                 if sql[2][1].len > 0: 
                   ", " & 
-                  $sql[2][1][1].mapIt("toDbValue(" & it.repr & ")").join(",")
+                  $sql[2][1].mapIt("toDbValue(" & it.repr & ")").join(",")
                 else: ""
               ),
               randId.repr,
