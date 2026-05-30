@@ -16,13 +16,16 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.8">
+<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.10">
 
 <!-- JS -->
-<script type="text/javascript" src="../dochack.js?v=2.2.8"></script>
+<script type="text/javascript" src="../dochack.js?v=2.2.10"></script>
 </head>
 <body>
   <div class="document" id="documentId">
+    <input type="checkbox" id="nav-toggle" hidden>
+    <label for="nav-toggle" id="nav-burger">&#9776;</label>
+    <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">ozark/model</h1>
       <div class="row">
@@ -58,9 +61,14 @@
   <details open>
     <summary><a class="reference reference-toplevel" href="#7" id="57">Types</a></summary>
     <ul class="simple simple-toc-section">
-      <li><a class="reference" href="#Model" title="Model = object of RootObj">Model</a></li>
+      <li><a class="reference" href="#Model" title="Model = object of RootObj
+  extra*: Table[string, string]">Model</a></li>
 <li><a class="reference" href="#ModelsTable" title="ModelsTable = object
   schemas*: SchemaTable">ModelsTable</a></li>
+<li><a class="reference" href="#RuntimeSchemas" title="RuntimeSchemas = ref object
+  schemas*: OrderedTableRef[string, OrderedTableRef[string, SqlNode]] ## A global table that holds the SQL schema 
+                                                                      ## definitions
+                                                                      ## for all models defined at runtime">RuntimeSchemas</a></li>
 <li><a class="reference" href="#SchemaTable" title="SchemaTable = OrderedTableRef[string, ref Model]">SchemaTable</a></li>
 
     </ul>
@@ -71,7 +79,8 @@
     <summary><a class="reference reference-toplevel" href="#8" id="58">Vars</a></summary>
     <ul class="simple simple-toc-section">
       <li><a class="reference" href="#Models" title="Models: ptr ModelsTable">Models</a></li>
-<li><a class="reference" href="#SqlSchemas" title="SqlSchemas {.compileTime.} = newTable(32)">SqlSchemas</a></li>
+<li><a class="reference" href="#RuntimeSqlSchemas" title="RuntimeSqlSchemas = newOrderedTable(32)">RuntimeSqlSchemas</a></li>
+<li><a class="reference" href="#SqlSchemas" title="SqlSchemas {.compileTime.} = newOrderedTable(32)">SqlSchemas</a></li>
 
     </ul>
   </details>
@@ -95,6 +104,10 @@
 </ul>
 <ul class="simple nested-toc-section">getTableName
   <li><a class="reference" href="#getTableName%2Cstring" title="getTableName(id: string): string">getTableName(id: string): string</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">unserializeSchemas
+  <li><a class="reference" href="#unserializeSchemas%2Cstring" title="unserializeSchemas(jsonSchema: string): RuntimeSchemas">unserializeSchemas(jsonSchema: string): RuntimeSchemas</a></li>
 
 </ul>
 
@@ -125,34 +138,46 @@
     <div class="section" id="6">
   <h1><a class="toc-backref" href="#6">Imports</a></h1>
   <dl class="item">
-    <a class="reference external" href="private/types.html">private/types</a>
+    <a class="reference external" href="driver/private/types.html">driver/private/types</a>
   </dl>
 </div>
 <div class="section" id="7">
   <h1><a class="toc-backref" href="#7">Types</a></h1>
   <dl class="item">
     <div id="Model">
-  <dt><pre><a href="model.html#Model"><span class="Identifier">Model</span></a> <span class="Other">=</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <span class="Identifier">RootObj</span></pre></dt>
+  <dt><pre><a href="#Model"><span class="Identifier">Model</span></a> <span class="Other">=</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <span class="Identifier">RootObj</span>
+  <span class="Identifier">extra</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">]</span></pre></dt>
   <dd>
     
-    
+    Base type for all models. Each model defined with <tt class="docutils literal"><span class="pre"><span class="Identifier">newModel</span></span></tt> will inherit from this type.
     
   </dd>
 </div>
 <div id="ModelsTable">
-  <dt><pre><a href="model.html#ModelsTable"><span class="Identifier">ModelsTable</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
-  <span class="Identifier">schemas</span><span class="Operator">*</span><span class="Other">:</span> <a href="model.html#SchemaTable"><span class="Identifier">SchemaTable</span></a></pre></dt>
+  <dt><pre><a href="#ModelsTable"><span class="Identifier">ModelsTable</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">schemas</span><span class="Operator">*</span><span class="Other">:</span> <a href="#SchemaTable"><span class="Identifier">SchemaTable</span></a></pre></dt>
   <dd>
     
-    A global table that holds all models defined at compile-time. Also, models defined at runtime will be added here.
+    A global table that holds all models Also, models defined at runtime will be added here.
+    
+  </dd>
+</div>
+<div id="RuntimeSchemas">
+  <dt><pre><a href="#RuntimeSchemas"><span class="Identifier">RuntimeSchemas</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
+  <span class="Identifier">schemas</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTableRef</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">OrderedTableRef</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">SqlNode</span><span class="Other">]</span><span class="Other">]</span> <span class="Comment">## A global table that holds the SQL schema </span>
+                                                                      <span class="Comment">## definitions</span>
+                                                                      <span class="Comment">## for all models defined at runtime</span></pre></dt>
+  <dd>
+    
+    
     
   </dd>
 </div>
 <div id="SchemaTable">
-  <dt><pre><a href="model.html#SchemaTable"><span class="Identifier">SchemaTable</span></a> <span class="Other">=</span> <span class="Identifier">OrderedTableRef</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Keyword">ref</span> <a href="model.html#Model"><span class="Identifier">Model</span></a><span class="Other">]</span></pre></dt>
+  <dt><pre><a href="#SchemaTable"><span class="Identifier">SchemaTable</span></a> <span class="Other">=</span> <span class="Identifier">OrderedTableRef</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Keyword">ref</span> <a href="#Model"><span class="Identifier">Model</span></a><span class="Other">]</span></pre></dt>
   <dd>
     
-    A cache table that holds all models defined at compile-time.
+    A cache table that holds all models
     
   </dd>
 </div>
@@ -163,15 +188,23 @@
   <h1><a class="toc-backref" href="#8">Vars</a></h1>
   <dl class="item">
     <div id="Models">
-  <dt><pre><a href="model.html#Models"><span class="Identifier">Models</span></a><span class="Other">:</span> <span class="Keyword">ptr</span> <a href="model.html#ModelsTable"><span class="Identifier">ModelsTable</span></a></pre></dt>
+  <dt><pre><a href="#Models"><span class="Identifier">Models</span></a><span class="Other">:</span> <span class="Keyword">ptr</span> <a href="#ModelsTable"><span class="Identifier">ModelsTable</span></a></pre></dt>
   <dd>
     
-    A global table that holds all models defined at compile-time. Also, models defined at runtime will be added here.
+    A global table that holds all models Also, models defined at runtime will be added here.
+    
+  </dd>
+</div>
+<div id="RuntimeSqlSchemas">
+  <dt><pre><a href="#RuntimeSqlSchemas"><span class="Identifier">RuntimeSqlSchemas</span></a> <span class="Other">=</span> <span class="Identifier">newOrderedTable</span><span class="Other">(</span><span class="DecNumber">32</span><span class="Other">)</span></pre></dt>
+  <dd>
+    
+    
     
   </dd>
 </div>
 <div id="SqlSchemas">
-  <dt><pre><a href="model.html#SqlSchemas"><span class="Identifier">SqlSchemas</span></a> {.<span class="Identifier">compileTime</span>.} <span class="Other">=</span> <span class="Identifier">newTable</span><span class="Other">(</span><span class="DecNumber">32</span><span class="Other">)</span></pre></dt>
+  <dt><pre><a href="#SqlSchemas"><span class="Identifier">SqlSchemas</span></a> {.<span class="Identifier">compileTime</span>.} <span class="Other">=</span> <span class="Identifier">newOrderedTable</span><span class="Other">(</span><span class="DecNumber">32</span><span class="Other">)</span></pre></dt>
   <dd>
     
     
@@ -185,7 +218,7 @@
   <h1><a class="toc-backref" href="#10">Consts</a></h1>
   <dl class="item">
     <div id="StaticSchemas">
-  <dt><pre><a href="model.html#StaticSchemas"><span class="Identifier">StaticSchemas</span></a> <span class="Other">=</span> <span class="StringLit">r&quot;StaticSchema&quot;</span></pre></dt>
+  <dt><pre><a href="#StaticSchemas"><span class="Identifier">StaticSchemas</span></a> <span class="Other">=</span> <span class="StringLit">r&quot;StaticSchema&quot;</span></pre></dt>
   <dd>
     
     A cache table that holds all models defined at compile-time. This allows us to determine if a model exists at compile-time and also to access its schema definition.
@@ -200,7 +233,7 @@
   <dl class="item">
     <div id="getDatatype-procs-all">
   <div id="getDatatype,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#getDatatype%2Cstring"><span class="Identifier">getDatatype</span></a><span class="Other">(</span><span class="Identifier">dt</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Other">(</span><a href="private/types.html#DataType"><span class="Identifier">DataType</span></a><span class="Other">,</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">]</span><span class="Other">)</span> {.
+  <dt><pre><span class="Keyword">proc</span> <a href="#getDatatype%2Cstring"><span class="Identifier">getDatatype</span></a><span class="Other">(</span><span class="Identifier">dt</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Other">(</span><a href="driver/private/types.html#DataType"><span class="Identifier">DataType</span></a><span class="Other">,</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">]</span><span class="Other">)</span> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
@@ -216,6 +249,19 @@
   <dd>
     
     Helper to convert a model name to a table name.
+    
+  </dd>
+</div>
+
+</div>
+<div id="unserializeSchemas-procs-all">
+  <div id="unserializeSchemas,string">
+  <dt><pre><span class="Keyword">proc</span> <a href="#unserializeSchemas%2Cstring"><span class="Identifier">unserializeSchemas</span></a><span class="Other">(</span><span class="Identifier">jsonSchema</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="#RuntimeSchemas"><span class="Identifier">RuntimeSchemas</span></a> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">OpenParserJsonError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Unserializes a JSON string containing model schema definitions and registers them in the global RuntimeSqlSchemas table. This allows models defined at runtime (e.g. by plugins) to be integrated into the application's schema management system.
     
   </dd>
 </div>
@@ -248,7 +294,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-03-06 22:08:28 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-05-30 12:39:07 UTC</small>
       </div>
     </div>
   </div>

@@ -1,0 +1,50 @@
+nimTitle	types	ozark/driver/private/types.html	module ozark/driver/private/types		0
+nim	BigInt	ozark/driver/private/types.html#BigInt	DataType.BigInt		11
+nim	BigSerial	ozark/driver/private/types.html#BigSerial	DataType.BigSerial		11
+nim	Bit	ozark/driver/private/types.html#Bit	DataType.Bit		11
+nim	BitVarying	ozark/driver/private/types.html#BitVarying	DataType.BitVarying		11
+nim	Boolean	ozark/driver/private/types.html#Boolean	DataType.Boolean		11
+nim	Box	ozark/driver/private/types.html#Box	DataType.Box		11
+nim	Bytea	ozark/driver/private/types.html#Bytea	DataType.Bytea		11
+nim	Char	ozark/driver/private/types.html#Char	DataType.Char		11
+nim	Varchar	ozark/driver/private/types.html#Varchar	DataType.Varchar		11
+nim	Cidr	ozark/driver/private/types.html#Cidr	DataType.Cidr		11
+nim	Circle	ozark/driver/private/types.html#Circle	DataType.Circle		11
+nim	Date	ozark/driver/private/types.html#Date	DataType.Date		11
+nim	DoublePrecision	ozark/driver/private/types.html#DoublePrecision	DataType.DoublePrecision		11
+nim	Inet	ozark/driver/private/types.html#Inet	DataType.Inet		11
+nim	Int	ozark/driver/private/types.html#Int	DataType.Int		11
+nim	Int4	ozark/driver/private/types.html#Int4	DataType.Int4		11
+nim	Interval	ozark/driver/private/types.html#Interval	DataType.Interval		11
+nim	Json	ozark/driver/private/types.html#Json	DataType.Json		11
+nim	Jsonb	ozark/driver/private/types.html#Jsonb	DataType.Jsonb		11
+nim	Line	ozark/driver/private/types.html#Line	DataType.Line		11
+nim	Lseg	ozark/driver/private/types.html#Lseg	DataType.Lseg		11
+nim	Macaddr	ozark/driver/private/types.html#Macaddr	DataType.Macaddr		11
+nim	Macaddr8	ozark/driver/private/types.html#Macaddr8	DataType.Macaddr8		11
+nim	Money	ozark/driver/private/types.html#Money	DataType.Money		11
+nim	Numeric	ozark/driver/private/types.html#Numeric	DataType.Numeric		11
+nim	Path	ozark/driver/private/types.html#Path	DataType.Path		11
+nim	PGLsn	ozark/driver/private/types.html#PGLsn	DataType.PGLsn		11
+nim	PGSnapshot	ozark/driver/private/types.html#PGSnapshot	DataType.PGSnapshot		11
+nim	Point	ozark/driver/private/types.html#Point	DataType.Point		11
+nim	Polygon	ozark/driver/private/types.html#Polygon	DataType.Polygon		11
+nim	Real	ozark/driver/private/types.html#Real	DataType.Real		11
+nim	SmallInt	ozark/driver/private/types.html#SmallInt	DataType.SmallInt		11
+nim	SmallSerial	ozark/driver/private/types.html#SmallSerial	DataType.SmallSerial		11
+nim	Serial	ozark/driver/private/types.html#Serial	DataType.Serial		11
+nim	Text	ozark/driver/private/types.html#Text	DataType.Text		11
+nim	Time	ozark/driver/private/types.html#Time	DataType.Time		11
+nim	Timezone	ozark/driver/private/types.html#Timezone	DataType.Timezone		11
+nim	Timestamp	ozark/driver/private/types.html#Timestamp	DataType.Timestamp		11
+nim	TimestampTz	ozark/driver/private/types.html#TimestampTz	DataType.TimestampTz		11
+nim	TsQuery	ozark/driver/private/types.html#TsQuery	DataType.TsQuery		11
+nim	TsVector	ozark/driver/private/types.html#TsVector	DataType.TsVector		11
+nim	Uuid	ozark/driver/private/types.html#Uuid	DataType.Uuid		11
+nim	Enum	ozark/driver/private/types.html#Enum	DataType.Enum		11
+nim	Integer	ozark/driver/private/types.html#Integer	DataType.Integer		11
+nim	Blob	ozark/driver/private/types.html#Blob	DataType.Blob		11
+nim	DataType	ozark/driver/private/types.html#DataType	enum DataType		11
+nim	countSqlArgs	ozark/driver/private/types.html#countSqlArgs,NimNode	proc countSqlArgs(args: NimNode): int		60
+nim	appendSqlArgs	ozark/driver/private/types.html#appendSqlArgs,NimNode,NimNode	proc appendSqlArgs(callNode: var NimNode; args: NimNode)		73
+nim	getDriverType	ozark/driver/private/types.html#getDriverType,NimNode	proc getDriverType(n: NimNode): SqlDriver		89

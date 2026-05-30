@@ -1,0 +1,3 @@
+nimTitle	dbmeta	ozark/driver/dbmeta.html	module ozark/driver/dbmeta		0
+nim	initStaticDriver	ozark/driver/dbmeta.html#initStaticDriver,staticstring,staticSqlDriver	proc initStaticDriver(name: static string; driver: static SqlDriver)		6
+nim	getSqlDriver	ozark/driver/dbmeta.html#getSqlDriver,staticstring	proc getSqlDriver(name: static string = "main"): SqlDriver		9

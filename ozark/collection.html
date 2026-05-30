@@ -16,13 +16,16 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.8">
+<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.10">
 
 <!-- JS -->
-<script type="text/javascript" src="../dochack.js?v=2.2.8"></script>
+<script type="text/javascript" src="../dochack.js?v=2.2.10"></script>
 </head>
 <body>
   <div class="document" id="documentId">
+    <input type="checkbox" id="nav-toggle" hidden>
+    <label for="nav-toggle" id="nav-burger">&#9776;</label>
+    <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">ozark/collection</h1>
       <div class="row">
@@ -124,7 +127,7 @@
     
     <div id="tocRoot"></div>
     
-    <p class="module-desc"></p>
+    <p class="module-desc">The Collection module defines a simple collection type that can hold a sequence of items of any model type. It provides a way to work with results from database queries as collections of model instances, with utility methods for accessing and iterating over the items.</p>
     <div class="section" id="6">
   <h1><a class="toc-backref" href="#6">Imports</a></h1>
   <dl class="item">
@@ -135,7 +138,7 @@
   <h1><a class="toc-backref" href="#7">Types</a></h1>
   <dl class="item">
     <div id="Collection">
-  <dt><pre><a href="collection.html#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span> <span class="Other">=</span> <span class="Keyword">object</span>
+  <dt><pre><a href="#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span> <span class="Other">=</span> <span class="Keyword">object</span>
   <span class="Identifier">entries</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span></pre></dt>
   <dd>
     
@@ -151,7 +154,7 @@
   <dl class="item">
     <div id="[]-procs-all">
   <div id="[],Collection[T],int">
-  <dt><pre><span class="Keyword">proc</span> <a href="#%5B%5D%2CCollection%5BT%5D%2Cint"><span class="Identifier">`[]`</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="collection.html#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">index</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">T</span></pre></dt>
+  <dt><pre><span class="Keyword">proc</span> <a href="#%5B%5D%2CCollection%5BT%5D%2Cint"><span class="Identifier">`[]`</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">index</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">T</span></pre></dt>
   <dd>
     
     A short syntax for accessing items in the collection by index.
@@ -162,7 +165,7 @@
 </div>
 <div id="contains-procs-all">
   <div id="contains,Collection[T],string,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#contains%2CCollection%5BT%5D%2Cstring%2Cstring"><span class="Identifier">contains</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="collection.html#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">,</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span></pre></dt>
+  <dt><pre><span class="Keyword">proc</span> <a href="#contains%2CCollection%5BT%5D%2Cstring%2Cstring"><span class="Identifier">contains</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">key</span><span class="Other">,</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span></pre></dt>
   <dd>
     
     Check if the collection contains an item with the given key and value.
@@ -173,7 +176,7 @@
 </div>
 <div id="first-procs-all">
   <div id="first,Collection[T]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#first%2CCollection%5BT%5D"><span class="Identifier">first</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="collection.html#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">T</span></pre></dt>
+  <dt><pre><span class="Keyword">proc</span> <a href="#first%2CCollection%5BT%5D"><span class="Identifier">first</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">T</span></pre></dt>
   <dd>
     
     Get the first item in the collection.
@@ -184,7 +187,7 @@
 </div>
 <div id="get-procs-all">
   <div id="get,Collection[T],int">
-  <dt><pre><span class="Keyword">proc</span> <a href="#get%2CCollection%5BT%5D%2Cint"><span class="Identifier">get</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="collection.html#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">index</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">T</span></pre></dt>
+  <dt><pre><span class="Keyword">proc</span> <a href="#get%2CCollection%5BT%5D%2Cint"><span class="Identifier">get</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">index</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">T</span></pre></dt>
   <dd>
     
     Get an item from the collection by index.
@@ -195,7 +198,7 @@
 </div>
 <div id="getAll-procs-all">
   <div id="getAll,Collection[T]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#getAll%2CCollection%5BT%5D"><span class="Identifier">getAll</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="collection.html#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">lent</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span></pre></dt>
+  <dt><pre><span class="Keyword">proc</span> <a href="#getAll%2CCollection%5BT%5D"><span class="Identifier">getAll</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">lent</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span></pre></dt>
   <dd>
     
     Get all items in the collection as a sequence. For iterating over the items, it's more efficient to use the <tt class="docutils literal"><span class="pre"><span class="Identifier">items</span></span></tt> iterator.
@@ -206,7 +209,7 @@
 </div>
 <div id="isEmpty-procs-all">
   <div id="isEmpty,Collection[T]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#isEmpty%2CCollection%5BT%5D"><span class="Identifier">isEmpty</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="collection.html#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span></pre></dt>
+  <dt><pre><span class="Keyword">proc</span> <a href="#isEmpty%2CCollection%5BT%5D"><span class="Identifier">isEmpty</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span></pre></dt>
   <dd>
     
     Check if the collection is empty.
@@ -217,7 +220,7 @@
 </div>
 <div id="len-procs-all">
   <div id="len,Collection[T]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#len%2CCollection%5BT%5D"><span class="Identifier">len</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="collection.html#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
+  <dt><pre><span class="Keyword">proc</span> <a href="#len%2CCollection%5BT%5D"><span class="Identifier">len</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
   <dd>
     
     Get the number of items in the collection.
@@ -234,7 +237,7 @@
   <dl class="item">
     <div id="items-iterators-all">
   <div id="items.i,Collection[T]">
-  <dt><pre><span class="Keyword">iterator</span> <a href="#items.i%2CCollection%5BT%5D"><span class="Identifier">items</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="collection.html#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">T</span></pre></dt>
+  <dt><pre><span class="Keyword">iterator</span> <a href="#items.i%2CCollection%5BT%5D"><span class="Identifier">items</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">T</span></pre></dt>
   <dd>
     
     Iterate over the items in the collection.
@@ -245,7 +248,7 @@
 </div>
 <div id="mitems-iterators-all">
   <div id="mitems.i,Collection[T]">
-  <dt><pre><span class="Keyword">iterator</span> <a href="#mitems.i%2CCollection%5BT%5D"><span class="Identifier">mitems</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="collection.html#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">T</span></pre></dt>
+  <dt><pre><span class="Keyword">iterator</span> <a href="#mitems.i%2CCollection%5BT%5D"><span class="Identifier">mitems</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">col</span><span class="Other">:</span> <a href="#Collection"><span class="Identifier">Collection</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">T</span></pre></dt>
   <dd>
     
     Iterate over the items in the collection, allowing modification.
@@ -264,7 +267,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-03-06 22:08:28 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-05-30 12:39:08 UTC</small>
       </div>
     </div>
   </div>

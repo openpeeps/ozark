@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ozark/private/types</title>
+<title>ozark/driver/private/types</title>
 
 <!-- Google fonts -->
 <link href='https://fonts.googleapis.com/css?family=Lato:400,600,900' rel='stylesheet' type='text/css'/>
@@ -16,15 +16,18 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../../nimdoc.out.css?v=2.2.8">
+<link rel="stylesheet" type="text/css" href="../../../nimdoc.out.css?v=2.2.10">
 
 <!-- JS -->
-<script type="text/javascript" src="../../dochack.js?v=2.2.8"></script>
+<script type="text/javascript" src="../../../dochack.js?v=2.2.10"></script>
 </head>
 <body>
   <div class="document" id="documentId">
+    <input type="checkbox" id="nav-toggle" hidden>
+    <label for="nav-toggle" id="nav-burger">&#9776;</label>
+    <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
-      <h1 class="title">ozark/private/types</h1>
+      <h1 class="title">ozark/driver/private/types</h1>
       <div class="row">
   <div class="three columns">
     <div class="theme-select-wrapper">
@@ -37,7 +40,7 @@
     </div>
     <div id="global-links">
       <ul class="simple">
-        <li><a id="indexLink" href="../../theindex.html">Index</a></li>
+        <li><a id="indexLink" href="../../../theindex.html">Index</a></li>
       </ul>
     </div>
     <div id="searchInputDiv">
@@ -67,7 +70,28 @@
   Real = &quot;float4&quot;, SmallInt = &quot;int2&quot;, SmallSerial = &quot;serial2&quot;,
   Serial = &quot;serial&quot;, Text = &quot;text&quot;, Time = &quot;time&quot;, Timezone = &quot;timez&quot;,
   Timestamp = &quot;timestamp&quot;, TimestampTz = &quot;timestamptz&quot;, TsQuery = &quot;tsquery&quot;,
-  TsVector = &quot;tsvector&quot;, Uuid = &quot;uuid&quot;, Enum = &quot;enum&quot;">DataType</a></li>
+  TsVector = &quot;tsvector&quot;, Uuid = &quot;uuid&quot;, Enum = &quot;enum&quot;, Integer = &quot;integer&quot;,
+  Blob = &quot;blob&quot;">DataType</a></li>
+
+    </ul>
+  </details>
+</li>
+<li>
+  <details open>
+    <summary><a class="reference reference-toplevel" href="#12" id="62">Procs</a></summary>
+    <ul class="simple simple-toc-section">
+      <ul class="simple nested-toc-section">appendSqlArgs
+  <li><a class="reference" href="#appendSqlArgs%2CNimNode%2CNimNode" title="appendSqlArgs(callNode: var NimNode; args: NimNode)">appendSqlArgs(callNode: var NimNode; args: NimNode)</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">countSqlArgs
+  <li><a class="reference" href="#countSqlArgs%2CNimNode" title="countSqlArgs(args: NimNode): int">countSqlArgs(args: NimNode): int</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">getDriverType
+  <li><a class="reference" href="#getDriverType%2CNimNode" title="getDriverType(n: NimNode): SqlDriver">getDriverType(n: NimNode): SqlDriver</a></li>
+
+</ul>
 
     </ul>
   </details>
@@ -85,7 +109,7 @@
   <h1><a class="toc-backref" href="#7">Types</a></h1>
   <dl class="item">
     <div id="DataType">
-  <dt><pre><a href="types.html#DataType"><span class="Identifier">DataType</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
+  <dt><pre><a href="#DataType"><span class="Identifier">DataType</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
   <span class="Identifier">BigInt</span> <span class="Other">=</span> <span class="StringLit">&quot;int8&quot;</span><span class="Other">,</span> <span class="Identifier">BigSerial</span> <span class="Other">=</span> <span class="StringLit">&quot;serial18&quot;</span><span class="Other">,</span> <span class="Identifier">Bit</span> <span class="Other">=</span> <span class="StringLit">&quot;bit&quot;</span><span class="Other">,</span> <span class="Identifier">BitVarying</span> <span class="Other">=</span> <span class="StringLit">&quot;varbit&quot;</span><span class="Other">,</span>
   <span class="Identifier">Boolean</span> <span class="Other">=</span> <span class="StringLit">&quot;boolean&quot;</span><span class="Other">,</span> <span class="Identifier">Box</span> <span class="Other">=</span> <span class="StringLit">&quot;box&quot;</span><span class="Other">,</span> <span class="Identifier">Bytea</span> <span class="Other">=</span> <span class="StringLit">&quot;bytea&quot;</span><span class="Other">,</span> <span class="Identifier">Char</span> <span class="Other">=</span> <span class="StringLit">&quot;char&quot;</span><span class="Other">,</span>
   <span class="Identifier">Varchar</span> <span class="Other">=</span> <span class="StringLit">&quot;varchar&quot;</span><span class="Other">,</span> <span class="Identifier">Cidr</span> <span class="Other">=</span> <span class="StringLit">&quot;cidr&quot;</span><span class="Other">,</span> <span class="Identifier">Circle</span> <span class="Other">=</span> <span class="StringLit">&quot;circle&quot;</span><span class="Other">,</span> <span class="Identifier">Date</span> <span class="Other">=</span> <span class="StringLit">&quot;date&quot;</span><span class="Other">,</span>
@@ -97,12 +121,54 @@
   <span class="Identifier">Real</span> <span class="Other">=</span> <span class="StringLit">&quot;float4&quot;</span><span class="Other">,</span> <span class="Identifier">SmallInt</span> <span class="Other">=</span> <span class="StringLit">&quot;int2&quot;</span><span class="Other">,</span> <span class="Identifier">SmallSerial</span> <span class="Other">=</span> <span class="StringLit">&quot;serial2&quot;</span><span class="Other">,</span>
   <span class="Identifier">Serial</span> <span class="Other">=</span> <span class="StringLit">&quot;serial&quot;</span><span class="Other">,</span> <span class="Identifier">Text</span> <span class="Other">=</span> <span class="StringLit">&quot;text&quot;</span><span class="Other">,</span> <span class="Identifier">Time</span> <span class="Other">=</span> <span class="StringLit">&quot;time&quot;</span><span class="Other">,</span> <span class="Identifier">Timezone</span> <span class="Other">=</span> <span class="StringLit">&quot;timez&quot;</span><span class="Other">,</span>
   <span class="Identifier">Timestamp</span> <span class="Other">=</span> <span class="StringLit">&quot;timestamp&quot;</span><span class="Other">,</span> <span class="Identifier">TimestampTz</span> <span class="Other">=</span> <span class="StringLit">&quot;timestamptz&quot;</span><span class="Other">,</span> <span class="Identifier">TsQuery</span> <span class="Other">=</span> <span class="StringLit">&quot;tsquery&quot;</span><span class="Other">,</span>
-  <span class="Identifier">TsVector</span> <span class="Other">=</span> <span class="StringLit">&quot;tsvector&quot;</span><span class="Other">,</span> <span class="Identifier">Uuid</span> <span class="Other">=</span> <span class="StringLit">&quot;uuid&quot;</span><span class="Other">,</span> <span class="Identifier">Enum</span> <span class="Other">=</span> <span class="StringLit">&quot;enum&quot;</span></pre></dt>
+  <span class="Identifier">TsVector</span> <span class="Other">=</span> <span class="StringLit">&quot;tsvector&quot;</span><span class="Other">,</span> <span class="Identifier">Uuid</span> <span class="Other">=</span> <span class="StringLit">&quot;uuid&quot;</span><span class="Other">,</span> <span class="Identifier">Enum</span> <span class="Other">=</span> <span class="StringLit">&quot;enum&quot;</span><span class="Other">,</span> <span class="Identifier">Integer</span> <span class="Other">=</span> <span class="StringLit">&quot;integer&quot;</span><span class="Other">,</span>
+  <span class="Identifier">Blob</span> <span class="Other">=</span> <span class="StringLit">&quot;blob&quot;</span></pre></dt>
   <dd>
     
     
     
   </dd>
+</div>
+
+  </dl>
+</div>
+<div class="section" id="12">
+  <h1><a class="toc-backref" href="#12">Procs</a></h1>
+  <dl class="item">
+    <div id="appendSqlArgs-procs-all">
+  <div id="appendSqlArgs,NimNode,NimNode">
+  <dt><pre><span class="Keyword">proc</span> <a href="#appendSqlArgs%2CNimNode%2CNimNode"><span class="Identifier">appendSqlArgs</span></a><span class="Other">(</span><span class="Identifier">callNode</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">NimNode</span><span class="Other">;</span> <span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">)</span> {.<span class="Identifier">compileTime</span><span class="Other">,</span>
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="countSqlArgs-procs-all">
+  <div id="countSqlArgs,NimNode">
+  <dt><pre><span class="Keyword">proc</span> <a href="#countSqlArgs%2CNimNode"><span class="Identifier">countSqlArgs</span></a><span class="Other">(</span><span class="Identifier">args</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span> {.<span class="Identifier">compileTime</span><span class="Other">,</span> <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+                                        <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="getDriverType-procs-all">
+  <div id="getDriverType,NimNode">
+  <dt><pre><span class="Keyword">proc</span> <a href="#getDriverType%2CNimNode"><span class="Identifier">getDriverType</span></a><span class="Other">(</span><span class="Identifier">n</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">SqlDriver</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
 </div>
 
   </dl>
@@ -114,7 +180,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-03-06 22:08:28 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-05-30 12:39:07 UTC</small>
       </div>
     </div>
   </div>
