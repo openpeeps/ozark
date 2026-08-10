@@ -202,7 +202,7 @@ proc acquireConn*(pool: DBConnectionPool, timeoutMs: int = 5000): DBConn =
       pool.busyConnections.add(result)
       release(pool.lock)
       return
-    release(pool.lock)
+
     sleep(stepMs)
     inc(waited, stepMs)
 

@@ -107,16 +107,12 @@ proc toDbValue*(v: bool): string =
 
 proc toDbValue*(v: string): string =
   ## Convert a string value to a form suitable for database storage, handling nil values.
-  for i in 0..<v.len:
-    case v[i]
-    of 't':
-      if i + 3 == v.len and v[i..i+3] == "true":
-        return "t"
-    of 'f':
-      if i + 4 == v.len and v[i..i+4] == "false":
-        return "f"
-    else: discard
-  v
+  if v == "true":
+    "t"
+  elif v == "false":
+    "f"
+  else:
+    v
 
 proc fromDBValue*[T](v: string): T =
   ## Convert a string value from the database into the specified type T.
