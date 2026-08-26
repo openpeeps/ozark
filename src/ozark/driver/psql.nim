@@ -76,13 +76,21 @@ proc initOzarkDatabase*(address, name, user, password: string,
     driver: driver
   )
 
+proc hasKey*(db: Ozark, id: string): bool =
+  ## Check if a database connection with the given id is registered
+  result = db.dbs.hasKey(id)
+
+proc `[]`*(db: Ozark, id: string): DBCredentials =
+  ## Get registered database connection credentials by id
+  result = db.dbs[id]
+
 proc `[]=`*(db: Ozark, id: string, dbCon: DBCredentials) =
   ## Add new database connection credentials
-  db[id] = dbCon
+  db.dbs[id] = dbCon
 
 proc add*(db: Ozark, id: string, dbCon: DBCredentials) {.inline.} =
   ## Add new database connection credentials
-  db[id] = dbCon
+  db.dbs[id] = dbCon
 
 macro withDB*(body: untyped) =
   ## Use the current database context to run database queries.
@@ -124,14 +132,15 @@ macro withDatabase*(id: static string, body: untyped) =
   result = newStmtList()
   add result, quote do:
     block:
-      # ensure multiple withDB calls can be nested without interfering with
+      const sqlDriver {.inject.} = 1
+      # ensure multiple withDatabase calls can be nested without interfering with
       # each other's connections.
       let db = getInstance()
       assert db != nil, "Database manager not initialized. Call initDBManager first."
       assert db.hasKey(id), "Database connection with id `" & id & "` not found."
       let dbcon {.inject.} =
-          open(db[id].address, db[$id].user,
-                  db[id].password, db[$id].name)
+          open(db[id].address, db[id].user,
+                  db[id].password, db[id].name)
       defer:
         dbcon.close()
       block:
@@ -255,7 +264,7 @@ proc parseSqlQuery(sql: NimNode, getRowProcName: string,
   # map the results to model instances. This procedure is called by the `get` and `getAll` macros.
   try:
     let sqlDriver = SqlDriver(sql[1][^2][1][1][1].intVal)
-    let parsedSql = parseSQL(sql[1][^1][1].strVal, sqlDriver = SqlDriver.pgsql)
+    let parsedSql = parseSQL(normalizeInLists(sql[1][^1][1].strVal), sqlDriver = SqlDriver.pgsql)
     let modelSym = sql[1][^2][1][1][0]
     var colNames: seq[string]
     let
@@ -301,40 +310,15 @@ proc parseSqlQuery(sql: NimNode, getRowProcName: string,
     if getRowProcName == "getRow":
       result = newCall(
         nnkBracketExpr.newTree(
-          bindSym"getRowToModel",
+          bindSym"getFirstToModel",
           ident($(modelSym.getImpl[0][1]))
         ),
         ident"dbcon",
-        newCall(bindSym"SqlQuery", newLit($parsedSql)),
+        newCall(bindSym"SqlQuery", newLit(sql[1][^1][1].strVal)),
+        newLit(colNames),
         newLit(nParams),
       )
       appendSqlArgs(result, args)
-      result.add(
-        nnkLambda.newTree(
-          newEmptyNode(),
-          newEmptyNode(),
-          newEmptyNode(),
-          nnkFormalParams.newTree(
-            newEmptyNode(),
-            nnkIdentDefs.newTree(
-              ident("inst"),
-              ident($(modelSym.getImpl[0][1])),
-              newEmptyNode()
-            ),
-            nnkIdentDefs.newTree(
-              ident("row"),
-              nnkBracketExpr.newTree(
-                ident("seq"),
-                ident("string")
-              ),
-              newEmptyNode()
-            )
-          ),
-          newEmptyNode(),
-          newEmptyNode(),
-          assigns
-        )
-      )
     else:
       result = newCall(
         nnkBracketExpr.newTree(
@@ -342,7 +326,7 @@ proc parseSqlQuery(sql: NimNode, getRowProcName: string,
           ident($(modelSym.getImpl[0][1]))
         ),
         ident"dbcon",
-        newCall(bindSym"SqlQuery", newLit($parsedSql)),
+        newCall(bindSym"SqlQuery", newLit(sql[1][^1][1].strVal)),
         newLit(colNames),
         newLit(nParams)
       )
@@ -354,16 +338,12 @@ macro getAll*(sql: untyped): untyped =
   ## Finalize and get all results of the SQL statement.
   ## This macro produce the final SQL string and wraps it in a runtime call
   ## to execute it and return all rows via `instantRows`
-  if sql.kind != nnkBlockExpr or sql[1][^1][0].strVal notin [
-        "ozarkWhereResult", "ozarkRawSQLResult",
-        "ozarkLimitResult", "ozarkOrderByResult",
-        "ozarkSelectResult"
-    ]:
+  if sql.kind != nnkBlockExpr or resultKindOf(trailingCallOf(sql)) notin selectFamilyResults:
     error("The argument to `getAll` must be the result of a `where` macro.", sql)
   if sql[1][^1][0].strVal == "ozarkSelectResult":
     result = sql.parseSqlQuery("instantRows")
   else:
-    result = sql.parseSqlQuery("instantRows", sql[1][^1][2][1])
+    result = sql.parseSqlQuery("instantRows", paramsBracketOf(trailingCallOf(sql)))
 
 macro get*(sql: untyped): untyped =
   ## Finalize SQL statement. This macro produces the final SQL
@@ -371,12 +351,14 @@ macro get*(sql: untyped): untyped =
   var runtimeCode: NimNode
   let calledMacro = sql[1][^1][0].strVal
   if sql.kind != nnkBlockExpr or
-          calledMacro notin ["ozarkWhereResult", "ozarkRawSQLResult", "ozarkWhereInResult", "ozarkLimitResult"]:
+          calledMacro notin ["ozarkWhereResult", "ozarkRawSQLResult", "ozarkWhereInResult",
+                             "ozarkLimitResult", "ozarkOffsetResult",
+                             "ozarkGroupByResult", "ozarkHavingResult"]:
     error("The argument to `get` must be the result of a `where` macro. Got " & calledMacro, sql)
   if calledMacro == "ozarkWhereInResult":
-    result = sql.parseSqlQuery("getRow", sql[1][^1][2][1])
+    result = sql.parseSqlQuery("getRow", paramsBracketOf(trailingCallOf(sql)))
   else:
-    result = sql.parseSqlQuery("getRow", sql[1][^1][2][1])
+    result = sql.parseSqlQuery("getRow", paramsBracketOf(trailingCallOf(sql)))
 
 proc validateSqlNodes(nodes: seq[SqlNode], colNames: var seq[string]) {.compileTime.} =
   for sqlNode in nodes:
@@ -481,67 +463,17 @@ macro getWith*(sql: untyped, toModelIdent: untyped): untyped =
     error("SQL parsing error: " & e.msg, sql)
 
 macro getRaw*(sql: untyped): untyped =
-  ## Finalize a RAW SQL statement. This macro produces the final SQL
-  ## string and emits runtime code that returns the raw results as a sequence of sequences of strings.
-  discard # TODO
-
-macro exists*(tableName: untyped) =
-  ## Search in the current table for a record matching
-  ## the specified values. This is a placeholder for an `EXISTS` query.
-  withTableCheck tableName:
-    result = newCall(
-      bindSym"ozarkRawSQLResult",
-      newLit("SELECT EXISTS(SELECT 1 FROM " & getTableName($tableName[1]) & " WHERE $1)"),
-    )
-
-macro limit*(sql: untyped, count: untyped): untyped =
-  ## Placeholder for a `LIMIT` clause in SQL queries.
-  if sql.kind != nnkBlockExpr or sql[1][1][0].strVal notin [
-      "ozarkWhereResult", "ozarkRawSQLResult", "ozarkOrderByResult", "ozarkSelectResult"]:
-    error("The argument to `limit` must be the result of a `select`, `where`", sql)
-  let len = sql[1][^1][2][1].len + 1
-  # sql[1][^1][1].strVal = sql[1][^1][1].strVal & " AND " & col & " " & op & " $" & $(len)
-  sql[1][^1][^1][1].add(count) # add to the current varargs list
-  sql[1][1] = newCall(
-    bindSym"ozarkLimitResult",
-    newLit(sql[1][1][1].strVal & " LIMIT $" & $(len))
-  )
-  result = sql
-
-type
-  Order* = enum
-    Desc, Asc
-
-macro orderDescBy*(sql: untyped, cols: static openArray[string]): untyped =
-  ## Placeholder for an `ORDER BY` clause in SQL queries.
-  if sql[1][1].kind != nnkCall or sql[1][1][0].strVal notin ["ozarkWhereResult", "ozarkSelectResult"]:
-    error("The argument to `orderDescBy` must be the result of a `where` macro.")
-  withColumnsCheck(sql[1][0][1], cols):
-    let blockIdent = genSym(nskLabel, "ozarkBlockOrderBy")
-    var newCallNode = newCall(bindSym"ozarkOrderByResult")
-    let totalParam =
-      if sql[1][^1].len > 2 and sql[1][^1][2].kind == nnkHiddenStdConv:
-        # if there are already parameters (e.g. from a WHERE IN clause), we need to calculate
-        # the new parameter index based on the existing parameters
-        sql[1][^1][2][1].len # the number of params inside a nnkBracket node
-      else:
-        0
-    
-    var idx: seq[int]
-    var argsNode =
-      if totalParam == 0:
-        newEmptyNode()
-      else:
-        sql[1][^1][2]
-    
-    newCallNode.insert(1, newLit(sql[1][1][1].strVal &
-      " ORDER BY " & cols.join(", ") & " DESC"))
-
-    if argsNode.kind != nnkEmpty:
-      newCallNode.add(argsNode)
-
-    sql[1][1] = newCallNode
-    result = sql
+  ## Finalize a SELECT-family chain and return the raw results as
+  ## `seq[seq[string]]` (one inner sequence per row, no model mapping).
+  ensureStage(sql, selectFamilyResults, "getRaw")
+  let trailing = trailingCallOf(sql)
+  var bracket = paramsBracketOf(trailing)
+  var call = newCall(bindSym"execRows", ident"dbcon",
+                     newCall(bindSym"SqlQuery", newLit(trailing[1].strVal)),
+                     newLit(bracket.len))
+  for v in bracket:
+    call.add(v)
+  result = call
 
 macro rawSQL*(models: ptr ModelsTable, sql: static string, values: varargs[untyped]): untyped =
   ## Allows raw SQL queries without losing safety of
@@ -581,44 +513,67 @@ macro exec*(sql: untyped) =
   ## Finalize and execute an SQL statement that doesn't
   ## return results (e.g. INSERT, UPDATE, DELETE).
   var sql = sql
+  if sql.kind == nnkBlockExpr:
+    sql = sql[1][^1] # extract the trailing SQL result from a chained block
   if sql.kind != nnkCall or
       sql[0].strVal notin ["ozarkWhereResult", "ozarkRawSQLResult",
                       "ozarkInsertResult", "ozarkCreateTableResult",
-                      "ozarkRemoveResult"]:
-    if sql.kind != nnkBlockExpr:
-      error("The argument to `exec` must be the result of a `where`, `rawSQL`, or `insert`/`update` macro. Got " & $sql[1][^1][0], sql)
-    else:
-      sql = sql[1][^1] # if it's a block expression, we need to extract the last statement which should be the SQL result
+                      "ozarkRemoveResult", "ozarkUpsertResult"]:
+    error("The argument to `exec` must be the result of a `where`, `rawSQL`, or `insert`/`update` macro. Got " &
+      (if sql.kind == nnkCall: $sql[0] else: $sql.kind), sql)
+  # normalize statements without bound params to carry an empty params bracket
+  if sql.len == 2:
+    sql.add(nnkPrefix.newTree(ident"@", nnkBracket.newTree()))
   try:
-    let sqlNode = parseSQL($sql[1], sqlDriver = SqlDriver.pgsql)
+    if sql[0].strVal == "ozarkUpsertResult":
+      # `ON CONFLICT` is not covered by the compile-time SQL parser. Upsert
+      # statements are fully generated (and column-validated) by the `upsert`
+      # macro, so skip parsing and emit the runtime code directly.
+      let randId = genSym(nskVar, "id")
+      let stub = staticRead("private" / "stubs" / "execSql.nim")
+      let argBracket = paramsBracketOf(sql)
+      result = macros.parseStmt(stub % [
+              sql[1].strVal,
+              (
+                if argBracket.len > 0:
+                  ", " &
+                  $argBracket.mapIt("toDbValue(" & it.repr & ")").join(",")
+                else: ""
+              ),
+              randId.repr,
+              $(argBracket.len)
+        ])
+      return
+    let sqlNode = parseSQL(normalizeInLists($sql[1]), sqlDriver = SqlDriver.pgsql)
+    let argBracket = paramsBracketOf(sql)
     case sqlNode.sons[0].kind
     of nkInsert, nkDelete:
       let randId = genSym(nskVar, "id")
       let stub = staticRead("private" / "stubs" / "execSql.nim")
       result = macros.parseStmt(stub % [
-              $sql[1],
+              sql[1].strVal,
               (
-                if sql[2][1].len > 0: 
-                  ", " & 
-                  $sql[2][1].mapIt("toDbValue(" & it.repr & ")").join(",")
+                if argBracket.len > 0:
+                  ", " &
+                  $argBracket.mapIt("toDbValue(" & it.repr & ")").join(",")
                 else: ""
               ),
               randId.repr,
-              $(sql[2][1]).len
+              $(argBracket.len)
         ])
     of nkUpdate:
       let randId = genSym(nskVar, "id")
       let stub = staticRead("private" / "stubs" / "execSql.nim")
       result = macros.parseStmt(stub % [
-              $sql[1],
+              sql[1].strVal,
               (
-                if sql[2][1][1].len > 0: 
-                  ", " & 
-                  $sql[2][1][1].mapIt("toDbValue(" & it.repr & ")").join(",")
+                if argBracket.len > 0:
+                  ", " &
+                  $argBracket.mapIt("toDbValue(" & it.repr & ")").join(",")
                 else: ""
               ),
               randId.repr,
-              $(sql[2][1][1]).len # bracket len
+              $(argBracket.len)
         ])
     of nkCreateTable, nkCreateTableIfNotExists:
       let randId = genSym(nskVar, "id")
@@ -666,19 +621,40 @@ macro execGet*(sql: untyped): untyped =
   if sql.kind != nnkCall or sql[0].strVal notin ["ozarkInsertResult"]:
     error("The argument to `execGet` must be the result of an `insert` or `delete` macro.")
   try:
-    let sqlNode = parseSQL($sql[1], sqlDriver = SqlDriver.pgsql)
+    let argBracket = paramsBracketOf(sql)
+    let sqlNode = parseSQL(normalizeInLists($sql[1]), sqlDriver = SqlDriver.pgsql)
     case sqlNode.sons[0].kind
     of nkInsert:
       let randId = genSym(nskVar, "id")
       let stub = staticRead("private" / "stubs" / "tryInsertID.nim")
       result = macros.parseStmt(stub % [
-              $sql[1],
-              $sql[2][1].mapIt(it.repr).join(","),
+              sql[1].strVal,
+              $argBracket.mapIt(it.repr).join(","),
               randId.repr,
-              $(sql[2][1]).len
+              $(argBracket.len)
         ])
     of nkDelete:
       discard # todo
     else: discard 
   except SqlParseError as e:
     raise newException(OzarkModelDefect, "SQL Parsing Error: " & e.msg)
+
+macro returning*(sql: untyped, cols: static openArray[string]): untyped =
+  ## Finalize an `insert` statement with a `RETURNING cols` clause
+  ## (PostgreSQL only). Returns every returned row as `seq[seq[string]]`.
+  if cols.len == 0:
+    error("`returning` requires at least one column.", sql)
+  var sql = sql
+  if sql.kind == nnkBlockExpr:
+    sql = sql[1][^1]
+  if sql.kind != nnkCall or sql[0].strVal notin ["ozarkInsertResult", "ozarkUpsertResult"]:
+    error("The argument to `returning` must be the result of an `insert` or `upsert` macro. Got " &
+      (if sql.kind == nnkCall: $sql[0] else: $sql.kind), sql)
+  var bracket = paramsBracketOf(sql)
+  let sqlText = sql[1].strVal & " RETURNING " & cols.join(", ")
+  var call = newCall(bindSym"execRows", ident"dbcon",
+                     newCall(bindSym"SqlQuery", newLit(sqlText)),
+                     newLit(bracket.len))
+  for v in bracket:
+    call.add(v)
+  result = call

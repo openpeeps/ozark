@@ -30,6 +30,10 @@ proc first*[T](col: Collection[T]): T =
   ## Get the first item in the collection.
   result = col.entries[0]
 
+proc last*[T](col: Collection[T]): T =
+  ## Get the last item in the collection.
+  result = col.entries[^1]
+
 proc `[]`*[T](col: Collection[T], index: int): T =
   ## A short syntax for accessing items in the collection by index.
   result = col.entries[index]
@@ -47,9 +51,10 @@ proc contains*[T](col: Collection[T], key, val: string): bool =
   ## Check if the collection contains an
   ## item with the given key and value.
   for entry in col.entries:
-    if entry.hasKey(key):
-      if entry[key].value == val:
-        return true # Found a match, return true
+    for fName, fValue in entry[].fieldPairs():
+      if fName == key:
+        if $fValue == val:
+          return true # Found a match, return true
   
 iterator items*[T](col: Collection[T]): T =
   ## Iterate over the items in the collection.

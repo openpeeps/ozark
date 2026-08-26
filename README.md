@@ -15,7 +15,9 @@
 ## 😍 Key Features
 - [x] Macro-based query builder with a fluent API
 - [x] Compile-time SQL validation & type safety
-- [x] Support for PostgreSQL
+- [x] Support for PostgreSQL and SQLite
+- [x] Transactions (`withTransaction`) with automatic commit/rollback
+- [x] Upserts, batch inserts, aggregates, pagination, raw SQL with bound params
 - [ ] Async query execution (coming soon)
 - [ ] Migration system (coming soon)
 
@@ -42,6 +44,15 @@ withDB do:
 
 withDBPool do:
   # execute queries here
+```
+
+#### `withTransaction`
+Run a block inside a database transaction on a dedicated pooled connection. Commits on success, rolls back when the block raises, and always returns the connection to the pool.
+
+```nim
+withTransaction do:
+  Models.table(Users).insert({...}).exec()
+  Models.table(Audit).insert({...}).exec()
 ```
 
 ### Define a Model

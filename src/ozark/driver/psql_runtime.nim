@@ -78,6 +78,14 @@ proc instantRowsToModels*[T](
     results.entries.add(inst)
   results
 
+proc getFirstToModel*[T](dbcon: DbConn, sql: SqlQuery, colNames: seq[string],
+                         nParams: int, params: varargs[string, `$`]): Collection[T] =
+  ## Execute a SQL query that is expected to return a single row and map it
+  ## via `instantRowsToModels`, keeping only the first result.
+  result = instantRowsToModels[T](dbcon, sql, colNames, nParams, params)
+  if result.entries.len > 1:
+    result.entries.setLen(1)
+
 proc getRowToModel*[T](
   dbcon: DbConn,
   sql: SqlQuery,
@@ -133,4 +141,39 @@ proc toDbValue*(v: DateTime): string =
   ## PostgreSQL expects `yyyy-MM-dd HH:mm:sszz`
   const pgFmt = "yyyy-MM-dd HH:mm:sszz"
   v.format(pgFmt)
+
+proc execScalar*(dbcon: DbConn, sql: SqlQuery, nParams: int,
+                 params: varargs[string, `$`]): string =
+  ## Execute a query that returns a single scalar value (e.g. COUNT, SUM)
+  ## and return it as reported by the driver (an empty string when no row).
+  let sqlPrepared = ensurePrepared(dbcon, "", sql, nParams)
+  let row = getRow(dbcon, sqlPrepared, params)
+  if row.len > 0:
+    result = row[0]
+  else:
+    result = ""
+
+proc execRows*(dbcon: DbConn, sql: SqlQuery, nParams: int,
+               params: varargs[string, `$`]): seq[seq[string]] =
+  ## Execute a query (e.g. INSERT ... RETURNING) and return every resulting
+  ## row as a sequence of column values.
+  var cols: DBColumns = @[]
+  let sqlPrepared = ensurePrepared(dbcon, "", sql, nParams)
+  for row in instantRows(dbcon, cols, sqlPrepared, params):
+    if row.len > 0:
+      var values: seq[string]
+      values.newSeq(row.len)
+      for i in 0 ..< row.len:
+        values[i] = row[i]
+      result.add(values)
+
+proc execColumn*(dbcon: DbConn, sql: SqlQuery, nParams: int,
+                 params: varargs[string, `$`]): seq[string] =
+  ## Execute a query returning a single column and collect its values,
+  ## one entry per row.
+  var cols: DBColumns = @[]
+  let sqlPrepared = ensurePrepared(dbcon, "", sql, nParams)
+  for row in instantRows(dbcon, cols, sqlPrepared, params):
+    if row.len > 0:
+      result.add(row[0])
   

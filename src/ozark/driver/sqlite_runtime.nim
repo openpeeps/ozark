@@ -156,6 +156,14 @@ proc instantRowsToModels*[T](dbcon: DbConn, sql: SqlQuery, colNames: seq[string]
   finalize(stmtPrepared)
   results
 
+proc getFirstToModel*[T](dbcon: DbConn, sql: SqlQuery, colNames: seq[string],
+                         nParams: int, params: varargs[string, `$`]): Collection[T] =
+  ## Execute a SQL query that is expected to return a single row and map it
+  ## via `instantRowsToModels`, keeping only the first result.
+  result = instantRowsToModels[T](dbcon, sql, colNames, nParams, params)
+  if result.entries.len > 1:
+    result.entries.setLen(1)
+
 proc getRowToModel*[T](dbcon: DbConn, sql: SqlQuery, nParams: int, params: varargs[string, `$`],
                     assignProc: proc(inst: T, row: seq[string])): Collection[T] =
   ## Execute a SQL query that is expected to return a single row,
@@ -177,17 +185,12 @@ proc toDbValue*(v: bool): string =
   if v: "1" else: "0"
 
 proc toDbValue*(v: string): string =
-  ## Convert a string value to a form suitable for PostgreSQL
-  for i in 0..<v.len:
-    case v[i]
-    of 't':
-      if i + 3 == v.len and v[i..i+3] == "true":
-        return "1"
-    of 'f':
-      if i + 4 == v.len and v[i..i+4] == "false":
-        return "0"
-    else: discard
-  v
+  ## Convert a string value to a form suitable for SQLite
+  if v == "true":
+    return "1"
+  elif v == "false":
+    return "0"
+  return v
 
 proc fromDBValue*[T](v: string): T =
   ## Convert a string value from the database into the specified type T.
@@ -207,3 +210,35 @@ proc toDbValue*(v: DateTime): string =
   ## SQLite stores ISO‑8601 with a `T` separator and a colon in the offset.
   const isoFmt = "yyyy-MM-dd'T'HH:mm:sszzz"
   v.format(isoFmt)
+
+proc execColumn*(dbcon: DbConn, sql: SqlQuery, nParams: int,
+                 params: varargs[string, `$`]): seq[string] =
+  ## Execute a query returning a single column and collect its values,
+  ## one entry per row.
+  var cols: DBColumns = @[]
+  for row in instantRows(dbcon, cols, sql, params):
+    if row.len > 0:
+      result.add(row[0])
+
+proc execScalar*(dbcon: DbConn, sql: SqlQuery, nParams: int,
+                 params: varargs[string, `$`]): string =
+  ## Execute a query that returns a single scalar value (e.g. COUNT, SUM)
+  ## and return it as reported by the driver (an empty string when no row).
+  let row = getRow(dbcon, sql, params)
+  if row.len > 0:
+    result = row[0]
+  else:
+    result = ""
+
+proc execRows*(dbcon: DbConn, sql: SqlQuery, nParams: int,
+               params: varargs[string, `$`]): seq[seq[string]] =
+  ## Execute a query and return every resulting row as a sequence of
+  ## column values.
+  var cols: DBColumns = @[]
+  for row in instantRows(dbcon, cols, sql, params):
+    if row.len > 0:
+      var values: seq[string]
+      values.newSeq(row.len)
+      for i in 0 ..< row.len:
+        values[i] = row[i]
+      result.add(values)

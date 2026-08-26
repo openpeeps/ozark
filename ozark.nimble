@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.6"
+version       = "0.2.0"
 author        = "George Lemon"
 description   = "A magical ORM for Nim"
 license       = "MIT"
