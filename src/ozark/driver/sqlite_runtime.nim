@@ -192,6 +192,35 @@ proc toDbValue*(v: string): string =
     return "0"
   return v
 
+proc parseDateTimeFlexible(v: string): DateTime =
+  ## Try multiple timestamp formats to tolerate both SQLite and Postgres storage.
+  ## Handles `T` vs ` ` separator, `+HH:MM` vs `+HH` and trailing `Z`.
+  var s = v.strip()
+  if s.endsWith("Z"):
+    s = s[0 .. ^2] & "+00:00"
+  const fmts = [
+    "yyyy-MM-dd'T'HH:mm:sszzz",
+    "yyyy-MM-dd'T'HH:mm:sszz",
+    "yyyy-MM-dd HH:mm:sszzz",
+    "yyyy-MM-dd HH:mm:sszz",
+    "yyyy-MM-dd'T'HH:mm:ss",
+    "yyyy-MM-dd HH:mm:ss"
+  ]
+  for fmt in fmts:
+    try:
+      return parse(s, fmt)
+    except CatchableError, Defect:
+      discard
+  # Fallback: normalize `T` -> ` ` and retry
+  if 'T' in s:
+    let s2 = s.replace("T", " ")
+    for fmt in fmts:
+      try:
+        return parse(s2, fmt)
+      except CatchableError, Defect:
+        discard
+  raise newException(ValueError, "Cannot parse DateTime `" & v & "`")
+
 proc fromDBValue*[T](v: string): T =
   ## Convert a string value from the database into the specified type T.
   when T is bool:
@@ -200,7 +229,7 @@ proc fromDBValue*[T](v: string): T =
     else:
       raise newException(ValueError, "Cannot convert value `" & v & "` to bool")
   elif T is DateTime:
-    parse(v, "yyyy-MM-dd'T'HH:mm:sszzz")
+    parseDateTimeFlexible(v)
   elif T is string:
     return v
   else:

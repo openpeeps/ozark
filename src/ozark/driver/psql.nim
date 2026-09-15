@@ -264,7 +264,7 @@ proc parseSqlQuery(sql: NimNode, getRowProcName: string,
   # map the results to model instances. This procedure is called by the `get` and `getAll` macros.
   try:
     let sqlDriver = SqlDriver(sql[1][^2][1][1][1].intVal)
-    let parsedSql = parseSQL(normalizeInLists(sql[1][^1][1].strVal), sqlDriver = SqlDriver.pgsql)
+    let parsedSql = parseSQL(normalizeInLists(sql[1][^1][1].strVal), sqlDriver = sqlDriver)
     let modelSym = sql[1][^2][1][1][0]
     var colNames: seq[string]
     let
