@@ -140,12 +140,19 @@ proc rebuildResultCall*(kindSym: NimNode, sqlText: string, bracket: NimNode): Ni
   result = newCall(kindSym, newLit(sqlText))
   result.add(nnkPrefix.newTree(ident"@", bracket))
 
-proc normalizeInLists*(sqlText: string): string =
+proc normalizeInLists*(sqlText: string, driver: SqlDriver = SqlDriver.generic): string =
   ## Collapse multi-placeholder groups — `(?, ?, ?)` or `($1, $2)` — into a
   ## single placeholder so the compile-time SQL validator (which only accepts
   ## one expression per parenthesized group) can validate statements with
   ## multi-value `IN (...)` lists. The returned text is used for validation
   ## and column extraction only; the original text is what gets executed.
+  ##
+  ## The collapsed placeholder must match `driver`: the `pgsql` dialect only
+  ## accepts `$N` placeholders while `mysql`/`sqlite` only accept `?`
+  ## (see `featPlaceholderPg` / `featPlaceholderQmark` in `openparser/sql`).
+  let collapsed =
+    if driver == SqlDriver.pgsql: "($1)"
+    else: "(?)"
   result = newStringOfCap(sqlText.len)
   var i = 0
   while i < sqlText.len:
@@ -169,7 +176,7 @@ proc normalizeInLists*(sqlText: string): string =
           break
         inc j
       if onlyPlaceholders and phCount >= 2 and j < sqlText.len:
-        result.add("(?)")
+        result.add(collapsed)
         i = j + 1
         continue
     result.add(c)

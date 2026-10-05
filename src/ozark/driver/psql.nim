@@ -264,7 +264,7 @@ proc parseSqlQuery(sql: NimNode, getRowProcName: string,
   # map the results to model instances. This procedure is called by the `get` and `getAll` macros.
   try:
     let sqlDriver = SqlDriver(sql[1][^2][1][1][1].intVal)
-    let parsedSql = parseSQL(normalizeInLists(sql[1][^1][1].strVal), sqlDriver = sqlDriver)
+    let parsedSql = parseSQL(normalizeInLists(sql[1][^1][1].strVal, sqlDriver), sqlDriver = sqlDriver)
     let modelSym = sql[1][^2][1][1][0]
     var colNames: seq[string]
     let
@@ -544,7 +544,7 @@ macro exec*(sql: untyped) =
               $(argBracket.len)
         ])
       return
-    let sqlNode = parseSQL(normalizeInLists($sql[1]), sqlDriver = SqlDriver.pgsql)
+    let sqlNode = parseSQL(normalizeInLists($sql[1], SqlDriver.pgsql), sqlDriver = SqlDriver.pgsql)
     let argBracket = paramsBracketOf(sql)
     case sqlNode.sons[0].kind
     of nkInsert, nkDelete:
@@ -622,7 +622,7 @@ macro execGet*(sql: untyped): untyped =
     error("The argument to `execGet` must be the result of an `insert` or `delete` macro.")
   try:
     let argBracket = paramsBracketOf(sql)
-    let sqlNode = parseSQL(normalizeInLists($sql[1]), sqlDriver = SqlDriver.pgsql)
+    let sqlNode = parseSQL(normalizeInLists($sql[1], SqlDriver.pgsql), sqlDriver = SqlDriver.pgsql)
     case sqlNode.sons[0].kind
     of nkInsert:
       let randId = genSym(nskVar, "id")

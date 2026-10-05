@@ -19,7 +19,7 @@
 - [x] Transactions (`withTransaction`) with automatic commit/rollback
 - [x] Upserts, batch inserts, aggregates, pagination, raw SQL with bound params
 - [ ] Async query execution (coming soon)
-- [ ] Migration system (coming soon)
+- [x] Pluginkit-backed migration system with compile-time validated DSL
 
 > [!NOTE]
 > Ozark is still in active development. Expect bugs and breaking changes. Contributions are welcome!
@@ -121,6 +121,48 @@ Models.table(Users)
       .rawSQL("SELECT * FROM users WHERE name = ?", "Alice")
       .get(Users)
 ```
+
+### Migrations
+Nim is compiled, so migrations ship as pluginkit dynamic libraries built from
+your model definitions (full compile-time validation: unknown models/columns
+fail the library build). Each migration lives in `migrations/` with a
+`<name>_<YYYYMMDDHHMMSS>.nim` filename (timestamp last, since Nim module
+names cannot start with a digit):
+
+```nim
+# migrations/add_users_20260915120000.nim
+import app/models          # the app's models: migrations validate against them
+import ozark/migration
+
+newMigration addUsers:
+  ## Add users table with unique email   # <- stored as the migration description
+  up do:
+    Models.table(Users).prepareTable().exec()
+  down do:
+    Models.table(Users).dropTable().exec()
+```
+
+```bash
+nim c --app:lib --path:src migrations/add_users_20260915120000.nim
+```
+
+```nim
+import ozark/driver/sqlite
+import ozark/migration
+
+initOzarkDatabase("app.db")
+withDBPool do:
+  migrate("migrations")    # apply pending in filename-version order
+  # rollback("migrations", 1)
+  # for s in migrationStatus("migrations"): echo s.info.version, " ", s.applied
+```
+
+Applied versions (with description, `compiledAt` build time and `runAt`
+apply time) are tracked in the `ozark_migrations` table. Each migration runs
+in its own transaction. Migrations support both drivers (`serial`/`integer`
+DDL and `?`/`$N` placeholders are generated per driver); hand-written
+`rawSQL` text is shared verbatim, so keep placeholder styles portable or
+split per-driver migrations.
 
 ### ❤ Contributions & Support
 - 🐛 Found a bug? [Create a new Issue](https://github.com/openpeeps/ozark/issues)

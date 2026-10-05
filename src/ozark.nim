@@ -4,5 +4,5 @@
 #          Made by Humans from OpenPeeps
 #          https://github.com/openpeeps/ozark
 
-import ./ozark/[model, query, collection]
-export model, query, collection
+import ./ozark/[model, query, collection, migration]
+export model, query, collection, migration

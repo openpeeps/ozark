@@ -315,7 +315,7 @@ proc parseSqlQuery(sql: NimNode, getRowProcName: string,
   # generate the appropriate runtime code to execute it and
   # map the results to model instances. This procedure is called by the `get` and `getAll` macros.
   try:
-    let parsedSql = parseSQL(normalizeInLists(sql[1][^1][1].strVal), sqlDriver = SqlDriver.sqlite)
+    let parsedSql = parseSQL(normalizeInLists(sql[1][^1][1].strVal, SqlDriver.sqlite), sqlDriver = SqlDriver.sqlite)
     let modelSym = sql[1][^2][1][1][0]
     var colNames: seq[string]
     let
@@ -597,7 +597,7 @@ macro exec*(sql: untyped) =
               $(argBracket.len)
         ])
       return
-    let sqlNode = parseSQL(normalizeInLists($sql[1]), sqlDriver = SqlDriver.sqlite)
+    let sqlNode = parseSQL(normalizeInLists($sql[1], SqlDriver.sqlite), sqlDriver = SqlDriver.sqlite)
     let argBracket = paramsBracketOf(sql)
     case sqlNode.sons[0].kind
     of nkInsert, nkDelete:
@@ -694,7 +694,7 @@ macro execGet*(sql: untyped): untyped =
     error("The argument to `execGet` must be the result of an `insert` or `delete` macro.")
   try:
     let argBracket = paramsBracketOf(sql)
-    let sqlNode = parseSQL(normalizeInLists($sql[1]), sqlDriver = SqlDriver.sqlite)
+    let sqlNode = parseSQL(normalizeInLists($sql[1], SqlDriver.sqlite), sqlDriver = SqlDriver.sqlite)
     case sqlNode.sons[0].kind
     of nkInsert:
       result = macros.parseStmt("""
