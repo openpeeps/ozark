@@ -243,8 +243,8 @@ macro withDBPool*(body: untyped) =
     )
   )
   add result, quote do:
-    const sqlDriver {.inject.} = 1
     block:
+      const sqlDriver {.inject.} = 1
       let db = getInstance()
       assert db != nil, "Database manager not initialized. Call initOzarkDatabase first."
       assert db[].mainPool != nil,
