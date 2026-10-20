@@ -51,8 +51,8 @@ type
 var
   DB: ptr Ozark
   o = createOnce()
-  stmtCacheLock*: RWLock
-  stmtCache*: TableRef[DBConn, seq[FinalizerProc]]
+  stmtCacheLock*: RWLock = createRwLock()
+  stmtCache*: TableRef[DBConn, seq[FinalizerProc]] = newTable[DBConn, seq[FinalizerProc]]()
 
 const StaticDbTypes = CacheTable"StaticDbTypes"
 proc initOzarkPool*(size: Positive = 10)
@@ -166,7 +166,10 @@ proc initOzarkDbWithPool*(address: string, poolSize: Positive = 10) =
 
 
 proc initStmtCache*() =
-  stmtCacheLock = createRwLock()
+  ## Ensures the statement-finalizer cache exists. The cache and its lock
+  ## are initialized at startup; this is kept for backwards compatibility
+  ## and is safe to call multiple times (re-creating a live lock would be
+  ## racy, so the lock itself is never re-initialized here).
   if stmtCache.isNil:
     stmtCache = newTable[DBConn, seq[FinalizerProc]]()
 
