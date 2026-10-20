@@ -16,10 +16,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.10">
+<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.12">
 
 <!-- JS -->
-<script type="text/javascript" src="../dochack.js?v=2.2.10"></script>
+<script type="text/javascript" src="../dochack.js?v=2.2.12"></script>
 </head>
 <body>
   <div class="document" id="documentId">
@@ -61,7 +61,31 @@
   <details open>
     <summary><a class="reference reference-toplevel" href="#7" id="57">Types</a></summary>
     <ul class="simple simple-toc-section">
-      <li><a class="reference" href="#OzarkModelDefect" title="OzarkModelDefect = object of CatchableError">OzarkModelDefect</a></li>
+      <li><a class="reference" href="#Order" title="Order = enum
+  Asc, Desc">Order</a></li>
+<li><a class="reference" href="#OzarkModelDefect" title="OzarkModelDefect = object of CatchableError">OzarkModelDefect</a></li>
+
+    </ul>
+  </details>
+</li>
+<li>
+  <details open>
+    <summary><a class="reference reference-toplevel" href="#8" id="58">Vars</a></summary>
+    <ul class="simple simple-toc-section">
+      <li><a class="reference" href="#ozarkTxDepth" title="ozarkTxDepth {.threadvar.}: int">ozarkTxDepth</a></li>
+
+    </ul>
+  </details>
+</li>
+<li>
+  <details open>
+    <summary><a class="reference reference-toplevel" href="#10" id="60">Consts</a></summary>
+    <ul class="simple simple-toc-section">
+      <li><a class="reference" href="#selectFamilyResults" title="selectFamilyResults = [&quot;ozarkSelectResult&quot;, &quot;ozarkWhereResult&quot;,
+                       &quot;ozarkWhereInResult&quot;, &quot;ozarkRawSQLResult&quot;,
+                       &quot;ozarkLimitResult&quot;, &quot;ozarkOrderByResult&quot;,
+                       &quot;ozarkOffsetResult&quot;, &quot;ozarkGroupByResult&quot;,
+                       &quot;ozarkHavingResult&quot;]">selectFamilyResults</a></li>
 
     </ul>
   </details>
@@ -74,12 +98,36 @@
   <li><a class="reference" href="#%24%2CSqlQuery" title="`$`(sql: SqlQuery): string">`$`(sql: SqlQuery): string</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">ensureStage
+  <li><a class="reference" href="#ensureStage%2CNimNode%2CopenArray%5Bstring%5D%2Cstring" title="ensureStage(sql: NimNode; allowed: openArray[string]; caller: string)">ensureStage(sql: NimNode; allowed: openArray[string]; caller: string)</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">getPlaceholder
   <li><a class="reference" href="#getPlaceholder%2CNimNode%2Cint" title="getPlaceholder(modelTuple: NimNode; idx: int = 1): string">getPlaceholder(modelTuple: NimNode; idx: int = 1): string</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">modelSymOf
+  <li><a class="reference" href="#modelSymOf%2CNimNode" title="modelSymOf(sql: NimNode): NimNode">modelSymOf(sql: NimNode): NimNode</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">modelTupleOf
+  <li><a class="reference" href="#modelTupleOf%2CNimNode" title="modelTupleOf(sql: NimNode): NimNode">modelTupleOf(sql: NimNode): NimNode</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">normalizeInLists
+  <li><a class="reference" href="#normalizeInLists%2Cstring%2CSqlDriver" title="normalizeInLists(sqlText: string; driver: SqlDriver = SqlDriver.generic): string">normalizeInLists(sqlText: string; driver: SqlDriver = SqlDriver.generic): string</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">ozarkCreateTableResult
   <li><a class="reference" href="#ozarkCreateTableResult%2Cstatic%5Bstring%5D" title="ozarkCreateTableResult(sql: static[string]): NimNode">ozarkCreateTableResult(sql: static[string]): NimNode</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">ozarkGroupByResult
+  <li><a class="reference" href="#ozarkGroupByResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D" title="ozarkGroupByResult(sql: static[string]; vals: seq[string]): NimNode">ozarkGroupByResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">ozarkHavingResult
+  <li><a class="reference" href="#ozarkHavingResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D" title="ozarkHavingResult(sql: static[string]; vals: seq[string]): NimNode">ozarkHavingResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">ozarkHoldModel
@@ -92,15 +140,19 @@
 
 </ul>
 <ul class="simple nested-toc-section">ozarkLimitResult
-  <li><a class="reference" href="#ozarkLimitResult%2Cstatic%5Bstring%5D" title="ozarkLimitResult(sql: static[string]): NimNode">ozarkLimitResult(sql: static[string]): NimNode</a></li>
+  <li><a class="reference" href="#ozarkLimitResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D" title="ozarkLimitResult(sql: static[string]; vals: seq[string]): NimNode">ozarkLimitResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">ozarkOffsetResult
+  <li><a class="reference" href="#ozarkOffsetResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D" title="ozarkOffsetResult(sql: static[string]; vals: seq[string]): NimNode">ozarkOffsetResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">ozarkOrderByResult
-  <li><a class="reference" href="#ozarkOrderByResult%2Cstatic%5Bstring%5D%2Cvarargs%5Bstring%5D" title="ozarkOrderByResult(sql: static[string]; vals: varargs[string]): NimNode">ozarkOrderByResult(sql: static[string]; vals: varargs[string]): NimNode</a></li>
+  <li><a class="reference" href="#ozarkOrderByResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D" title="ozarkOrderByResult(sql: static[string]; vals: seq[string]): NimNode">ozarkOrderByResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">ozarkRawSQLResult
-  <li><a class="reference" href="#ozarkRawSQLResult%2Cstatic%5Bstring%5D%2Cvarargs%5Bstring%5D" title="ozarkRawSQLResult(sql: static[string]; vals: varargs[string]): NimNode">ozarkRawSQLResult(sql: static[string]; vals: varargs[string]): NimNode</a></li>
+  <li><a class="reference" href="#ozarkRawSQLResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D" title="ozarkRawSQLResult(sql: static[string]; vals: seq[string]): NimNode">ozarkRawSQLResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">ozarkRemoveResult
@@ -115,12 +167,42 @@
   <li><a class="reference" href="#ozarkUpdateResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D" title="ozarkUpdateResult(sql: static[string]; vals: seq[string]): NimNode">ozarkUpdateResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">ozarkUpsertResult
+  <li><a class="reference" href="#ozarkUpsertResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D" title="ozarkUpsertResult(sql: static[string]; vals: seq[string]): NimNode">ozarkUpsertResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">ozarkWhereInResult
-  <li><a class="reference" href="#ozarkWhereInResult%2Cstatic%5Bstring%5D%2Cvarargs%5Bstring%5D" title="ozarkWhereInResult(sql: static[string]; vals: varargs[string]): NimNode">ozarkWhereInResult(sql: static[string]; vals: varargs[string]): NimNode</a></li>
+  <li><a class="reference" href="#ozarkWhereInResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D" title="ozarkWhereInResult(sql: static[string]; vals: seq[string]): NimNode">ozarkWhereInResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">ozarkWhereResult
-  <li><a class="reference" href="#ozarkWhereResult%2Cstatic%5Bstring%5D%2Cvarargs%5Bstring%5D" title="ozarkWhereResult(sql: static[string]; val: varargs[string]): NimNode">ozarkWhereResult(sql: static[string]; val: varargs[string]): NimNode</a></li>
+  <li><a class="reference" href="#ozarkWhereResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D" title="ozarkWhereResult(sql: static[string]; vals: seq[string]): NimNode">ozarkWhereResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">paramsBracketOf
+  <li><a class="reference" href="#paramsBracketOf%2CNimNode" title="paramsBracketOf(trailing: NimNode): NimNode">paramsBracketOf(trailing: NimNode): NimNode</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">rebuildResultCall
+  <li><a class="reference" href="#rebuildResultCall%2CNimNode%2Cstring%2CNimNode" title="rebuildResultCall(kindSym: NimNode; sqlText: string; bracket: NimNode): NimNode">rebuildResultCall(kindSym: NimNode; sqlText: string; bracket: NimNode): NimNode</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">resultKindOf
+  <li><a class="reference" href="#resultKindOf%2CNimNode" title="resultKindOf(callNode: NimNode): string">resultKindOf(callNode: NimNode): string</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">swapResultCall
+  <li><a class="reference" href="#swapResultCall%2CNimNode%2CNimNode%2Cstring%2CNimNode" title="swapResultCall(trailing: NimNode; kindSym: NimNode; newText: string;
+               bracket: NimNode)">swapResultCall(trailing: NimNode; kindSym: NimNode; newText: string;
+               bracket: NimNode)</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">trailingCallOf
+  <li><a class="reference" href="#trailingCallOf%2CNimNode" title="trailingCallOf(sql: NimNode): NimNode">trailingCallOf(sql: NimNode): NimNode</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">unbracket
+  <li><a class="reference" href="#unbracket%2CNimNode" title="unbracket(n: NimNode): NimNode">unbracket(n: NimNode): NimNode</a></li>
 
 </ul>
 
@@ -131,28 +213,172 @@
   <details open>
     <summary><a class="reference reference-toplevel" href="#17" id="67">Macros</a></summary>
     <ul class="simple simple-toc-section">
-      <ul class="simple nested-toc-section">dropTable
+      <ul class="simple nested-toc-section">avgOf
+  <li><a class="reference" href="#avgOf.m%2Cuntyped%2Cstaticstring" title="avgOf(sql: untyped; col: static string): untyped">avgOf(sql: untyped; col: static string): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">count
+  <li><a class="reference" href="#count.m%2Cuntyped" title="count(sql: untyped): untyped">count(sql: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">countDistinct
+  <li><a class="reference" href="#countDistinct.m%2Cuntyped%2Cstaticstring" title="countDistinct(sql: untyped; col: static string): untyped">countDistinct(sql: untyped; col: static string): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">decrement
+  <li><a class="reference" href="#decrement.m%2Cuntyped%2Cstaticstring%2Cstaticint" title="decrement(modelTuple: untyped; col: static string; n: static int = 1): untyped">decrement(modelTuple: untyped; col: static string; n: static int = 1): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">dropTable
   <li><a class="reference" href="#dropTable.m%2Cuntyped%2Cstaticbool" title="dropTable(modelTuple: untyped; cascade: static bool = false): untyped">dropTable(modelTuple: untyped; cascade: static bool = false): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">exists
+  <li><a class="reference" href="#exists.m%2Cuntyped" title="exists(x: untyped): untyped">exists(x: untyped): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">extractSQL
   <li><a class="reference" href="#extractSQL.m%2CNimNode" title="extractSQL(sql: NimNode): untyped">extractSQL(sql: NimNode): untyped</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">findById
+  <li><a class="reference" href="#findById.m%2Cuntyped%2Cuntyped" title="findById(modelTuple: untyped; id: untyped): untyped">findById(modelTuple: untyped; id: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">first
+  <li><a class="reference" href="#first.m%2Cuntyped" title="first(sql: untyped): untyped">first(sql: untyped): untyped</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">fromSQL
   <li><a class="reference" href="#fromSQL.m%2Cuntyped" title="fromSQL(sql: untyped): untyped">fromSQL(sql: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">groupBy
+  <li><a class="reference" href="#groupBy.m%2Cuntyped%2CstaticopenArray%5Bstring%5D" title="groupBy(sql: untyped; cols: static openArray[string]): untyped">groupBy(sql: untyped; cols: static openArray[string]): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">having
+  <li><a class="reference" href="#having.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="having(sql: untyped; col: static string; val: untyped): untyped">having(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">havingGt
+  <li><a class="reference" href="#havingGt.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="havingGt(sql: untyped; col: static string; val: untyped): untyped">havingGt(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">havingGte
+  <li><a class="reference" href="#havingGte.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="havingGte(sql: untyped; col: static string; val: untyped): untyped">havingGte(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">havingLt
+  <li><a class="reference" href="#havingLt.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="havingLt(sql: untyped; col: static string; val: untyped): untyped">havingLt(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">havingLte
+  <li><a class="reference" href="#havingLte.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="havingLte(sql: untyped; col: static string; val: untyped): untyped">havingLte(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">increment
+  <li><a class="reference" href="#increment.m%2Cuntyped%2Cstaticstring%2Cstaticint" title="increment(modelTuple: untyped; col: static string; n: static int = 1): untyped">increment(modelTuple: untyped; col: static string; n: static int = 1): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">insert
   <li><a class="reference" href="#insert.m%2Cuntyped%2Cuntyped" title="insert(modelTuple, data: untyped): untyped">insert(modelTuple, data: untyped): untyped</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">insertMany
+  <li><a class="reference" href="#insertMany.m%2Cuntyped%2Cuntyped" title="insertMany(modelTuple: untyped; rows: untyped): untyped">insertMany(modelTuple: untyped; rows: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">last
+  <li><a class="reference" href="#last.m%2Cuntyped" title="last(sql: untyped): untyped">last(sql: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">limit
+  <li><a class="reference" href="#limit.m%2Cuntyped%2Cstaticint" title="limit(sql: untyped; count: static int): untyped">limit(sql: untyped; count: static int): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">maxOf
+  <li><a class="reference" href="#maxOf.m%2Cuntyped%2Cstaticstring" title="maxOf(sql: untyped; col: static string): untyped">maxOf(sql: untyped; col: static string): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">minOf
+  <li><a class="reference" href="#minOf.m%2Cuntyped%2Cstaticstring" title="minOf(sql: untyped; col: static string): untyped">minOf(sql: untyped; col: static string): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">offset
+  <li><a class="reference" href="#offset.m%2Cuntyped%2Cstaticint" title="offset(sql: untyped; count: static int): untyped">offset(sql: untyped; count: static int): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orderAscBy
+  <li><a class="reference" href="#orderAscBy.m%2Cuntyped%2CstaticopenArray%5Bstring%5D" title="orderAscBy(sql: untyped; cols: static openArray[string]): untyped">orderAscBy(sql: untyped; cols: static openArray[string]): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orderBy
+  <li><a class="reference" href="#orderBy.m%2Cuntyped%2CstaticopenArray%5Bstring%5D%2CstaticOrder" title="orderBy(sql: untyped; cols: static openArray[string]; dir: static Order = Desc): untyped">orderBy(sql: untyped; cols: static openArray[string]; dir: static Order = Desc): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orderDescBy
+  <li><a class="reference" href="#orderDescBy.m%2Cuntyped%2CstaticopenArray%5Bstring%5D" title="orderDescBy(sql: untyped; cols: static openArray[string]): untyped">orderDescBy(sql: untyped; cols: static openArray[string]): untyped</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">orWhere
   <li><a class="reference" href="#orWhere.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhere(sql: untyped; col: static string; val: untyped): untyped">orWhere(sql: untyped; col: static string; val: untyped): untyped</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">orWhereBetween
+  <li><a class="reference" href="#orWhereBetween.m%2Cuntyped%2Cstaticstring%2Cuntyped%2Cuntyped" title="orWhereBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped">orWhereBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orWhereEndsLike
+  <li><a class="reference" href="#orWhereEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhereEndsLike(sql: untyped; col: static string; val: untyped): untyped">orWhereEndsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orWhereGt
+  <li><a class="reference" href="#orWhereGt.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhereGt(sql: untyped; col: static string; val: untyped): untyped">orWhereGt(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orWhereGte
+  <li><a class="reference" href="#orWhereGte.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhereGte(sql: untyped; col: static string; val: untyped): untyped">orWhereGte(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orWhereIn
+  <li><a class="reference" href="#orWhereIn.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhereIn(sql: untyped; col: static string; vals: untyped): untyped">orWhereIn(sql: untyped; col: static string; vals: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orWhereLike
+  <li><a class="reference" href="#orWhereLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhereLike(sql: untyped; col: static string; val: untyped): untyped">orWhereLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orWhereLt
+  <li><a class="reference" href="#orWhereLt.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhereLt(sql: untyped; col: static string; val: untyped): untyped">orWhereLt(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orWhereLte
+  <li><a class="reference" href="#orWhereLte.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhereLte(sql: untyped; col: static string; val: untyped): untyped">orWhereLte(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">orWhereNot
   <li><a class="reference" href="#orWhereNot.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhereNot(sql: untyped; col: static string; val: untyped): untyped">orWhereNot(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orWhereNotIn
+  <li><a class="reference" href="#orWhereNotIn.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhereNotIn(sql: untyped; col: static string; vals: untyped): untyped">orWhereNotIn(sql: untyped; col: static string; vals: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orWhereNotLike
+  <li><a class="reference" href="#orWhereNotLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhereNotLike(sql: untyped; col: static string; val: untyped): untyped">orWhereNotLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">orWhereStartsLike
+  <li><a class="reference" href="#orWhereStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="orWhereStartsLike(sql: untyped; col: static string; val: untyped): untyped">orWhereStartsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">paginate
+  <li><a class="reference" href="#paginate.m%2Cuntyped%2Cstaticint%2Cstaticint" title="paginate(sql: untyped; page: static int; perPage: static int): untyped">paginate(sql: untyped; page: static int; perPage: static int): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">pluck
+  <li><a class="reference" href="#pluck.m%2Cuntyped%2Cstaticstring" title="pluck(sql: untyped; col: static string): untyped">pluck(sql: untyped; col: static string): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">prepareTable
@@ -172,16 +398,48 @@
   <li><a class="reference" href="#selectAll.m%2Cuntyped" title="selectAll(modelTuple: untyped): untyped">selectAll(modelTuple: untyped): untyped</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">sumOf
+  <li><a class="reference" href="#sumOf.m%2Cuntyped%2Cstaticstring" title="sumOf(sql: untyped; col: static string): untyped">sumOf(sql: untyped; col: static string): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">truncate
+  <li><a class="reference" href="#truncate.m%2Cuntyped" title="truncate(modelTuple: untyped): untyped">truncate(modelTuple: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">unique
+  <li><a class="reference" href="#unique.m%2Cuntyped" title="unique(sql: untyped): untyped">unique(sql: untyped): untyped</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">update
   <li><a class="reference" href="#update.m%2Cuntyped%2Cuntyped" title="update(modelTuple, data: untyped): untyped">update(modelTuple, data: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">upsert
+  <li><a class="reference" href="#upsert.m%2Cuntyped%2Cuntyped%2CstaticopenArray%5Bstring%5D%2CstaticopenArray%5Bstring%5D" title="upsert(modelTuple: untyped; data: untyped;
+       conflictCols: static openArray[string];
+       updateCols: static openArray[string]): untyped">upsert(modelTuple: untyped; data: untyped;
+       conflictCols: static openArray[string];
+       updateCols: static openArray[string]): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">where
   <li><a class="reference" href="#where.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="where(sql: untyped; col: static string; vals: untyped): untyped">where(sql: untyped; col: static string; vals: untyped): untyped</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">whereBetween
+  <li><a class="reference" href="#whereBetween.m%2Cuntyped%2Cstaticstring%2Cuntyped%2Cuntyped" title="whereBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped">whereBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">whereEndsLike
   <li><a class="reference" href="#whereEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereEndsLike(sql: untyped; col: static string; val: untyped): untyped">whereEndsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">whereGt
+  <li><a class="reference" href="#whereGt.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereGt(sql: untyped; col: static string; val: untyped): untyped">whereGt(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">whereGte
+  <li><a class="reference" href="#whereGte.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereGte(sql: untyped; col: static string; val: untyped): untyped">whereGte(sql: untyped; col: static string; val: untyped): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">whereIn
@@ -192,8 +450,20 @@
   <li><a class="reference" href="#whereLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereLike(sql: untyped; col: static string; val: untyped): untyped">whereLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">whereLt
+  <li><a class="reference" href="#whereLt.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereLt(sql: untyped; col: static string; val: untyped): untyped">whereLt(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">whereLte
+  <li><a class="reference" href="#whereLte.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereLte(sql: untyped; col: static string; val: untyped): untyped">whereLte(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">whereNot
   <li><a class="reference" href="#whereNot.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereNot(sql: untyped; col: static string; val: untyped): untyped">whereNot(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">whereNotBetween
+  <li><a class="reference" href="#whereNotBetween.m%2Cuntyped%2Cstaticstring%2Cuntyped%2Cuntyped" title="whereNotBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped">whereNotBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">whereNotEndsLike
@@ -208,12 +478,24 @@
   <li><a class="reference" href="#whereNotLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereNotLike(sql: untyped; col: static string; val: untyped): untyped">whereNotLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">whereNotNull
+  <li><a class="reference" href="#whereNotNull.m%2Cuntyped%2Cstaticstring" title="whereNotNull(sql: untyped; col: static string): untyped">whereNotNull(sql: untyped; col: static string): untyped</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">whereNotStartsLike
   <li><a class="reference" href="#whereNotStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereNotStartsLike(sql: untyped; col: static string; val: untyped): untyped">whereNotStartsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">whereNull
+  <li><a class="reference" href="#whereNull.m%2Cuntyped%2Cstaticstring" title="whereNull(sql: untyped; col: static string): untyped">whereNull(sql: untyped; col: static string): untyped</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">whereStartsLike
   <li><a class="reference" href="#whereStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="whereStartsLike(sql: untyped; col: static string; val: untyped): untyped">whereStartsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">withTransaction
+  <li><a class="reference" href="#withTransaction.m%2Cuntyped" title="withTransaction(body: untyped): untyped">withTransaction(body: untyped): untyped</a></li>
 
 </ul>
 
@@ -266,11 +548,52 @@
 <div class="section" id="7">
   <h1><a class="toc-backref" href="#7">Types</a></h1>
   <dl class="item">
-    <div id="OzarkModelDefect">
+    <div id="Order">
+  <dt><pre><a href="#Order"><span class="Identifier">Order</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
+  <span class="Identifier">Asc</span><span class="Other">,</span> <span class="Identifier">Desc</span></pre></dt>
+  <dd>
+    
+    Sort direction used by <tt class="docutils literal"><span class="pre"><span class="Identifier">orderBy</span></span></tt> and friends
+    
+  </dd>
+</div>
+<div id="OzarkModelDefect">
   <dt><pre><a href="#OzarkModelDefect"><span class="Identifier">OzarkModelDefect</span></a> <span class="Other">=</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <span class="Identifier">CatchableError</span></pre></dt>
   <dd>
     
     Exception type for errors related to model definitions, such as referencing an unknown model or column in a query
+    
+  </dd>
+</div>
+
+  </dl>
+</div>
+<div class="section" id="8">
+  <h1><a class="toc-backref" href="#8">Vars</a></h1>
+  <dl class="item">
+    <div id="ozarkTxDepth">
+  <dt><pre><a href="#ozarkTxDepth"><span class="Identifier">ozarkTxDepth</span></a> {.<span class="Identifier">threadvar</span>.}<span class="Other">:</span> <span class="Identifier">int</span></pre></dt>
+  <dd>
+    
+    Per-thread nesting depth used by <tt class="docutils literal"><span class="pre"><span class="Identifier">withTransaction</span></span></tt>
+    
+  </dd>
+</div>
+
+  </dl>
+</div>
+<div class="section" id="10">
+  <h1><a class="toc-backref" href="#10">Consts</a></h1>
+  <dl class="item">
+    <div id="selectFamilyResults">
+  <dt><pre><a href="#selectFamilyResults"><span class="Identifier">selectFamilyResults</span></a> <span class="Other">=</span> <span class="Other">[</span><span class="StringLit">&quot;ozarkSelectResult&quot;</span><span class="Other">,</span> <span class="StringLit">&quot;ozarkWhereResult&quot;</span><span class="Other">,</span>
+                       <span class="StringLit">&quot;ozarkWhereInResult&quot;</span><span class="Other">,</span> <span class="StringLit">&quot;ozarkRawSQLResult&quot;</span><span class="Other">,</span>
+                       <span class="StringLit">&quot;ozarkLimitResult&quot;</span><span class="Other">,</span> <span class="StringLit">&quot;ozarkOrderByResult&quot;</span><span class="Other">,</span>
+                       <span class="StringLit">&quot;ozarkOffsetResult&quot;</span><span class="Other">,</span> <span class="StringLit">&quot;ozarkGroupByResult&quot;</span><span class="Other">,</span>
+                       <span class="StringLit">&quot;ozarkHavingResult&quot;</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    
     
   </dd>
 </div>
@@ -291,6 +614,18 @@
 </div>
 
 </div>
+<div id="ensureStage-procs-all">
+  <div id="ensureStage,NimNode,openArray[string],string">
+  <dt><pre><span class="Keyword">proc</span> <a href="#ensureStage%2CNimNode%2CopenArray%5Bstring%5D%2Cstring"><span class="Identifier">ensureStage</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">;</span> <span class="Identifier">allowed</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">caller</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Compile-time guard: the query must currently be in one of <tt class="docutils literal"><span class="pre"><span class="Identifier">allowed</span></span></tt> stages
+    
+  </dd>
+</div>
+
+</div>
 <div id="getPlaceholder-procs-all">
   <div id="getPlaceholder,NimNode,int">
   <dt><pre><span class="Keyword">proc</span> <a href="#getPlaceholder%2CNimNode%2Cint"><span class="Identifier">getPlaceholder</span></a><span class="Other">(</span><span class="Identifier">modelTuple</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">;</span> <span class="Identifier">idx</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">=</span> <span class="DecNumber">1</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
@@ -303,9 +638,69 @@
 </div>
 
 </div>
+<div id="modelSymOf-procs-all">
+  <div id="modelSymOf,NimNode">
+  <dt><pre><span class="Keyword">proc</span> <a href="#modelSymOf%2CNimNode"><span class="Identifier">modelSymOf</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Extract the model type symbol from a chained query block
+    
+  </dd>
+</div>
+
+</div>
+<div id="modelTupleOf-procs-all">
+  <div id="modelTupleOf,NimNode">
+  <dt><pre><span class="Keyword">proc</span> <a href="#modelTupleOf%2CNimNode"><span class="Identifier">modelTupleOf</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Extract the <tt class="docutils literal"><span class="pre"><span class="Punctuation">(</span><span class="Identifier">bindSym</span><span class="Punctuation">(</span><span class="Identifier">Model</span><span class="Punctuation">)</span><span class="Punctuation">,</span> <span class="Identifier">sqlDriver</span><span class="Punctuation">)</span></span></tt> tuple carried inside the block
+    
+  </dd>
+</div>
+
+</div>
+<div id="normalizeInLists-procs-all">
+  <div id="normalizeInLists,string,SqlDriver">
+  <dt><pre><span class="Keyword">proc</span> <a href="#normalizeInLists%2Cstring%2CSqlDriver"><span class="Identifier">normalizeInLists</span></a><span class="Other">(</span><span class="Identifier">sqlText</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">driver</span><span class="Other">:</span> <span class="Identifier">SqlDriver</span> <span class="Other">=</span> <span class="Identifier">SqlDriver</span><span class="Other">.</span><span class="Identifier">generic</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    <p>Collapse multi-placeholder groups — <tt class="docutils literal"><span class="pre"><span class="Punctuation">(</span><span class="Operator">?</span><span class="Punctuation">,</span> <span class="Operator">?</span><span class="Punctuation">,</span> <span class="Operator">?</span><span class="Punctuation">)</span></span></tt> or <tt class="docutils literal"><span class="pre"><span class="Punctuation">(</span><span class="Operator">$</span><span class="DecNumber">1</span><span class="Punctuation">,</span> <span class="Operator">$</span><span class="DecNumber">2</span><span class="Punctuation">)</span></span></tt> — into a single placeholder so the compile-time SQL validator (which only accepts one expression per parenthesized group) can validate statements with multi-value <tt class="docutils literal"><span class="pre"><span class="Keyword">IN</span> <span class="Punctuation">(</span><span class="Operator">...</span><span class="Punctuation">)</span></span></tt> lists. The returned text is used for validation and column extraction only; the original text is what gets executed.</p>
+<p>The collapsed placeholder must match <tt class="docutils literal"><span class="pre"><span class="Identifier">driver</span></span></tt>: the <tt class="docutils literal"><span class="pre"><span class="Identifier">pgsql</span></span></tt> dialect only accepts <tt class="docutils literal"><span class="pre"><span class="Operator">$</span><span class="Identifier">N</span></span></tt> placeholders while <tt class="docutils literal"><span class="pre"><span class="Identifier">mysql</span></span></tt>/<tt class="docutils literal"><span class="pre"><span class="Identifier">sqlite</span></span></tt> only accept <tt class="docutils literal"><span class="pre"><span class="Operator">?</span></span></tt> (see <tt class="docutils literal"><span class="pre"><span class="Identifier">featPlaceholderPg</span></span></tt> / <tt class="docutils literal"><span class="pre"><span class="Identifier">featPlaceholderQmark</span></span></tt> in <tt class="docutils literal"><span class="pre"><span class="Identifier">openparser</span><span class="Operator">/</span><span class="Identifier">sql</span></span></tt>).</p>
+
+    
+  </dd>
+</div>
+
+</div>
 <div id="ozarkCreateTableResult-procs-all">
   <div id="ozarkCreateTableResult,static[string]">
   <dt><pre><span class="Keyword">proc</span> <a href="#ozarkCreateTableResult%2Cstatic%5Bstring%5D"><span class="Identifier">ozarkCreateTableResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.<span class="Identifier">compileTime</span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="ozarkGroupByResult-procs-all">
+  <div id="ozarkGroupByResult,static[string],seq[string]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkGroupByResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D"><span class="Identifier">ozarkGroupByResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
+    <span class="Identifier">compileTime</span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="ozarkHavingResult-procs-all">
+  <div id="ozarkHavingResult,static[string],seq[string]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkHavingResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D"><span class="Identifier">ozarkHavingResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
+    <span class="Identifier">compileTime</span>.}</pre></dt>
   <dd>
     
     
@@ -346,8 +741,21 @@
 
 </div>
 <div id="ozarkLimitResult-procs-all">
-  <div id="ozarkLimitResult,static[string]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkLimitResult%2Cstatic%5Bstring%5D"><span class="Identifier">ozarkLimitResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.<span class="Identifier">compileTime</span>.}</pre></dt>
+  <div id="ozarkLimitResult,static[string],seq[string]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkLimitResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D"><span class="Identifier">ozarkLimitResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
+    <span class="Identifier">compileTime</span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="ozarkOffsetResult-procs-all">
+  <div id="ozarkOffsetResult,static[string],seq[string]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkOffsetResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D"><span class="Identifier">ozarkOffsetResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
+    <span class="Identifier">compileTime</span>.}</pre></dt>
   <dd>
     
     
@@ -357,8 +765,8 @@
 
 </div>
 <div id="ozarkOrderByResult-procs-all">
-  <div id="ozarkOrderByResult,static[string],varargs[string]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkOrderByResult%2Cstatic%5Bstring%5D%2Cvarargs%5Bstring%5D"><span class="Identifier">ozarkOrderByResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
+  <div id="ozarkOrderByResult,static[string],seq[string]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkOrderByResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D"><span class="Identifier">ozarkOrderByResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
     <span class="Identifier">compileTime</span>.}</pre></dt>
   <dd>
     
@@ -369,8 +777,8 @@
 
 </div>
 <div id="ozarkRawSQLResult-procs-all">
-  <div id="ozarkRawSQLResult,static[string],varargs[string]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkRawSQLResult%2Cstatic%5Bstring%5D%2Cvarargs%5Bstring%5D"><span class="Identifier">ozarkRawSQLResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
+  <div id="ozarkRawSQLResult,static[string],seq[string]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkRawSQLResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D"><span class="Identifier">ozarkRawSQLResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
     <span class="Identifier">compileTime</span>.}</pre></dt>
   <dd>
     
@@ -414,9 +822,21 @@
 </div>
 
 </div>
+<div id="ozarkUpsertResult-procs-all">
+  <div id="ozarkUpsertResult,static[string],seq[string]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkUpsertResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D"><span class="Identifier">ozarkUpsertResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
+    <span class="Identifier">compileTime</span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
 <div id="ozarkWhereInResult-procs-all">
-  <div id="ozarkWhereInResult,static[string],varargs[string]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkWhereInResult%2Cstatic%5Bstring%5D%2Cvarargs%5Bstring%5D"><span class="Identifier">ozarkWhereInResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
+  <div id="ozarkWhereInResult,static[string],seq[string]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkWhereInResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D"><span class="Identifier">ozarkWhereInResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
     <span class="Identifier">compileTime</span>.}</pre></dt>
   <dd>
     
@@ -427,12 +847,81 @@
 
 </div>
 <div id="ozarkWhereResult-procs-all">
-  <div id="ozarkWhereResult,static[string],varargs[string]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkWhereResult%2Cstatic%5Bstring%5D%2Cvarargs%5Bstring%5D"><span class="Identifier">ozarkWhereResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
+  <div id="ozarkWhereResult,static[string],seq[string]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#ozarkWhereResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D"><span class="Identifier">ozarkWhereResult</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
     <span class="Identifier">compileTime</span>.}</pre></dt>
   <dd>
     
     
+    
+  </dd>
+</div>
+
+</div>
+<div id="paramsBracketOf-procs-all">
+  <div id="paramsBracketOf,NimNode">
+  <dt><pre><span class="Keyword">proc</span> <a href="#paramsBracketOf%2CNimNode"><span class="Identifier">paramsBracketOf</span></a><span class="Other">(</span><span class="Identifier">trailing</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Return a mutable bracket node holding all bound params accumulated so far, regardless of the internal shape produced by earlier writers (<tt class="docutils literal"><span class="pre"><span class="Operator">@</span><span class="Punctuation">[</span><span class="Operator">...</span><span class="Punctuation">]</span></span></tt> prefix, compiler-folded varargs, bare single value, or none).
+    
+  </dd>
+</div>
+
+</div>
+<div id="rebuildResultCall-procs-all">
+  <div id="rebuildResultCall,NimNode,string,NimNode">
+  <dt><pre><span class="Keyword">proc</span> <a href="#rebuildResultCall%2CNimNode%2Cstring%2CNimNode"><span class="Identifier">rebuildResultCall</span></a><span class="Other">(</span><span class="Identifier">kindSym</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">;</span> <span class="Identifier">sqlText</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">bracket</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Standardized result call: (kindSym)(sqlText, @<a class="reference internal" href="#params...">params...</a>)
+    
+  </dd>
+</div>
+
+</div>
+<div id="resultKindOf-procs-all">
+  <div id="resultKindOf,NimNode">
+  <dt><pre><span class="Keyword">proc</span> <a href="#resultKindOf%2CNimNode"><span class="Identifier">resultKindOf</span></a><span class="Other">(</span><span class="Identifier">callNode</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    The callee name of a trailing result call (e.g. &quot;ozarkWhereResult&quot;)
+    
+  </dd>
+</div>
+
+</div>
+<div id="swapResultCall-procs-all">
+  <div id="swapResultCall,NimNode,NimNode,string,NimNode">
+  <dt><pre><span class="Keyword">proc</span> <a href="#swapResultCall%2CNimNode%2CNimNode%2Cstring%2CNimNode"><span class="Identifier">swapResultCall</span></a><span class="Other">(</span><span class="Identifier">trailing</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">;</span> <span class="Identifier">kindSym</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">;</span> <span class="Identifier">newText</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+                    <span class="Identifier">bracket</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    In-place rewrite of an existing trailing call to a new stage while preserving every accumulated parameter
+    
+  </dd>
+</div>
+
+</div>
+<div id="trailingCallOf-procs-all">
+  <div id="trailingCallOf,NimNode">
+  <dt><pre><span class="Keyword">proc</span> <a href="#trailingCallOf%2CNimNode"><span class="Identifier">trailingCallOf</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Normalize a chained query expression (block stmt/expr or bare call) to its trailing <tt class="docutils literal"><span class="pre"><span class="Identifier">ozark</span><span class="Operator">*</span><span class="Identifier">Result</span></span></tt> call node.
+    
+  </dd>
+</div>
+
+</div>
+<div id="unbracket-procs-all">
+  <div id="unbracket,NimNode">
+  <dt><pre><span class="Keyword">proc</span> <a href="#unbracket%2CNimNode"><span class="Identifier">unbracket</span></a><span class="Other">(</span><span class="Identifier">n</span><span class="Other">:</span> <span class="Identifier">NimNode</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">NimNode</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Normalizes an array-ish argument (<tt class="docutils literal"><span class="pre"><span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;a&quot;</span><span class="Punctuation">]</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Punctuation">[</span><span class="StringLit">&quot;a&quot;</span><span class="Punctuation">]</span></span></tt>, compiler-folded varargs, or a single value) to a plain bracket node
     
   </dd>
 </div>
@@ -444,13 +933,72 @@
 <div class="section" id="17">
   <h1><a class="toc-backref" href="#17">Macros</a></h1>
   <dl class="item">
-    <div id="dropTable-macros-all">
+    <div id="avgOf-macros-all">
+  <div id="avgOf.m,untyped,staticstring">
+  <dt><pre><span class="Keyword">macro</span> <a href="#avgOf.m%2Cuntyped%2Cstaticstring"><span class="Identifier">avgOf</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Execute <tt class="docutils literal"><span class="pre"><span class="Identifier">SELECT</span> <span class="Identifier">AVG</span><span class="Punctuation">(</span><span class="Identifier">col</span><span class="Punctuation">)</span></span></tt> over the current query.
+    
+  </dd>
+</div>
+
+</div>
+<div id="count-macros-all">
+  <div id="count.m,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#count.m%2Cuntyped"><span class="Identifier">count</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Execute <tt class="docutils literal"><span class="pre"><span class="Identifier">SELECT</span> <span class="Identifier">COUNT</span><span class="Punctuation">(</span><span class="Operator">*</span><span class="Punctuation">)</span></span></tt> over the current query and return the row count as <tt class="docutils literal"><span class="pre"><span class="Identifier">int64</span></span></tt>.
+    
+  </dd>
+</div>
+
+</div>
+<div id="countDistinct-macros-all">
+  <div id="countDistinct.m,untyped,staticstring">
+  <dt><pre><span class="Keyword">macro</span> <a href="#countDistinct.m%2Cuntyped%2Cstaticstring"><span class="Identifier">countDistinct</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Execute <tt class="docutils literal"><span class="pre"><span class="Identifier">SELECT</span> <span class="Identifier">COUNT</span><span class="Punctuation">(</span><span class="Keyword">DISTINCT</span> <span class="Identifier">col</span><span class="Punctuation">)</span></span></tt> over the current query.
+    
+  </dd>
+</div>
+
+</div>
+<div id="decrement-macros-all">
+  <div id="decrement.m,untyped,staticstring,staticint">
+  <dt><pre><span class="Keyword">macro</span> <a href="#decrement.m%2Cuntyped%2Cstaticstring%2Cstaticint"><span class="Identifier">decrement</span></a><span class="Other">(</span><span class="Identifier">modelTuple</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">n</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">int</span> <span class="Other">=</span> <span class="DecNumber">1</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Emit <tt class="docutils literal"><span class="pre"><span class="Identifier">UPDATE</span> <span class="Identifier">table</span> <span class="Identifier">SET</span> <span class="Identifier">col</span> <span class="Operator">=</span> <span class="Identifier">col</span> <span class="Operator">-</span> <span class="Identifier">n</span></span></tt>. Chainable with <tt class="docutils literal"><span class="pre"><span class="Operator">.</span><span class="Identifier">where</span><span class="Punctuation">(</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">exec</span><span class="Punctuation">(</span><span class="Punctuation">)</span></span></tt>.
+    
+  </dd>
+</div>
+
+</div>
+<div id="dropTable-macros-all">
   <div id="dropTable.m,untyped,staticbool">
   <dt><pre><span class="Keyword">macro</span> <a href="#dropTable.m%2Cuntyped%2Cstaticbool"><span class="Identifier">dropTable</span></a><span class="Other">(</span><span class="Identifier">modelTuple</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">cascade</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">bool</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
     <p>Compile-time macro to drop a model's table from the database.</p>
 <p>Cascade option is included for compatibility with databases that support it, but will be ignored for SQLite since it does not support CASCADE with DROP TABLE</p>
+
+    
+  </dd>
+</div>
+
+</div>
+<div id="exists-macros-all">
+  <div id="exists.m,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#exists.m%2Cuntyped"><span class="Identifier">exists</span></a><span class="Other">(</span><span class="Identifier">x</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Two forms:<ul class="simple"><li>Chained: <tt class="docutils literal"><span class="pre"><span class="Operator">...</span><span class="Identifier">select</span><span class="Punctuation">(</span><span class="Operator">...</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">where</span><span class="Punctuation">(</span><span class="Operator">...</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">exists</span><span class="Punctuation">(</span><span class="Punctuation">)</span></span></tt> is true when the query matches at least one row.</li>
+<li>Table-level: <tt class="docutils literal"><span class="pre"><span class="Identifier">Models</span><span class="Operator">.</span><span class="Identifier">table</span><span class="Punctuation">(</span><span class="Identifier">Users</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">exists</span><span class="Punctuation">(</span><span class="Punctuation">)</span></span></tt> is true when the table has at least one row.</li>
+</ul>
+<p>Both execute immediately and return <tt class="docutils literal"><span class="pre"><span class="Identifier">bool</span></span></tt>.</p>
 
     
   </dd>
@@ -468,12 +1016,111 @@
 </div>
 
 </div>
+<div id="findById-macros-all">
+  <div id="findById.m,untyped,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#findById.m%2Cuntyped%2Cuntyped"><span class="Identifier">findById</span></a><span class="Other">(</span><span class="Identifier">modelTuple</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">id</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Shorthand for fetching a single row by its <tt class="docutils literal"><span class="pre"><span class="Identifier">id</span></span></tt> column. Finish the chain with <tt class="docutils literal"><span class="pre"><span class="Identifier">get</span><span class="Punctuation">(</span><span class="Punctuation">)</span></span></tt>. (Named <tt class="docutils literal"><span class="pre"><span class="Identifier">findById</span></span></tt> because <tt class="docutils literal"><span class="pre"><span class="Identifier">system</span><span class="Operator">.</span><span class="Identifier">find</span></span></tt> shadows a bare <tt class="docutils literal"><span class="pre"><span class="Identifier">find</span></span></tt>.)
+    
+  </dd>
+</div>
+
+</div>
+<div id="first-macros-all">
+  <div id="first.m,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#first.m%2Cuntyped"><span class="Identifier">first</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Alias for <tt class="docutils literal"><span class="pre"><span class="Identifier">get</span><span class="Punctuation">(</span><span class="Punctuation">)</span></span></tt>: fetch a single row from the chained query.
+    
+  </dd>
+</div>
+
+</div>
 <div id="fromSQL-macros-all">
   <div id="fromSQL.m,untyped">
   <dt><pre><span class="Keyword">macro</span> <a href="#fromSQL.m%2Cuntyped"><span class="Identifier">fromSQL</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
     Macro to parse a resumed SQL string back into a NimNode for further manipulation This is used in the <tt class="docutils literal"><span class="pre"><span class="Identifier">where</span></span></tt> macros to allow chaining multiple clauses based on runtime computations.
+    
+  </dd>
+</div>
+
+</div>
+<div id="groupBy-macros-all">
+  <div id="groupBy.m,untyped,staticopenArray[string]">
+  <dt><pre><span class="Keyword">macro</span> <a href="#groupBy.m%2Cuntyped%2CstaticopenArray%5Bstring%5D"><span class="Identifier">groupBy</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">cols</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">GROUP</span> <span class="Identifier">BY</span></span></tt> clause
+    
+  </dd>
+</div>
+
+</div>
+<div id="having-macros-all">
+  <div id="having.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#having.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">having</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">HAVING</span> <span class="Identifier">col</span> <span class="Operator">=</span> <span class="Identifier">val</span></span></tt> (must follow <tt class="docutils literal"><span class="pre"><span class="Identifier">groupBy</span></span></tt>)
+    
+  </dd>
+</div>
+
+</div>
+<div id="havingGt-macros-all">
+  <div id="havingGt.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#havingGt.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">havingGt</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">HAVING</span> <span class="Identifier">col</span> <span class="Operator">&gt;</span> <span class="Identifier">val</span></span></tt>
+    
+  </dd>
+</div>
+
+</div>
+<div id="havingGte-macros-all">
+  <div id="havingGte.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#havingGte.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">havingGte</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">HAVING</span> <span class="Identifier">col</span> <span class="Operator">&gt;=</span> <span class="Identifier">val</span></span></tt>
+    
+  </dd>
+</div>
+
+</div>
+<div id="havingLt-macros-all">
+  <div id="havingLt.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#havingLt.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">havingLt</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">HAVING</span> <span class="Identifier">col</span> <span class="Operator">&lt;</span> <span class="Identifier">val</span></span></tt>
+    
+  </dd>
+</div>
+
+</div>
+<div id="havingLte-macros-all">
+  <div id="havingLte.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#havingLte.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">havingLte</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">HAVING</span> <span class="Identifier">col</span> <span class="Operator">&lt;=</span> <span class="Identifier">val</span></span></tt>
+    
+  </dd>
+</div>
+
+</div>
+<div id="increment-macros-all">
+  <div id="increment.m,untyped,staticstring,staticint">
+  <dt><pre><span class="Keyword">macro</span> <a href="#increment.m%2Cuntyped%2Cstaticstring%2Cstaticint"><span class="Identifier">increment</span></a><span class="Other">(</span><span class="Identifier">modelTuple</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">n</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">int</span> <span class="Other">=</span> <span class="DecNumber">1</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Emit <tt class="docutils literal"><span class="pre"><span class="Identifier">UPDATE</span> <span class="Identifier">table</span> <span class="Identifier">SET</span> <span class="Identifier">col</span> <span class="Operator">=</span> <span class="Identifier">col</span> <span class="Operator">+</span> <span class="Identifier">n</span></span></tt>. Chainable with <tt class="docutils literal"><span class="pre"><span class="Operator">.</span><span class="Identifier">where</span><span class="Punctuation">(</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">exec</span><span class="Punctuation">(</span><span class="Punctuation">)</span></span></tt>.
     
   </dd>
 </div>
@@ -490,6 +1137,106 @@
 </div>
 
 </div>
+<div id="insertMany-macros-all">
+  <div id="insertMany.m,untyped,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#insertMany.m%2Cuntyped%2Cuntyped"><span class="Identifier">insertMany</span></a><span class="Other">(</span><span class="Identifier">modelTuple</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">rows</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Insert multiple rows with a single <tt class="docutils literal"><span class="pre"><span class="Identifier">INSERT</span></span></tt> statement. All rows must declare the exact same set of columns, validated at compile time.
+    
+  </dd>
+</div>
+
+</div>
+<div id="last-macros-all">
+  <div id="last.m,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#last.m%2Cuntyped"><span class="Identifier">last</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Fetch a single row ordered by highest <tt class="docutils literal"><span class="pre"><span class="Identifier">id</span></span></tt>. Executes immediately and returns a <tt class="docutils literal"><span class="pre"><span class="Identifier">Collection</span><span class="Punctuation">[</span><span class="Identifier">T</span><span class="Punctuation">]</span></span></tt>. Cannot be combined with an explicit <tt class="docutils literal"><span class="pre"><span class="Identifier">orderBy</span></span></tt> on the same chain.
+    
+  </dd>
+</div>
+
+</div>
+<div id="limit-macros-all">
+  <div id="limit.m,untyped,staticint">
+  <dt><pre><span class="Keyword">macro</span> <a href="#limit.m%2Cuntyped%2Cstaticint"><span class="Identifier">limit</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">count</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">LIMIT</span></span></tt> clause with a constant row count. Must be called before <tt class="docutils literal"><span class="pre"><span class="Identifier">offset</span></span></tt> (canonical SQL clause order).
+    
+  </dd>
+</div>
+
+</div>
+<div id="maxOf-macros-all">
+  <div id="maxOf.m,untyped,staticstring">
+  <dt><pre><span class="Keyword">macro</span> <a href="#maxOf.m%2Cuntyped%2Cstaticstring"><span class="Identifier">maxOf</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Execute <tt class="docutils literal"><span class="pre"><span class="Identifier">SELECT</span> <span class="Identifier">MAX</span><span class="Punctuation">(</span><span class="Identifier">col</span><span class="Punctuation">)</span></span></tt> over the current query.
+    
+  </dd>
+</div>
+
+</div>
+<div id="minOf-macros-all">
+  <div id="minOf.m,untyped,staticstring">
+  <dt><pre><span class="Keyword">macro</span> <a href="#minOf.m%2Cuntyped%2Cstaticstring"><span class="Identifier">minOf</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Execute <tt class="docutils literal"><span class="pre"><span class="Identifier">SELECT</span> <span class="Identifier">MIN</span><span class="Punctuation">(</span><span class="Identifier">col</span><span class="Punctuation">)</span></span></tt> over the current query.
+    
+  </dd>
+</div>
+
+</div>
+<div id="offset-macros-all">
+  <div id="offset.m,untyped,staticint">
+  <dt><pre><span class="Keyword">macro</span> <a href="#offset.m%2Cuntyped%2Cstaticint"><span class="Identifier">offset</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">count</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">OFFSET</span></span></tt> clause with a constant row count.
+    
+  </dd>
+</div>
+
+</div>
+<div id="orderAscBy-macros-all">
+  <div id="orderAscBy.m,untyped,staticopenArray[string]">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orderAscBy.m%2Cuntyped%2CstaticopenArray%5Bstring%5D"><span class="Identifier">orderAscBy</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">cols</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">ORDER</span> <span class="Identifier">BY</span> <span class="Operator">...</span> <span class="Identifier">ASC</span></span></tt>
+    
+  </dd>
+</div>
+
+</div>
+<div id="orderBy-macros-all">
+  <div id="orderBy.m,untyped,staticopenArray[string],staticOrder">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orderBy.m%2Cuntyped%2CstaticopenArray%5Bstring%5D%2CstaticOrder"><span class="Identifier">orderBy</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">cols</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span>
+              <span class="Identifier">dir</span><span class="Other">:</span> <span class="Keyword">static</span> <a href="#Order"><span class="Identifier">Order</span></a> <span class="Other">=</span> <span class="Identifier">Desc</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">ORDER</span> <span class="Identifier">BY</span></span></tt> with an explicit sort direction
+    
+  </dd>
+</div>
+
+</div>
+<div id="orderDescBy-macros-all">
+  <div id="orderDescBy.m,untyped,staticopenArray[string]">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orderDescBy.m%2Cuntyped%2CstaticopenArray%5Bstring%5D"><span class="Identifier">orderDescBy</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">cols</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">ORDER</span> <span class="Identifier">BY</span> <span class="Operator">...</span> <span class="Identifier">DESC</span></span></tt>
+    
+  </dd>
+</div>
+
+</div>
 <div id="orWhere-macros-all">
   <div id="orWhere.m,untyped,staticstring,untyped">
   <dt><pre><span class="Keyword">macro</span> <a href="#orWhere.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhere</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
@@ -501,12 +1248,155 @@
 </div>
 
 </div>
+<div id="orWhereBetween-macros-all">
+  <div id="orWhereBetween.m,untyped,staticstring,untyped,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orWhereBetween.m%2Cuntyped%2Cstaticstring%2Cuntyped%2Cuntyped"><span class="Identifier">orWhereBetween</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">lo</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">hi</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define an <tt class="docutils literal"><span class="pre"><span class="Keyword">OR</span> <span class="Identifier">BETWEEN</span></span></tt> condition in <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause
+    
+  </dd>
+</div>
+
+</div>
+<div id="orWhereEndsLike-macros-all">
+  <div id="orWhereEndsLike.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orWhereEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhereEndsLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define an <tt class="docutils literal"><span class="pre"><span class="Keyword">OR</span></span></tt> condition matching a suffix via <tt class="docutils literal"><span class="pre"><span class="Identifier">LIKE</span></span></tt>
+    
+  </dd>
+</div>
+
+</div>
+<div id="orWhereGt-macros-all">
+  <div id="orWhereGt.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orWhereGt.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhereGt</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define a <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause using an ordered comparison operator
+    
+  </dd>
+</div>
+
+</div>
+<div id="orWhereGte-macros-all">
+  <div id="orWhereGte.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orWhereGte.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhereGte</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define a <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause using an ordered comparison operator
+    
+  </dd>
+</div>
+
+</div>
+<div id="orWhereIn-macros-all">
+  <div id="orWhereIn.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orWhereIn.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhereIn</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define an <tt class="docutils literal"><span class="pre"><span class="Keyword">OR</span> <span class="Keyword">IN</span></span></tt> condition in <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause
+    
+  </dd>
+</div>
+
+</div>
+<div id="orWhereLike-macros-all">
+  <div id="orWhereLike.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orWhereLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhereLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define an <tt class="docutils literal"><span class="pre"><span class="Keyword">OR</span> <span class="Identifier">LIKE</span></span></tt> condition in <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause
+    
+  </dd>
+</div>
+
+</div>
+<div id="orWhereLt-macros-all">
+  <div id="orWhereLt.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orWhereLt.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhereLt</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define a <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause using an ordered comparison operator
+    
+  </dd>
+</div>
+
+</div>
+<div id="orWhereLte-macros-all">
+  <div id="orWhereLte.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orWhereLte.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhereLte</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define a <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause using an ordered comparison operator
+    
+  </dd>
+</div>
+
+</div>
 <div id="orWhereNot-macros-all">
   <div id="orWhereNot.m,untyped,staticstring,untyped">
   <dt><pre><span class="Keyword">macro</span> <a href="#orWhereNot.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhereNot</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
     Define a <tt class="docutils literal"><span class="pre"><span class="Keyword">OR</span></span></tt> condition with <tt class="docutils literal"><span class="pre"><span class="Keyword">NOT</span></span></tt> in <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause
+    
+  </dd>
+</div>
+
+</div>
+<div id="orWhereNotIn-macros-all">
+  <div id="orWhereNotIn.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orWhereNotIn.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhereNotIn</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">vals</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define an <tt class="docutils literal"><span class="pre"><span class="Keyword">OR</span> <span class="Keyword">NOT</span> <span class="Keyword">IN</span></span></tt> condition in <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause
+    
+  </dd>
+</div>
+
+</div>
+<div id="orWhereNotLike-macros-all">
+  <div id="orWhereNotLike.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orWhereNotLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhereNotLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define an <tt class="docutils literal"><span class="pre"><span class="Keyword">OR</span> <span class="Keyword">NOT</span> <span class="Identifier">LIKE</span></span></tt> condition in <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause
+    
+  </dd>
+</div>
+
+</div>
+<div id="orWhereStartsLike-macros-all">
+  <div id="orWhereStartsLike.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#orWhereStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">orWhereStartsLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define an <tt class="docutils literal"><span class="pre"><span class="Keyword">OR</span></span></tt> condition matching a prefix via <tt class="docutils literal"><span class="pre"><span class="Identifier">LIKE</span></span></tt>
+    
+  </dd>
+</div>
+
+</div>
+<div id="paginate-macros-all">
+  <div id="paginate.m,untyped,staticint,staticint">
+  <dt><pre><span class="Keyword">macro</span> <a href="#paginate.m%2Cuntyped%2Cstaticint%2Cstaticint"><span class="Identifier">paginate</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">page</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">int</span><span class="Other">;</span> <span class="Identifier">perPage</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Apply <tt class="docutils literal"><span class="pre"><span class="Identifier">LIMIT</span></span></tt>/<tt class="docutils literal"><span class="pre"><span class="Identifier">OFFSET</span></span></tt> pagination with constant values. <tt class="docutils literal"><span class="pre"><span class="Identifier">page</span></span></tt> is 1-based.
+    
+  </dd>
+</div>
+
+</div>
+<div id="pluck-macros-all">
+  <div id="pluck.m,untyped,staticstring">
+  <dt><pre><span class="Keyword">macro</span> <a href="#pluck.m%2Cuntyped%2Cstaticstring"><span class="Identifier">pluck</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Execute the current query but collect only <tt class="docutils literal"><span class="pre"><span class="Identifier">col</span></span></tt> into a <tt class="docutils literal"><span class="pre"><span class="Identifier">seq</span><span class="Punctuation">[</span><span class="Identifier">string</span><span class="Punctuation">]</span></span></tt>, one entry per matched row.
     
   </dd>
 </div>
@@ -566,12 +1456,58 @@
 </div>
 
 </div>
+<div id="sumOf-macros-all">
+  <div id="sumOf.m,untyped,staticstring">
+  <dt><pre><span class="Keyword">macro</span> <a href="#sumOf.m%2Cuntyped%2Cstaticstring"><span class="Identifier">sumOf</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Execute <tt class="docutils literal"><span class="pre"><span class="Identifier">SELECT</span> <span class="Identifier">SUM</span><span class="Punctuation">(</span><span class="Identifier">col</span><span class="Punctuation">)</span></span></tt> over the current query. Returns the raw string value reported by the database driver.
+    
+  </dd>
+</div>
+
+</div>
+<div id="truncate-macros-all">
+  <div id="truncate.m,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#truncate.m%2Cuntyped"><span class="Identifier">truncate</span></a><span class="Other">(</span><span class="Identifier">modelTuple</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Remove all rows from the model's table. Emits <tt class="docutils literal"><span class="pre"><span class="Identifier">DELETE</span> <span class="Keyword">FROM</span></span></tt> so the behavior stays portable across drivers (no <tt class="docutils literal"><span class="pre"><span class="Identifier">TRUNCATE</span></span></tt> support yet).
+    
+  </dd>
+</div>
+
+</div>
+<div id="unique-macros-all">
+  <div id="unique.m,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#unique.m%2Cuntyped"><span class="Identifier">unique</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Apply <tt class="docutils literal"><span class="pre"><span class="Identifier">SELECT</span> <span class="Keyword">DISTINCT</span></span></tt> to the current query. Can only be applied directly to a <tt class="docutils literal"><span class="pre"><span class="Identifier">select</span></span></tt>/<tt class="docutils literal"><span class="pre"><span class="Identifier">selectAll</span></span></tt> stage.
+    
+  </dd>
+</div>
+
+</div>
 <div id="update-macros-all">
   <div id="update.m,untyped,untyped">
   <dt><pre><span class="Keyword">macro</span> <a href="#update.m%2Cuntyped%2Cuntyped"><span class="Identifier">update</span></a><span class="Other">(</span><span class="Identifier">modelTuple</span><span class="Other">,</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
     Placeholder for an <tt class="docutils literal"><span class="pre"><span class="Identifier">UPDATE</span></span></tt> statement. This macro generates the SQL string for the UPDATE statement. This macro performs compile-time checks for the existence of the specified model and the validity of the column names.
+    
+  </dd>
+</div>
+
+</div>
+<div id="upsert-macros-all">
+  <div id="upsert.m,untyped,untyped,staticopenArray[string],staticopenArray[string]">
+  <dt><pre><span class="Keyword">macro</span> <a href="#upsert.m%2Cuntyped%2Cuntyped%2CstaticopenArray%5Bstring%5D%2CstaticopenArray%5Bstring%5D"><span class="Identifier">upsert</span></a><span class="Other">(</span><span class="Identifier">modelTuple</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span>
+             <span class="Identifier">conflictCols</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span>
+             <span class="Identifier">updateCols</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Insert a row, resolving conflicts on <tt class="docutils literal"><span class="pre"><span class="Identifier">conflictCols</span></span></tt>. When a conflict occurs, <tt class="docutils literal"><span class="pre"><span class="Identifier">updateCols</span></span></tt> are overwritten with the proposed values (<tt class="docutils literal"><span class="pre"><span class="Keyword">DO</span> <span class="Identifier">UPDATE</span> <span class="Identifier">SET</span> <span class="Identifier">c</span> <span class="Operator">=</span> <span class="Identifier">EXCLUDED</span><span class="Operator">.</span><span class="Identifier">c</span></span></tt>). Pass an empty <tt class="docutils literal"><span class="pre"><span class="Identifier">updateCols</span></span></tt> to emit <tt class="docutils literal"><span class="pre"><span class="Keyword">DO</span> <span class="Identifier">NOTHING</span></span></tt>. Uses the portable <tt class="docutils literal"><span class="pre"><span class="Identifier">ON</span> <span class="Identifier">CONFLICT</span></span></tt> syntax (PostgreSQL and SQLite 3.24+).
     
   </dd>
 </div>
@@ -588,12 +1524,45 @@
 </div>
 
 </div>
+<div id="whereBetween-macros-all">
+  <div id="whereBetween.m,untyped,staticstring,untyped,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereBetween.m%2Cuntyped%2Cstaticstring%2Cuntyped%2Cuntyped"><span class="Identifier">whereBetween</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">lo</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">hi</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span> <span class="Identifier">col</span> <span class="Identifier">BETWEEN</span> <span class="Identifier">lo</span> <span class="Keyword">AND</span> <span class="Identifier">hi</span></span></tt>
+    
+  </dd>
+</div>
+
+</div>
 <div id="whereEndsLike-macros-all">
   <div id="whereEndsLike.m,untyped,staticstring,untyped">
   <dt><pre><span class="Keyword">macro</span> <a href="#whereEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereEndsLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
     Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause with <tt class="docutils literal"><span class="pre"><span class="Identifier">LIKE</span></span></tt> for suffix matching
+    
+  </dd>
+</div>
+
+</div>
+<div id="whereGt-macros-all">
+  <div id="whereGt.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereGt.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereGt</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define a <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause using an ordered comparison operator
+    
+  </dd>
+</div>
+
+</div>
+<div id="whereGte-macros-all">
+  <div id="whereGte.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereGte.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereGte</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define a <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause using an ordered comparison operator
     
   </dd>
 </div>
@@ -621,12 +1590,45 @@
 </div>
 
 </div>
+<div id="whereLt-macros-all">
+  <div id="whereLt.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereLt.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereLt</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define a <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause using an ordered comparison operator
+    
+  </dd>
+</div>
+
+</div>
+<div id="whereLte-macros-all">
+  <div id="whereLte.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereLte.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereLte</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define a <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause using an ordered comparison operator
+    
+  </dd>
+</div>
+
+</div>
 <div id="whereNot-macros-all">
   <div id="whereNot.m,untyped,staticstring,untyped">
   <dt><pre><span class="Keyword">macro</span> <a href="#whereNot.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereNot</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
     Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause with <tt class="docutils literal"><span class="pre"><span class="Keyword">NOT</span></span></tt>
+    
+  </dd>
+</div>
+
+</div>
+<div id="whereNotBetween-macros-all">
+  <div id="whereNotBetween.m,untyped,staticstring,untyped,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereNotBetween.m%2Cuntyped%2Cstaticstring%2Cuntyped%2Cuntyped"><span class="Identifier">whereNotBetween</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">lo</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">hi</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span> <span class="Identifier">col</span> <span class="Keyword">NOT</span> <span class="Identifier">BETWEEN</span> <span class="Identifier">lo</span> <span class="Keyword">AND</span> <span class="Identifier">hi</span></span></tt>
     
   </dd>
 </div>
@@ -665,6 +1667,17 @@
 </div>
 
 </div>
+<div id="whereNotNull-macros-all">
+  <div id="whereNotNull.m,untyped,staticstring">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereNotNull.m%2Cuntyped%2Cstaticstring"><span class="Identifier">whereNotNull</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span> <span class="Identifier">col</span> <span class="Keyword">IS</span> <span class="Keyword">NOT</span> <span class="Identifier">NULL</span></span></tt>
+    
+  </dd>
+</div>
+
+</div>
 <div id="whereNotStartsLike-macros-all">
   <div id="whereNotStartsLike.m,untyped,staticstring,untyped">
   <dt><pre><span class="Keyword">macro</span> <a href="#whereNotStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereNotStartsLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
@@ -676,12 +1689,38 @@
 </div>
 
 </div>
+<div id="whereNull-macros-all">
+  <div id="whereNull.m,untyped,staticstring">
+  <dt><pre><span class="Keyword">macro</span> <a href="#whereNull.m%2Cuntyped%2Cstaticstring"><span class="Identifier">whereNull</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span> <span class="Identifier">col</span> <span class="Keyword">IS</span> <span class="Identifier">NULL</span></span></tt>
+    
+  </dd>
+</div>
+
+</div>
 <div id="whereStartsLike-macros-all">
   <div id="whereStartsLike.m,untyped,staticstring,untyped">
   <dt><pre><span class="Keyword">macro</span> <a href="#whereStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">whereStartsLike</span></a><span class="Other">(</span><span class="Identifier">sql</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">col</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
     Define <tt class="docutils literal"><span class="pre"><span class="Identifier">WHERE</span></span></tt> clause with <tt class="docutils literal"><span class="pre"><span class="Identifier">LIKE</span></span></tt> for prefix matching
+    
+  </dd>
+</div>
+
+</div>
+<div id="withTransaction-macros-all">
+  <div id="withTransaction.m,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#withTransaction.m%2Cuntyped"><span class="Identifier">withTransaction</span></a><span class="Other">(</span><span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    <p>Run <tt class="docutils literal"><span class="pre"><span class="Identifier">body</span></span></tt> inside a database transaction on a dedicated pooled connection. Commits on normal completion; rolls back when the body raises (secondary rollback errors are swallowed, the original exception is re-raised). The connection is always returned to the pool.</p>
+<p>Query chains inside the block use the injected <tt class="docutils literal"><span class="pre"><span class="Identifier">dbcon</span></span></tt> automatically:</p>
+<p>withTransaction do: Models.table(Orders).insert({...}).exec() Models.table(Audit).insert({...}).exec()</p>
+<p>Nested calls raise <tt class="docutils literal"><span class="pre"><span class="Identifier">OzarkConnectionError</span></span></tt>.</p>
+
     
   </dd>
 </div>
@@ -760,7 +1799,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-08-10 13:46:40 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-10-20 20:22:04 UTC</small>
       </div>
     </div>
   </div>

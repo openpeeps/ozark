@@ -4,42 +4,110 @@ nim	table	ozark/query.html#table.t,ptr.ModelsTable,	template table(models: ptr M
 nim	withTableCheck	ozark/query.html#withTableCheck.t,NimNode,	template withTableCheck(modelTuple: NimNode; body)		34
 nim	withColumnsCheck	ozark/query.html#withColumnsCheck.t,NimNode,openArray[string],	template withColumnsCheck(model: NimNode; cols: openArray[string]; body)		41
 nim	ozarkSelectResult	ozark/query.html#ozarkSelectResult,static[string]	proc ozarkSelectResult(sql: static[string]): NimNode		48
-nim	ozarkWhereResult	ozark/query.html#ozarkWhereResult,static[string],varargs[string]	proc ozarkWhereResult(sql: static[string]; val: varargs[string]): NimNode		49
-nim	ozarkWhereInResult	ozark/query.html#ozarkWhereInResult,static[string],varargs[string]	proc ozarkWhereInResult(sql: static[string]; vals: varargs[string]): NimNode		50
-nim	ozarkRawSQLResult	ozark/query.html#ozarkRawSQLResult,static[string],varargs[string]	proc ozarkRawSQLResult(sql: static[string]; vals: varargs[string]): NimNode		51
+nim	ozarkWhereResult	ozark/query.html#ozarkWhereResult,static[string],seq[string]	proc ozarkWhereResult(sql: static[string]; vals: seq[string]): NimNode		49
+nim	ozarkWhereInResult	ozark/query.html#ozarkWhereInResult,static[string],seq[string]	proc ozarkWhereInResult(sql: static[string]; vals: seq[string]): NimNode		50
+nim	ozarkRawSQLResult	ozark/query.html#ozarkRawSQLResult,static[string],seq[string]	proc ozarkRawSQLResult(sql: static[string]; vals: seq[string]): NimNode		51
 nim	ozarkInsertResult	ozark/query.html#ozarkInsertResult,static[string],seq[string]	proc ozarkInsertResult(sql: static[string]; vals: seq[string]): NimNode		52
 nim	ozarkUpdateResult	ozark/query.html#ozarkUpdateResult,static[string],seq[string]	proc ozarkUpdateResult(sql: static[string]; vals: seq[string]): NimNode		53
-nim	ozarkLimitResult	ozark/query.html#ozarkLimitResult,static[string]	proc ozarkLimitResult(sql: static[string]): NimNode		54
-nim	ozarkOrderByResult	ozark/query.html#ozarkOrderByResult,static[string],varargs[string]	proc ozarkOrderByResult(sql: static[string]; vals: varargs[string]): NimNode		55
-nim	ozarkCreateTableResult	ozark/query.html#ozarkCreateTableResult,static[string]	proc ozarkCreateTableResult(sql: static[string]): NimNode		56
-nim	ozarkRemoveResult	ozark/query.html#ozarkRemoveResult,static[string]	proc ozarkRemoveResult(sql: static[string]): NimNode		57
-nim	ozarkHoldModel	ozark/query.html#ozarkHoldModel,T	proc ozarkHoldModel[T](t: T)		59
-nim	ozarkHoldModel	ozark/query.html#ozarkHoldModel,T_2	proc ozarkHoldModel[T: typedesc](t: T)		62
-nim	extractSQL	ozark/query.html#extractSQL.m,NimNode	macro extractSQL(sql: NimNode): untyped		65
-nim	fromSQL	ozark/query.html#fromSQL.m,untyped	macro fromSQL(sql: untyped): untyped		69
-nim	withColumnCheck	ozark/query.html#withColumnCheck.t,NimNode,string,	template withColumnCheck(model: NimNode; col: string; body)		77
-nim	withColumn	ozark/query.html#withColumn.t,NimNode,string,	template withColumn(x: NimNode; col: string; body)		103
-nim	getPlaceholder	ozark/query.html#getPlaceholder,NimNode,int	proc getPlaceholder(modelTuple: NimNode; idx: int = 1): string		123
-nim	prepareTable	ozark/query.html#prepareTable.m	macro prepareTable(modelTuple): untyped		133
-nim	dropTable	ozark/query.html#dropTable.m,untyped,staticbool	macro dropTable(modelTuple: untyped; cascade: static bool = false): untyped		193
-nim	insert	ozark/query.html#insert.m,untyped,untyped	macro insert(modelTuple, data: untyped): untyped		213
-nim	removeRow	ozark/query.html#removeRow.m,untyped	macro removeRow(modelTuple: untyped): untyped		239
-nim	update	ozark/query.html#update.m,untyped,untyped	macro update(modelTuple, data: untyped): untyped		257
-nim	select	ozark/query.html#select.m,untyped,staticopenArray[string]	macro select(modelTuple: untyped; cols: static openArray[string]): untyped		291
-nim	select	ozark/query.html#select.m,untyped,staticstring	macro select(modelTuple: untyped; col: static string): untyped		308
-nim	selectAll	ozark/query.html#selectAll.m,untyped	macro selectAll(modelTuple: untyped): untyped		324
-nim	where	ozark/query.html#where.m,untyped,staticstring,untyped	macro where(sql: untyped; col: static string; vals: untyped): untyped		447
-nim	whereNot	ozark/query.html#whereNot.m,untyped,staticstring,untyped	macro whereNot(sql: untyped; col: static string; val: untyped): untyped		451
-nim	orWhere	ozark/query.html#orWhere.m,untyped,staticstring,untyped	macro orWhere(sql: untyped; col: static string; val: untyped): untyped		455
-nim	orWhereNot	ozark/query.html#orWhereNot.m,untyped,staticstring,untyped	macro orWhereNot(sql: untyped; col: static string; val: untyped): untyped		459
-nim	whereStartsLike	ozark/query.html#whereStartsLike.m,untyped,staticstring,untyped	macro whereStartsLike(sql: untyped; col: static string; val: untyped): untyped		463
-nim	whereEndsLike	ozark/query.html#whereEndsLike.m,untyped,staticstring,untyped	macro whereEndsLike(sql: untyped; col: static string; val: untyped): untyped		468
-nim	whereLike	ozark/query.html#whereLike.m,untyped,staticstring,untyped	macro whereLike(sql: untyped; col: static string; val: untyped): untyped		473
-nim	whereNotLike	ozark/query.html#whereNotLike.m,untyped,staticstring,untyped	macro whereNotLike(sql: untyped; col: static string; val: untyped): untyped		478
-nim	whereNotStartsLike	ozark/query.html#whereNotStartsLike.m,untyped,staticstring,untyped	macro whereNotStartsLike(sql: untyped; col: static string; val: untyped): untyped		483
-nim	whereNotEndsLike	ozark/query.html#whereNotEndsLike.m,untyped,staticstring,untyped	macro whereNotEndsLike(sql: untyped; col: static string; val: untyped): untyped		488
-nim	whereIn	ozark/query.html#whereIn.m,untyped,staticstring,untyped	macro whereIn(sql: untyped; col: static string; vals: untyped): untyped		493
-nim	whereNotIn	ozark/query.html#whereNotIn.m,untyped,staticstring,untyped	macro whereNotIn(sql: untyped; col: static string; vals: untyped): untyped		497
-nim	`$`	ozark/query.html#$,SqlQuery	proc `$`(sql: SqlQuery): string		501
-nimgrp	ozarkholdmodel	ozark/query.html#ozarkHoldModel-procs-all	proc		59
-nimgrp	select	ozark/query.html#select-macros-all	macro		291
+nim	ozarkOrderByResult	ozark/query.html#ozarkOrderByResult,static[string],seq[string]	proc ozarkOrderByResult(sql: static[string]; vals: seq[string]): NimNode		54
+nim	ozarkCreateTableResult	ozark/query.html#ozarkCreateTableResult,static[string]	proc ozarkCreateTableResult(sql: static[string]): NimNode		55
+nim	ozarkRemoveResult	ozark/query.html#ozarkRemoveResult,static[string]	proc ozarkRemoveResult(sql: static[string]): NimNode		56
+nim	ozarkOffsetResult	ozark/query.html#ozarkOffsetResult,static[string],seq[string]	proc ozarkOffsetResult(sql: static[string]; vals: seq[string]): NimNode		57
+nim	ozarkGroupByResult	ozark/query.html#ozarkGroupByResult,static[string],seq[string]	proc ozarkGroupByResult(sql: static[string]; vals: seq[string]): NimNode		58
+nim	ozarkLimitResult	ozark/query.html#ozarkLimitResult,static[string],seq[string]	proc ozarkLimitResult(sql: static[string]; vals: seq[string]): NimNode		59
+nim	ozarkHavingResult	ozark/query.html#ozarkHavingResult,static[string],seq[string]	proc ozarkHavingResult(sql: static[string]; vals: seq[string]): NimNode		60
+nim	ozarkUpsertResult	ozark/query.html#ozarkUpsertResult,static[string],seq[string]	proc ozarkUpsertResult(sql: static[string]; vals: seq[string]): NimNode		61
+nim	Asc	ozark/query.html#Asc	Order.Asc		64
+nim	Desc	ozark/query.html#Desc	Order.Desc		64
+nim	Order	ozark/query.html#Order	enum Order		64
+nim	selectFamilyResults	ozark/query.html#selectFamilyResults	const selectFamilyResults		77
+nim	trailingCallOf	ozark/query.html#trailingCallOf,NimNode	proc trailingCallOf(sql: NimNode): NimNode		83
+nim	resultKindOf	ozark/query.html#resultKindOf,NimNode	proc resultKindOf(callNode: NimNode): string		94
+nim	ensureStage	ozark/query.html#ensureStage,NimNode,openArray[string],string	proc ensureStage(sql: NimNode; allowed: openArray[string]; caller: string)		102
+nim	modelTupleOf	ozark/query.html#modelTupleOf,NimNode	proc modelTupleOf(sql: NimNode): NimNode		109
+nim	modelSymOf	ozark/query.html#modelSymOf,NimNode	proc modelSymOf(sql: NimNode): NimNode		113
+nim	paramsBracketOf	ozark/query.html#paramsBracketOf,NimNode	proc paramsBracketOf(trailing: NimNode): NimNode		117
+nim	rebuildResultCall	ozark/query.html#rebuildResultCall,NimNode,string,NimNode	proc rebuildResultCall(kindSym: NimNode; sqlText: string; bracket: NimNode): NimNode		138
+nim	normalizeInLists	ozark/query.html#normalizeInLists,string,SqlDriver	proc normalizeInLists(sqlText: string; driver: SqlDriver = SqlDriver.generic): string		143
+nim	swapResultCall	ozark/query.html#swapResultCall,NimNode,NimNode,string,NimNode	proc swapResultCall(trailing: NimNode; kindSym: NimNode; newText: string;\n               bracket: NimNode)		185
+nim	ozarkHoldModel	ozark/query.html#ozarkHoldModel,T	proc ozarkHoldModel[T](t: T)		196
+nim	ozarkHoldModel	ozark/query.html#ozarkHoldModel,T_2	proc ozarkHoldModel[T: typedesc](t: T)		199
+nim	extractSQL	ozark/query.html#extractSQL.m,NimNode	macro extractSQL(sql: NimNode): untyped		202
+nim	fromSQL	ozark/query.html#fromSQL.m,untyped	macro fromSQL(sql: untyped): untyped		206
+nim	withColumnCheck	ozark/query.html#withColumnCheck.t,NimNode,string,	template withColumnCheck(model: NimNode; col: string; body)		214
+nim	withColumn	ozark/query.html#withColumn.t,NimNode,string,	template withColumn(x: NimNode; col: string; body)		240
+nim	getPlaceholder	ozark/query.html#getPlaceholder,NimNode,int	proc getPlaceholder(modelTuple: NimNode; idx: int = 1): string		260
+nim	prepareTable	ozark/query.html#prepareTable.m	macro prepareTable(modelTuple): untyped		270
+nim	dropTable	ozark/query.html#dropTable.m,untyped,staticbool	macro dropTable(modelTuple: untyped; cascade: static bool = false): untyped		330
+nim	insert	ozark/query.html#insert.m,untyped,untyped	macro insert(modelTuple, data: untyped): untyped		350
+nim	removeRow	ozark/query.html#removeRow.m,untyped	macro removeRow(modelTuple: untyped): untyped		376
+nim	update	ozark/query.html#update.m,untyped,untyped	macro update(modelTuple, data: untyped): untyped		394
+nim	select	ozark/query.html#select.m,untyped,staticopenArray[string]	macro select(modelTuple: untyped; cols: static openArray[string]): untyped		428
+nim	select	ozark/query.html#select.m,untyped,staticstring	macro select(modelTuple: untyped; col: static string): untyped		445
+nim	selectAll	ozark/query.html#selectAll.m,untyped	macro selectAll(modelTuple: untyped): untyped		461
+nim	unbracket	ozark/query.html#unbracket,NimNode	proc unbracket(n: NimNode): NimNode		480
+nim	where	ozark/query.html#where.m,untyped,staticstring,untyped	macro where(sql: untyped; col: static string; vals: untyped): untyped		601
+nim	whereNot	ozark/query.html#whereNot.m,untyped,staticstring,untyped	macro whereNot(sql: untyped; col: static string; val: untyped): untyped		605
+nim	orWhere	ozark/query.html#orWhere.m,untyped,staticstring,untyped	macro orWhere(sql: untyped; col: static string; val: untyped): untyped		609
+nim	orWhereNot	ozark/query.html#orWhereNot.m,untyped,staticstring,untyped	macro orWhereNot(sql: untyped; col: static string; val: untyped): untyped		613
+nim	whereStartsLike	ozark/query.html#whereStartsLike.m,untyped,staticstring,untyped	macro whereStartsLike(sql: untyped; col: static string; val: untyped): untyped		617
+nim	whereEndsLike	ozark/query.html#whereEndsLike.m,untyped,staticstring,untyped	macro whereEndsLike(sql: untyped; col: static string; val: untyped): untyped		622
+nim	whereLike	ozark/query.html#whereLike.m,untyped,staticstring,untyped	macro whereLike(sql: untyped; col: static string; val: untyped): untyped		627
+nim	whereNotLike	ozark/query.html#whereNotLike.m,untyped,staticstring,untyped	macro whereNotLike(sql: untyped; col: static string; val: untyped): untyped		632
+nim	whereNotStartsLike	ozark/query.html#whereNotStartsLike.m,untyped,staticstring,untyped	macro whereNotStartsLike(sql: untyped; col: static string; val: untyped): untyped		637
+nim	whereNotEndsLike	ozark/query.html#whereNotEndsLike.m,untyped,staticstring,untyped	macro whereNotEndsLike(sql: untyped; col: static string; val: untyped): untyped		642
+nim	orWhereLike	ozark/query.html#orWhereLike.m,untyped,staticstring,untyped	macro orWhereLike(sql: untyped; col: static string; val: untyped): untyped		647
+nim	orWhereNotLike	ozark/query.html#orWhereNotLike.m,untyped,staticstring,untyped	macro orWhereNotLike(sql: untyped; col: static string; val: untyped): untyped		652
+nim	orWhereStartsLike	ozark/query.html#orWhereStartsLike.m,untyped,staticstring,untyped	macro orWhereStartsLike(sql: untyped; col: static string; val: untyped): untyped		657
+nim	orWhereEndsLike	ozark/query.html#orWhereEndsLike.m,untyped,staticstring,untyped	macro orWhereEndsLike(sql: untyped; col: static string; val: untyped): untyped		662
+nim	whereIn	ozark/query.html#whereIn.m,untyped,staticstring,untyped	macro whereIn(sql: untyped; col: static string; vals: untyped): untyped		667
+nim	whereNotIn	ozark/query.html#whereNotIn.m,untyped,staticstring,untyped	macro whereNotIn(sql: untyped; col: static string; vals: untyped): untyped		671
+nim	orWhereIn	ozark/query.html#orWhereIn.m,untyped,staticstring,untyped	macro orWhereIn(sql: untyped; col: static string; vals: untyped): untyped		675
+nim	orWhereNotIn	ozark/query.html#orWhereNotIn.m,untyped,staticstring,untyped	macro orWhereNotIn(sql: untyped; col: static string; vals: untyped): untyped		679
+nim	`$`	ozark/query.html#$,SqlQuery	proc `$`(sql: SqlQuery): string		683
+nim	whereGt	ozark/query.html#whereGt.m,untyped,staticstring,untyped	macro whereGt(sql: untyped; col: static string; val: untyped): untyped		694
+nim	whereGte	ozark/query.html#whereGte.m,untyped,staticstring,untyped	macro whereGte(sql: untyped; col: static string; val: untyped): untyped		695
+nim	whereLt	ozark/query.html#whereLt.m,untyped,staticstring,untyped	macro whereLt(sql: untyped; col: static string; val: untyped): untyped		696
+nim	whereLte	ozark/query.html#whereLte.m,untyped,staticstring,untyped	macro whereLte(sql: untyped; col: static string; val: untyped): untyped		697
+nim	orWhereGt	ozark/query.html#orWhereGt.m,untyped,staticstring,untyped	macro orWhereGt(sql: untyped; col: static string; val: untyped): untyped		698
+nim	orWhereGte	ozark/query.html#orWhereGte.m,untyped,staticstring,untyped	macro orWhereGte(sql: untyped; col: static string; val: untyped): untyped		699
+nim	orWhereLt	ozark/query.html#orWhereLt.m,untyped,staticstring,untyped	macro orWhereLt(sql: untyped; col: static string; val: untyped): untyped		700
+nim	orWhereLte	ozark/query.html#orWhereLte.m,untyped,staticstring,untyped	macro orWhereLte(sql: untyped; col: static string; val: untyped): untyped		701
+nim	whereNull	ozark/query.html#whereNull.m,untyped,staticstring	macro whereNull(sql: untyped; col: static string): untyped		735
+nim	whereNotNull	ozark/query.html#whereNotNull.m,untyped,staticstring	macro whereNotNull(sql: untyped; col: static string): untyped		739
+nim	whereBetween	ozark/query.html#whereBetween.m,untyped,staticstring,untyped,untyped	macro whereBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped		772
+nim	whereNotBetween	ozark/query.html#whereNotBetween.m,untyped,staticstring,untyped,untyped	macro whereNotBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped		776
+nim	orWhereBetween	ozark/query.html#orWhereBetween.m,untyped,staticstring,untyped,untyped	macro orWhereBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped		780
+nim	limit	ozark/query.html#limit.m,untyped,staticint	macro limit(sql: untyped; count: static int): untyped		792
+nim	offset	ozark/query.html#offset.m,untyped,staticint	macro offset(sql: untyped; count: static int): untyped		804
+nim	paginate	ozark/query.html#paginate.m,untyped,staticint,staticint	macro paginate(sql: untyped; page: static int; perPage: static int): untyped		813
+nim	orderBy	ozark/query.html#orderBy.m,untyped,staticopenArray[string],staticOrder	macro orderBy(sql: untyped; cols: static openArray[string]; dir: static Order = Desc): untyped		848
+nim	orderAscBy	ozark/query.html#orderAscBy.m,untyped,staticopenArray[string]	macro orderAscBy(sql: untyped; cols: static openArray[string]): untyped		855
+nim	orderDescBy	ozark/query.html#orderDescBy.m,untyped,staticopenArray[string]	macro orderDescBy(sql: untyped; cols: static openArray[string]): untyped		859
+nim	unique	ozark/query.html#unique.m,untyped	macro unique(sql: untyped): untyped		867
+nim	groupBy	ozark/query.html#groupBy.m,untyped,staticopenArray[string]	macro groupBy(sql: untyped; cols: static openArray[string]): untyped		879
+nim	having	ozark/query.html#having.m,untyped,staticstring,untyped	macro having(sql: untyped; col: static string; val: untyped): untyped		908
+nim	havingGt	ozark/query.html#havingGt.m,untyped,staticstring,untyped	macro havingGt(sql: untyped; col: static string; val: untyped): untyped		912
+nim	havingGte	ozark/query.html#havingGte.m,untyped,staticstring,untyped	macro havingGte(sql: untyped; col: static string; val: untyped): untyped		916
+nim	havingLt	ozark/query.html#havingLt.m,untyped,staticstring,untyped	macro havingLt(sql: untyped; col: static string; val: untyped): untyped		920
+nim	havingLte	ozark/query.html#havingLte.m,untyped,staticstring,untyped	macro havingLte(sql: untyped; col: static string; val: untyped): untyped		924
+nim	count	ozark/query.html#count.m,untyped	macro count(sql: untyped): untyped		947
+nim	countDistinct	ozark/query.html#countDistinct.m,untyped,staticstring	macro countDistinct(sql: untyped; col: static string): untyped		962
+nim	sumOf	ozark/query.html#sumOf.m,untyped,staticstring	macro sumOf(sql: untyped; col: static string): untyped		969
+nim	avgOf	ozark/query.html#avgOf.m,untyped,staticstring	macro avgOf(sql: untyped; col: static string): untyped		977
+nim	minOf	ozark/query.html#minOf.m,untyped,staticstring	macro minOf(sql: untyped; col: static string): untyped		984
+nim	maxOf	ozark/query.html#maxOf.m,untyped,staticstring	macro maxOf(sql: untyped; col: static string): untyped		991
+nim	findById	ozark/query.html#findById.m,untyped,untyped	macro findById(modelTuple: untyped; id: untyped): untyped		1002
+nim	first	ozark/query.html#first.m,untyped	macro first(sql: untyped): untyped		1016
+nim	insertMany	ozark/query.html#insertMany.m,untyped,untyped	macro insertMany(modelTuple: untyped; rows: untyped): untyped		1024
+nim	upsert	ozark/query.html#upsert.m,untyped,untyped,staticopenArray[string],staticopenArray[string]	macro upsert(modelTuple: untyped; data: untyped;\n       conflictCols: static openArray[string];\n       updateCols: static openArray[string]): untyped		1070
+nim	increment	ozark/query.html#increment.m,untyped,staticstring,staticint	macro increment(modelTuple: untyped; col: static string; n: static int = 1): untyped		1116
+nim	decrement	ozark/query.html#decrement.m,untyped,staticstring,staticint	macro decrement(modelTuple: untyped; col: static string; n: static int = 1): untyped		1130
+nim	truncate	ozark/query.html#truncate.m,untyped	macro truncate(modelTuple: untyped): untyped		1144
+nim	ozarkTxDepth	ozark/query.html#ozarkTxDepth	var ozarkTxDepth		1160
+nim	withTransaction	ozark/query.html#withTransaction.m,untyped	macro withTransaction(body: untyped): untyped		1163
+nim	exists	ozark/query.html#exists.m,untyped	macro exists(x: untyped): untyped		1231
+nim	last	ozark/query.html#last.m,untyped	macro last(sql: untyped): untyped		1268
+nim	pluck	ozark/query.html#pluck.m,untyped,staticstring	macro pluck(sql: untyped; col: static string): untyped		1284
+nimgrp	ozarkholdmodel	ozark/query.html#ozarkHoldModel-procs-all	proc		196
+nimgrp	select	ozark/query.html#select-macros-all	macro		428

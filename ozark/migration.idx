@@ -1,0 +1,24 @@
+nimTitle	migration	ozark/migration.html	module ozark/migration		0
+nim	OzarkMigrationDriverPgsql	ozark/migration.html#OzarkMigrationDriverPgsql	const OzarkMigrationDriverPgsql		54
+nim	OzarkMigrationDriverSqlite	ozark/migration.html#OzarkMigrationDriverSqlite	const OzarkMigrationDriverSqlite		56
+nim	OzarkMigrationError	ozark/migration.html#OzarkMigrationError	object OzarkMigrationError		64
+nim	OzarkMigrationStmt	ozark/migration.html#OzarkMigrationStmt	tuple OzarkMigrationStmt		67
+nim	OzarkMigrationInfo	ozark/migration.html#OzarkMigrationInfo	object OzarkMigrationInfo		70
+nim	OzarkMigrationStatus	ozark/migration.html#OzarkMigrationStatus	object OzarkMigrationStatus		74
+nim	migration_info_fn	ozark/migration.html#migration_info_fn	type migration_info_fn		80
+nim	migration_run_fn	ozark/migration.html#migration_run_fn	type migration_run_fn		82
+nim	ozarkMigStmtsToJson	ozark/migration.html#ozarkMigStmtsToJson,seq[OzarkMigrationStmt]	proc ozarkMigStmtsToJson(stmts: seq[OzarkMigrationStmt]): JsonNode		87
+nim	ozarkMigStmtsFromJson	ozark/migration.html#ozarkMigStmtsFromJson,JsonNode	proc ozarkMigStmtsFromJson(node: JsonNode): seq[OzarkMigrationStmt]		96
+nim	ozarkMigrationTimestamp	ozark/migration.html#ozarkMigrationTimestamp,string	proc ozarkMigrationTimestamp(filename: string): string		106
+nim	ozarkMigrationSemver	ozark/migration.html#ozarkMigrationSemver,string	proc ozarkMigrationSemver(timestamp: string): string		120
+nim	newMigration	ozark/migration.html#newMigration.m,untyped,untyped	macro newMigration(name: untyped; body: untyped): untyped		129
+nim	ozarkMigrationsTableDDL	ozark/migration.html#ozarkMigrationsTableDDL	const ozarkMigrationsTableDDL		396
+nim	parseOzarkMigrationInfo	ozark/migration.html#parseOzarkMigrationInfo,string,string	proc parseOzarkMigrationInfo(payload, filepath: string): OzarkMigrationInfo		402
+nim	ozarkMigPlaceholder	ozark/migration.html#ozarkMigPlaceholder,int,int	proc ozarkMigPlaceholder(driver, idx: int): string		417
+nim	ozarkRunAt	ozark/migration.html#ozarkRunAt	proc ozarkRunAt(): string		421
+nim	OzarkLoadedMigration	ozark/migration.html#OzarkLoadedMigration	object OzarkLoadedMigration		426
+nim	loadOzarkMigrations	ozark/migration.html#loadOzarkMigrations,PluginManager,string	proc loadOzarkMigrations(manager: PluginManager; dir: string): seq[\n    OzarkLoadedMigration]		432
+nim	withOzarkMigrationLibs	ozark/migration.html#withOzarkMigrationLibs.t,string,,	template withOzarkMigrationLibs(dir: string; loaded, body)		467
+nim	migrate	ozark/migration.html#migrate.t,string	template migrate(dir: string)		482
+nim	rollback	ozark/migration.html#rollback.t,string,int	template rollback(dir: string; steps: int = 1)		546
+nim	migrationStatus	ozark/migration.html#migrationStatus.t,string	template migrationStatus(dir: string): seq[OzarkMigrationStatus]		592

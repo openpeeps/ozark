@@ -16,10 +16,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="nimdoc.out.css?v=2.2.10">
+<link rel="stylesheet" type="text/css" href="nimdoc.out.css?v=2.2.12">
 
 <!-- JS -->
-<script type="text/javascript" src="dochack.js?v=2.2.10"></script>
+<script type="text/javascript" src="dochack.js?v=2.2.12"></script>
 </head>
 <body>
   <div class="document" id="documentId">
@@ -28,7 +28,7 @@
     <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">Index</h1>
-      Modules: <a href="index.html">ozark</a>, <a href="ozark/collection.html">ozark/collection</a>, <a href="ozark/driver/dbmeta.html">ozark/driver/dbmeta</a>, <a href="ozark/driver/private/types.html">ozark/driver/private/types</a>, <a href="ozark/model.html">ozark/model</a>, <a href="ozark/query.html">ozark/query</a>.<br/><p /><h2>API symbols</h2>
+      Modules: <a href="index.html">ozark</a>, <a href="ozark/collection.html">ozark/collection</a>, <a href="ozark/driver/dbmeta.html">ozark/driver/dbmeta</a>, <a href="ozark/driver/private/types.html">ozark/driver/private/types</a>, <a href="ozark/migration.html">ozark/migration</a>, <a href="ozark/model.html">ozark/model</a>, <a href="ozark/query.html">ozark/query</a>.<br/><p /><h2>API symbols</h2>
 <dl><dt><a name="%60%24%60" href="#%60%24%60"><span>`$`:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: proc `$`(sql: SqlQuery): string" href="ozark/query.html#%24%2CSqlQuery">query: proc `$`(sql: SqlQuery): string</a></li>
@@ -40,6 +40,14 @@
 <dt><a name="appendSqlArgs" href="#appendSqlArgs"><span>appendSqlArgs:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: proc appendSqlArgs(callNode: var NimNode; args: NimNode)" href="ozark/driver/private/types.html#appendSqlArgs%2CNimNode%2CNimNode">types: proc appendSqlArgs(callNode: var NimNode; args: NimNode)</a></li>
+          </ul></dd>
+<dt><a name="Asc" href="#Asc"><span>Asc:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: Order.Asc" href="ozark/query.html#Asc">query: Order.Asc</a></li>
+          </ul></dd>
+<dt><a name="avgOf" href="#avgOf"><span>avgOf:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro avgOf(sql: untyped; col: static string): untyped" href="ozark/query.html#avgOf.m%2Cuntyped%2Cstaticstring">query: macro avgOf(sql: untyped; col: static string): untyped</a></li>
           </ul></dd>
 <dt><a name="BigInt" href="#BigInt"><span>BigInt:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -93,6 +101,14 @@
 <li><a class="reference external"
           data-doc-search-tag="collection: proc contains[T](col: Collection[T]; key, val: string): bool" href="ozark/collection.html#contains%2CCollection%5BT%5D%2Cstring%2Cstring">collection: proc contains[T](col: Collection[T]; key, val: string): bool</a></li>
           </ul></dd>
+<dt><a name="count" href="#count"><span>count:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro count(sql: untyped): untyped" href="ozark/query.html#count.m%2Cuntyped">query: macro count(sql: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="countDistinct" href="#countDistinct"><span>countDistinct:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro countDistinct(sql: untyped; col: static string): untyped" href="ozark/query.html#countDistinct.m%2Cuntyped%2Cstaticstring">query: macro countDistinct(sql: untyped; col: static string): untyped</a></li>
+          </ul></dd>
 <dt><a name="countSqlArgs" href="#countSqlArgs"><span>countSqlArgs:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: proc countSqlArgs(args: NimNode): int" href="ozark/driver/private/types.html#countSqlArgs%2CNimNode">types: proc countSqlArgs(args: NimNode): int</a></li>
@@ -105,6 +121,14 @@
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.Date" href="ozark/driver/private/types.html#Date">types: DataType.Date</a></li>
           </ul></dd>
+<dt><a name="decrement" href="#decrement"><span>decrement:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro decrement(modelTuple: untyped; col: static string; n: static int = 1): untyped" href="ozark/query.html#decrement.m%2Cuntyped%2Cstaticstring%2Cstaticint">query: macro decrement(modelTuple: untyped; col: static string; n: static int = 1): untyped</a></li>
+          </ul></dd>
+<dt><a name="Desc" href="#Desc"><span>Desc:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: Order.Desc" href="ozark/query.html#Desc">query: Order.Desc</a></li>
+          </ul></dd>
 <dt><a name="DoublePrecision" href="#DoublePrecision"><span>DoublePrecision:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.DoublePrecision" href="ozark/driver/private/types.html#DoublePrecision">types: DataType.DoublePrecision</a></li>
@@ -113,17 +137,31 @@
 <li><a class="reference external"
           data-doc-search-tag="query: macro dropTable(modelTuple: untyped; cascade: static bool = false): untyped" href="ozark/query.html#dropTable.m%2Cuntyped%2Cstaticbool">query: macro dropTable(modelTuple: untyped; cascade: static bool = false): untyped</a></li>
           </ul></dd>
+<dt><a name="ensureStage" href="#ensureStage"><span>ensureStage:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc ensureStage(sql: NimNode; allowed: openArray[string]; caller: string)" href="ozark/query.html#ensureStage%2CNimNode%2CopenArray%5Bstring%5D%2Cstring">query: proc ensureStage(sql: NimNode; allowed: openArray[string]; caller: string)</a></li>
+          </ul></dd>
 <dt><a name="Enum" href="#Enum"><span>Enum:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.Enum" href="ozark/driver/private/types.html#Enum">types: DataType.Enum</a></li>
+          </ul></dd>
+<dt><a name="exists" href="#exists"><span>exists:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro exists(x: untyped): untyped" href="ozark/query.html#exists.m%2Cuntyped">query: macro exists(x: untyped): untyped</a></li>
           </ul></dd>
 <dt><a name="extractSQL" href="#extractSQL"><span>extractSQL:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: macro extractSQL(sql: NimNode): untyped" href="ozark/query.html#extractSQL.m%2CNimNode">query: macro extractSQL(sql: NimNode): untyped</a></li>
           </ul></dd>
+<dt><a name="findById" href="#findById"><span>findById:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro findById(modelTuple: untyped; id: untyped): untyped" href="ozark/query.html#findById.m%2Cuntyped%2Cuntyped">query: macro findById(modelTuple: untyped; id: untyped): untyped</a></li>
+          </ul></dd>
 <dt><a name="first" href="#first"><span>first:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="collection: proc first[T](col: Collection[T]): T" href="ozark/collection.html#first%2CCollection%5BT%5D">collection: proc first[T](col: Collection[T]): T</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="query: macro first(sql: untyped): untyped" href="ozark/query.html#first.m%2Cuntyped">query: macro first(sql: untyped): untyped</a></li>
           </ul></dd>
 <dt><a name="fromSQL" href="#fromSQL"><span>fromSQL:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -157,6 +195,34 @@
 <li><a class="reference external"
           data-doc-search-tag="model: proc getTableName(id: string): string" href="ozark/model.html#getTableName%2Cstring">model: proc getTableName(id: string): string</a></li>
           </ul></dd>
+<dt><a name="groupBy" href="#groupBy"><span>groupBy:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro groupBy(sql: untyped; cols: static openArray[string]): untyped" href="ozark/query.html#groupBy.m%2Cuntyped%2CstaticopenArray%5Bstring%5D">query: macro groupBy(sql: untyped; cols: static openArray[string]): untyped</a></li>
+          </ul></dd>
+<dt><a name="having" href="#having"><span>having:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro having(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#having.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro having(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="havingGt" href="#havingGt"><span>havingGt:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro havingGt(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#havingGt.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro havingGt(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="havingGte" href="#havingGte"><span>havingGte:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro havingGte(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#havingGte.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro havingGte(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="havingLt" href="#havingLt"><span>havingLt:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro havingLt(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#havingLt.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro havingLt(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="havingLte" href="#havingLte"><span>havingLte:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro havingLte(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#havingLte.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro havingLte(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="increment" href="#increment"><span>increment:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro increment(modelTuple: untyped; col: static string; n: static int = 1): untyped" href="ozark/query.html#increment.m%2Cuntyped%2Cstaticstring%2Cstaticint">query: macro increment(modelTuple: untyped; col: static string; n: static int = 1): untyped</a></li>
+          </ul></dd>
 <dt><a name="Inet" href="#Inet"><span>Inet:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.Inet" href="ozark/driver/private/types.html#Inet">types: DataType.Inet</a></li>
@@ -168,6 +234,10 @@
 <dt><a name="insert" href="#insert"><span>insert:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: macro insert(modelTuple, data: untyped): untyped" href="ozark/query.html#insert.m%2Cuntyped%2Cuntyped">query: macro insert(modelTuple, data: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="insertMany" href="#insertMany"><span>insertMany:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro insertMany(modelTuple: untyped; rows: untyped): untyped" href="ozark/query.html#insertMany.m%2Cuntyped%2Cuntyped">query: macro insertMany(modelTuple: untyped; rows: untyped): untyped</a></li>
           </ul></dd>
 <dt><a name="Int" href="#Int"><span>Int:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -201,13 +271,29 @@
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.Jsonb" href="ozark/driver/private/types.html#Jsonb">types: DataType.Jsonb</a></li>
           </ul></dd>
+<dt><a name="last" href="#last"><span>last:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="collection: proc last[T](col: Collection[T]): T" href="ozark/collection.html#last%2CCollection%5BT%5D">collection: proc last[T](col: Collection[T]): T</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="query: macro last(sql: untyped): untyped" href="ozark/query.html#last.m%2Cuntyped">query: macro last(sql: untyped): untyped</a></li>
+          </ul></dd>
 <dt><a name="len" href="#len"><span>len:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="collection: proc len[T](col: Collection[T]): int" href="ozark/collection.html#len%2CCollection%5BT%5D">collection: proc len[T](col: Collection[T]): int</a></li>
           </ul></dd>
+<dt><a name="limit" href="#limit"><span>limit:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro limit(sql: untyped; count: static int): untyped" href="ozark/query.html#limit.m%2Cuntyped%2Cstaticint">query: macro limit(sql: untyped; count: static int): untyped</a></li>
+          </ul></dd>
 <dt><a name="Line" href="#Line"><span>Line:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.Line" href="ozark/driver/private/types.html#Line">types: DataType.Line</a></li>
+          </ul></dd>
+<dt><a name="loadOzarkMigrations" href="#loadOzarkMigrations"><span>loadOzarkMigrations:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: proc loadOzarkMigrations(manager: PluginManager; dir: string): seq[
+    OzarkLoadedMigration]" href="ozark/migration.html#loadOzarkMigrations%2CPluginManager%2Cstring">migration: proc loadOzarkMigrations(manager: PluginManager; dir: string): seq[
+    OzarkLoadedMigration]</a></li>
           </ul></dd>
 <dt><a name="Lseg" href="#Lseg"><span>Lseg:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -220,6 +306,30 @@
 <dt><a name="Macaddr8" href="#Macaddr8"><span>Macaddr8:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.Macaddr8" href="ozark/driver/private/types.html#Macaddr8">types: DataType.Macaddr8</a></li>
+          </ul></dd>
+<dt><a name="maxOf" href="#maxOf"><span>maxOf:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro maxOf(sql: untyped; col: static string): untyped" href="ozark/query.html#maxOf.m%2Cuntyped%2Cstaticstring">query: macro maxOf(sql: untyped; col: static string): untyped</a></li>
+          </ul></dd>
+<dt><a name="migrate" href="#migrate"><span>migrate:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: template migrate(dir: string)" href="ozark/migration.html#migrate.t%2Cstring">migration: template migrate(dir: string)</a></li>
+          </ul></dd>
+<dt><a name="migration_info_fn" href="#migration_info_fn"><span>migration_info_fn:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: type migration_info_fn" href="ozark/migration.html#migration_info_fn">migration: type migration_info_fn</a></li>
+          </ul></dd>
+<dt><a name="migration_run_fn" href="#migration_run_fn"><span>migration_run_fn:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: type migration_run_fn" href="ozark/migration.html#migration_run_fn">migration: type migration_run_fn</a></li>
+          </ul></dd>
+<dt><a name="migrationStatus" href="#migrationStatus"><span>migrationStatus:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: template migrationStatus(dir: string): seq[OzarkMigrationStatus]" href="ozark/migration.html#migrationStatus.t%2Cstring">migration: template migrationStatus(dir: string): seq[OzarkMigrationStatus]</a></li>
+          </ul></dd>
+<dt><a name="minOf" href="#minOf"><span>minOf:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro minOf(sql: untyped; col: static string): untyped" href="ozark/query.html#minOf.m%2Cuntyped%2Cstaticstring">query: macro minOf(sql: untyped; col: static string): untyped</a></li>
           </ul></dd>
 <dt><a name="mitems" href="#mitems"><span>mitems:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -237,29 +347,117 @@
 <li><a class="reference external"
           data-doc-search-tag="model: object ModelsTable" href="ozark/model.html#ModelsTable">model: object ModelsTable</a></li>
           </ul></dd>
+<dt><a name="modelSymOf" href="#modelSymOf"><span>modelSymOf:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc modelSymOf(sql: NimNode): NimNode" href="ozark/query.html#modelSymOf%2CNimNode">query: proc modelSymOf(sql: NimNode): NimNode</a></li>
+          </ul></dd>
+<dt><a name="modelTupleOf" href="#modelTupleOf"><span>modelTupleOf:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc modelTupleOf(sql: NimNode): NimNode" href="ozark/query.html#modelTupleOf%2CNimNode">query: proc modelTupleOf(sql: NimNode): NimNode</a></li>
+          </ul></dd>
 <dt><a name="Money" href="#Money"><span>Money:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.Money" href="ozark/driver/private/types.html#Money">types: DataType.Money</a></li>
+          </ul></dd>
+<dt><a name="newMigration" href="#newMigration"><span>newMigration:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: macro newMigration(name: untyped; body: untyped): untyped" href="ozark/migration.html#newMigration.m%2Cuntyped%2Cuntyped">migration: macro newMigration(name: untyped; body: untyped): untyped</a></li>
           </ul></dd>
 <dt><a name="newModel" href="#newModel"><span>newModel:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="model: macro newModel(id, fields: untyped)" href="ozark/model.html#newModel.m%2Cuntyped%2Cuntyped">model: macro newModel(id, fields: untyped)</a></li>
           </ul></dd>
+<dt><a name="normalizeInLists" href="#normalizeInLists"><span>normalizeInLists:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc normalizeInLists(sqlText: string; driver: SqlDriver = SqlDriver.generic): string" href="ozark/query.html#normalizeInLists%2Cstring%2CSqlDriver">query: proc normalizeInLists(sqlText: string; driver: SqlDriver = SqlDriver.generic): string</a></li>
+          </ul></dd>
 <dt><a name="Numeric" href="#Numeric"><span>Numeric:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.Numeric" href="ozark/driver/private/types.html#Numeric">types: DataType.Numeric</a></li>
+          </ul></dd>
+<dt><a name="offset" href="#offset"><span>offset:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro offset(sql: untyped; count: static int): untyped" href="ozark/query.html#offset.m%2Cuntyped%2Cstaticint">query: macro offset(sql: untyped; count: static int): untyped</a></li>
+          </ul></dd>
+<dt><a name="Order" href="#Order"><span>Order:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: enum Order" href="ozark/query.html#Order">query: enum Order</a></li>
+          </ul></dd>
+<dt><a name="orderAscBy" href="#orderAscBy"><span>orderAscBy:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orderAscBy(sql: untyped; cols: static openArray[string]): untyped" href="ozark/query.html#orderAscBy.m%2Cuntyped%2CstaticopenArray%5Bstring%5D">query: macro orderAscBy(sql: untyped; cols: static openArray[string]): untyped</a></li>
+          </ul></dd>
+<dt><a name="orderBy" href="#orderBy"><span>orderBy:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orderBy(sql: untyped; cols: static openArray[string]; dir: static Order = Desc): untyped" href="ozark/query.html#orderBy.m%2Cuntyped%2CstaticopenArray%5Bstring%5D%2CstaticOrder">query: macro orderBy(sql: untyped; cols: static openArray[string]; dir: static Order = Desc): untyped</a></li>
+          </ul></dd>
+<dt><a name="orderDescBy" href="#orderDescBy"><span>orderDescBy:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orderDescBy(sql: untyped; cols: static openArray[string]): untyped" href="ozark/query.html#orderDescBy.m%2Cuntyped%2CstaticopenArray%5Bstring%5D">query: macro orderDescBy(sql: untyped; cols: static openArray[string]): untyped</a></li>
           </ul></dd>
 <dt><a name="orWhere" href="#orWhere"><span>orWhere:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: macro orWhere(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#orWhere.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro orWhere(sql: untyped; col: static string; val: untyped): untyped</a></li>
           </ul></dd>
+<dt><a name="orWhereBetween" href="#orWhereBetween"><span>orWhereBetween:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orWhereBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped" href="ozark/query.html#orWhereBetween.m%2Cuntyped%2Cstaticstring%2Cuntyped%2Cuntyped">query: macro orWhereBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="orWhereEndsLike" href="#orWhereEndsLike"><span>orWhereEndsLike:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orWhereEndsLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#orWhereEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro orWhereEndsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="orWhereGt" href="#orWhereGt"><span>orWhereGt:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orWhereGt(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#orWhereGt.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro orWhereGt(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="orWhereGte" href="#orWhereGte"><span>orWhereGte:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orWhereGte(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#orWhereGte.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro orWhereGte(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="orWhereIn" href="#orWhereIn"><span>orWhereIn:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orWhereIn(sql: untyped; col: static string; vals: untyped): untyped" href="ozark/query.html#orWhereIn.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro orWhereIn(sql: untyped; col: static string; vals: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="orWhereLike" href="#orWhereLike"><span>orWhereLike:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orWhereLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#orWhereLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro orWhereLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="orWhereLt" href="#orWhereLt"><span>orWhereLt:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orWhereLt(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#orWhereLt.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro orWhereLt(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="orWhereLte" href="#orWhereLte"><span>orWhereLte:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orWhereLte(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#orWhereLte.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro orWhereLte(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
 <dt><a name="orWhereNot" href="#orWhereNot"><span>orWhereNot:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: macro orWhereNot(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#orWhereNot.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro orWhereNot(sql: untyped; col: static string; val: untyped): untyped</a></li>
           </ul></dd>
+<dt><a name="orWhereNotIn" href="#orWhereNotIn"><span>orWhereNotIn:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orWhereNotIn(sql: untyped; col: static string; vals: untyped): untyped" href="ozark/query.html#orWhereNotIn.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro orWhereNotIn(sql: untyped; col: static string; vals: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="orWhereNotLike" href="#orWhereNotLike"><span>orWhereNotLike:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orWhereNotLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#orWhereNotLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro orWhereNotLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="orWhereStartsLike" href="#orWhereStartsLike"><span>orWhereStartsLike:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro orWhereStartsLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#orWhereStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro orWhereStartsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
 <dt><a name="ozarkCreateTableResult" href="#ozarkCreateTableResult"><span>ozarkCreateTableResult:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: proc ozarkCreateTableResult(sql: static[string]): NimNode" href="ozark/query.html#ozarkCreateTableResult%2Cstatic%5Bstring%5D">query: proc ozarkCreateTableResult(sql: static[string]): NimNode</a></li>
+          </ul></dd>
+<dt><a name="ozarkGroupByResult" href="#ozarkGroupByResult"><span>ozarkGroupByResult:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc ozarkGroupByResult(sql: static[string]; vals: seq[string]): NimNode" href="ozark/query.html#ozarkGroupByResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D">query: proc ozarkGroupByResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
+          </ul></dd>
+<dt><a name="ozarkHavingResult" href="#ozarkHavingResult"><span>ozarkHavingResult:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc ozarkHavingResult(sql: static[string]; vals: seq[string]): NimNode" href="ozark/query.html#ozarkHavingResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D">query: proc ozarkHavingResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
           </ul></dd>
 <dt><a name="ozarkHoldModel" href="#ozarkHoldModel"><span>ozarkHoldModel:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -273,39 +471,119 @@
           </ul></dd>
 <dt><a name="ozarkLimitResult" href="#ozarkLimitResult"><span>ozarkLimitResult:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="query: proc ozarkLimitResult(sql: static[string]): NimNode" href="ozark/query.html#ozarkLimitResult%2Cstatic%5Bstring%5D">query: proc ozarkLimitResult(sql: static[string]): NimNode</a></li>
+          data-doc-search-tag="query: proc ozarkLimitResult(sql: static[string]; vals: seq[string]): NimNode" href="ozark/query.html#ozarkLimitResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D">query: proc ozarkLimitResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
+          </ul></dd>
+<dt><a name="OzarkLoadedMigration" href="#OzarkLoadedMigration"><span>OzarkLoadedMigration:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: object OzarkLoadedMigration" href="ozark/migration.html#OzarkLoadedMigration">migration: object OzarkLoadedMigration</a></li>
+          </ul></dd>
+<dt><a name="ozarkMigPlaceholder" href="#ozarkMigPlaceholder"><span>ozarkMigPlaceholder:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: proc ozarkMigPlaceholder(driver, idx: int): string" href="ozark/migration.html#ozarkMigPlaceholder%2Cint%2Cint">migration: proc ozarkMigPlaceholder(driver, idx: int): string</a></li>
+          </ul></dd>
+<dt><a name="OzarkMigrationDriverPgsql" href="#OzarkMigrationDriverPgsql"><span>OzarkMigrationDriverPgsql:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: const OzarkMigrationDriverPgsql" href="ozark/migration.html#OzarkMigrationDriverPgsql">migration: const OzarkMigrationDriverPgsql</a></li>
+          </ul></dd>
+<dt><a name="OzarkMigrationDriverSqlite" href="#OzarkMigrationDriverSqlite"><span>OzarkMigrationDriverSqlite:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: const OzarkMigrationDriverSqlite" href="ozark/migration.html#OzarkMigrationDriverSqlite">migration: const OzarkMigrationDriverSqlite</a></li>
+          </ul></dd>
+<dt><a name="OzarkMigrationError" href="#OzarkMigrationError"><span>OzarkMigrationError:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: object OzarkMigrationError" href="ozark/migration.html#OzarkMigrationError">migration: object OzarkMigrationError</a></li>
+          </ul></dd>
+<dt><a name="OzarkMigrationInfo" href="#OzarkMigrationInfo"><span>OzarkMigrationInfo:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: object OzarkMigrationInfo" href="ozark/migration.html#OzarkMigrationInfo">migration: object OzarkMigrationInfo</a></li>
+          </ul></dd>
+<dt><a name="ozarkMigrationSemver" href="#ozarkMigrationSemver"><span>ozarkMigrationSemver:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: proc ozarkMigrationSemver(timestamp: string): string" href="ozark/migration.html#ozarkMigrationSemver%2Cstring">migration: proc ozarkMigrationSemver(timestamp: string): string</a></li>
+          </ul></dd>
+<dt><a name="ozarkMigrationsTableDDL" href="#ozarkMigrationsTableDDL"><span>ozarkMigrationsTableDDL:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: const ozarkMigrationsTableDDL" href="ozark/migration.html#ozarkMigrationsTableDDL">migration: const ozarkMigrationsTableDDL</a></li>
+          </ul></dd>
+<dt><a name="OzarkMigrationStatus" href="#OzarkMigrationStatus"><span>OzarkMigrationStatus:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: object OzarkMigrationStatus" href="ozark/migration.html#OzarkMigrationStatus">migration: object OzarkMigrationStatus</a></li>
+          </ul></dd>
+<dt><a name="OzarkMigrationStmt" href="#OzarkMigrationStmt"><span>OzarkMigrationStmt:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: tuple OzarkMigrationStmt" href="ozark/migration.html#OzarkMigrationStmt">migration: tuple OzarkMigrationStmt</a></li>
+          </ul></dd>
+<dt><a name="ozarkMigrationTimestamp" href="#ozarkMigrationTimestamp"><span>ozarkMigrationTimestamp:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: proc ozarkMigrationTimestamp(filename: string): string" href="ozark/migration.html#ozarkMigrationTimestamp%2Cstring">migration: proc ozarkMigrationTimestamp(filename: string): string</a></li>
+          </ul></dd>
+<dt><a name="ozarkMigStmtsFromJson" href="#ozarkMigStmtsFromJson"><span>ozarkMigStmtsFromJson:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: proc ozarkMigStmtsFromJson(node: JsonNode): seq[OzarkMigrationStmt]" href="ozark/migration.html#ozarkMigStmtsFromJson%2CJsonNode">migration: proc ozarkMigStmtsFromJson(node: JsonNode): seq[OzarkMigrationStmt]</a></li>
+          </ul></dd>
+<dt><a name="ozarkMigStmtsToJson" href="#ozarkMigStmtsToJson"><span>ozarkMigStmtsToJson:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: proc ozarkMigStmtsToJson(stmts: seq[OzarkMigrationStmt]): JsonNode" href="ozark/migration.html#ozarkMigStmtsToJson%2Cseq%5BOzarkMigrationStmt%5D">migration: proc ozarkMigStmtsToJson(stmts: seq[OzarkMigrationStmt]): JsonNode</a></li>
           </ul></dd>
 <dt><a name="OzarkModelDefect" href="#OzarkModelDefect"><span>OzarkModelDefect:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: object OzarkModelDefect" href="ozark/query.html#OzarkModelDefect">query: object OzarkModelDefect</a></li>
           </ul></dd>
+<dt><a name="ozarkOffsetResult" href="#ozarkOffsetResult"><span>ozarkOffsetResult:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc ozarkOffsetResult(sql: static[string]; vals: seq[string]): NimNode" href="ozark/query.html#ozarkOffsetResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D">query: proc ozarkOffsetResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
+          </ul></dd>
 <dt><a name="ozarkOrderByResult" href="#ozarkOrderByResult"><span>ozarkOrderByResult:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="query: proc ozarkOrderByResult(sql: static[string]; vals: varargs[string]): NimNode" href="ozark/query.html#ozarkOrderByResult%2Cstatic%5Bstring%5D%2Cvarargs%5Bstring%5D">query: proc ozarkOrderByResult(sql: static[string]; vals: varargs[string]): NimNode</a></li>
+          data-doc-search-tag="query: proc ozarkOrderByResult(sql: static[string]; vals: seq[string]): NimNode" href="ozark/query.html#ozarkOrderByResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D">query: proc ozarkOrderByResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
           </ul></dd>
 <dt><a name="ozarkRawSQLResult" href="#ozarkRawSQLResult"><span>ozarkRawSQLResult:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="query: proc ozarkRawSQLResult(sql: static[string]; vals: varargs[string]): NimNode" href="ozark/query.html#ozarkRawSQLResult%2Cstatic%5Bstring%5D%2Cvarargs%5Bstring%5D">query: proc ozarkRawSQLResult(sql: static[string]; vals: varargs[string]): NimNode</a></li>
+          data-doc-search-tag="query: proc ozarkRawSQLResult(sql: static[string]; vals: seq[string]): NimNode" href="ozark/query.html#ozarkRawSQLResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D">query: proc ozarkRawSQLResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
           </ul></dd>
 <dt><a name="ozarkRemoveResult" href="#ozarkRemoveResult"><span>ozarkRemoveResult:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: proc ozarkRemoveResult(sql: static[string]): NimNode" href="ozark/query.html#ozarkRemoveResult%2Cstatic%5Bstring%5D">query: proc ozarkRemoveResult(sql: static[string]): NimNode</a></li>
           </ul></dd>
+<dt><a name="ozarkRunAt" href="#ozarkRunAt"><span>ozarkRunAt:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: proc ozarkRunAt(): string" href="ozark/migration.html#ozarkRunAt">migration: proc ozarkRunAt(): string</a></li>
+          </ul></dd>
 <dt><a name="ozarkSelectResult" href="#ozarkSelectResult"><span>ozarkSelectResult:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: proc ozarkSelectResult(sql: static[string]): NimNode" href="ozark/query.html#ozarkSelectResult%2Cstatic%5Bstring%5D">query: proc ozarkSelectResult(sql: static[string]): NimNode</a></li>
+          </ul></dd>
+<dt><a name="ozarkTxDepth" href="#ozarkTxDepth"><span>ozarkTxDepth:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: var ozarkTxDepth" href="ozark/query.html#ozarkTxDepth">query: var ozarkTxDepth</a></li>
           </ul></dd>
 <dt><a name="ozarkUpdateResult" href="#ozarkUpdateResult"><span>ozarkUpdateResult:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: proc ozarkUpdateResult(sql: static[string]; vals: seq[string]): NimNode" href="ozark/query.html#ozarkUpdateResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D">query: proc ozarkUpdateResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
           </ul></dd>
+<dt><a name="ozarkUpsertResult" href="#ozarkUpsertResult"><span>ozarkUpsertResult:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc ozarkUpsertResult(sql: static[string]; vals: seq[string]): NimNode" href="ozark/query.html#ozarkUpsertResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D">query: proc ozarkUpsertResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
+          </ul></dd>
 <dt><a name="ozarkWhereInResult" href="#ozarkWhereInResult"><span>ozarkWhereInResult:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="query: proc ozarkWhereInResult(sql: static[string]; vals: varargs[string]): NimNode" href="ozark/query.html#ozarkWhereInResult%2Cstatic%5Bstring%5D%2Cvarargs%5Bstring%5D">query: proc ozarkWhereInResult(sql: static[string]; vals: varargs[string]): NimNode</a></li>
+          data-doc-search-tag="query: proc ozarkWhereInResult(sql: static[string]; vals: seq[string]): NimNode" href="ozark/query.html#ozarkWhereInResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D">query: proc ozarkWhereInResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
           </ul></dd>
 <dt><a name="ozarkWhereResult" href="#ozarkWhereResult"><span>ozarkWhereResult:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="query: proc ozarkWhereResult(sql: static[string]; val: varargs[string]): NimNode" href="ozark/query.html#ozarkWhereResult%2Cstatic%5Bstring%5D%2Cvarargs%5Bstring%5D">query: proc ozarkWhereResult(sql: static[string]; val: varargs[string]): NimNode</a></li>
+          data-doc-search-tag="query: proc ozarkWhereResult(sql: static[string]; vals: seq[string]): NimNode" href="ozark/query.html#ozarkWhereResult%2Cstatic%5Bstring%5D%2Cseq%5Bstring%5D">query: proc ozarkWhereResult(sql: static[string]; vals: seq[string]): NimNode</a></li>
+          </ul></dd>
+<dt><a name="paginate" href="#paginate"><span>paginate:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro paginate(sql: untyped; page: static int; perPage: static int): untyped" href="ozark/query.html#paginate.m%2Cuntyped%2Cstaticint%2Cstaticint">query: macro paginate(sql: untyped; page: static int; perPage: static int): untyped</a></li>
+          </ul></dd>
+<dt><a name="paramsBracketOf" href="#paramsBracketOf"><span>paramsBracketOf:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc paramsBracketOf(trailing: NimNode): NimNode" href="ozark/query.html#paramsBracketOf%2CNimNode">query: proc paramsBracketOf(trailing: NimNode): NimNode</a></li>
+          </ul></dd>
+<dt><a name="parseOzarkMigrationInfo" href="#parseOzarkMigrationInfo"><span>parseOzarkMigrationInfo:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: proc parseOzarkMigrationInfo(payload, filepath: string): OzarkMigrationInfo" href="ozark/migration.html#parseOzarkMigrationInfo%2Cstring%2Cstring">migration: proc parseOzarkMigrationInfo(payload, filepath: string): OzarkMigrationInfo</a></li>
           </ul></dd>
 <dt><a name="Path" href="#Path"><span>Path:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -318,6 +596,10 @@
 <dt><a name="PGSnapshot" href="#PGSnapshot"><span>PGSnapshot:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.PGSnapshot" href="ozark/driver/private/types.html#PGSnapshot">types: DataType.PGSnapshot</a></li>
+          </ul></dd>
+<dt><a name="pluck" href="#pluck"><span>pluck:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro pluck(sql: untyped; col: static string): untyped" href="ozark/query.html#pluck.m%2Cuntyped%2Cstaticstring">query: macro pluck(sql: untyped; col: static string): untyped</a></li>
           </ul></dd>
 <dt><a name="Point" href="#Point"><span>Point:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -335,9 +617,21 @@
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.Real" href="ozark/driver/private/types.html#Real">types: DataType.Real</a></li>
           </ul></dd>
+<dt><a name="rebuildResultCall" href="#rebuildResultCall"><span>rebuildResultCall:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc rebuildResultCall(kindSym: NimNode; sqlText: string; bracket: NimNode): NimNode" href="ozark/query.html#rebuildResultCall%2CNimNode%2Cstring%2CNimNode">query: proc rebuildResultCall(kindSym: NimNode; sqlText: string; bracket: NimNode): NimNode</a></li>
+          </ul></dd>
 <dt><a name="removeRow" href="#removeRow"><span>removeRow:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: macro removeRow(modelTuple: untyped): untyped" href="ozark/query.html#removeRow.m%2Cuntyped">query: macro removeRow(modelTuple: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="resultKindOf" href="#resultKindOf"><span>resultKindOf:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc resultKindOf(callNode: NimNode): string" href="ozark/query.html#resultKindOf%2CNimNode">query: proc resultKindOf(callNode: NimNode): string</a></li>
+          </ul></dd>
+<dt><a name="rollback" href="#rollback"><span>rollback:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: template rollback(dir: string; steps: int = 1)" href="ozark/migration.html#rollback.t%2Cstring%2Cint">migration: template rollback(dir: string; steps: int = 1)</a></li>
           </ul></dd>
 <dt><a name="RuntimeSchemas" href="#RuntimeSchemas"><span>RuntimeSchemas:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -361,6 +655,10 @@
 <li><a class="reference external"
           data-doc-search-tag="query: macro selectAll(modelTuple: untyped): untyped" href="ozark/query.html#selectAll.m%2Cuntyped">query: macro selectAll(modelTuple: untyped): untyped</a></li>
           </ul></dd>
+<dt><a name="selectFamilyResults" href="#selectFamilyResults"><span>selectFamilyResults:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: const selectFamilyResults" href="ozark/query.html#selectFamilyResults">query: const selectFamilyResults</a></li>
+          </ul></dd>
 <dt><a name="Serial" href="#Serial"><span>Serial:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.Serial" href="ozark/driver/private/types.html#Serial">types: DataType.Serial</a></li>
@@ -380,6 +678,16 @@
 <dt><a name="StaticSchemas" href="#StaticSchemas"><span>StaticSchemas:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="model: const StaticSchemas" href="ozark/model.html#StaticSchemas">model: const StaticSchemas</a></li>
+          </ul></dd>
+<dt><a name="sumOf" href="#sumOf"><span>sumOf:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro sumOf(sql: untyped; col: static string): untyped" href="ozark/query.html#sumOf.m%2Cuntyped%2Cstaticstring">query: macro sumOf(sql: untyped; col: static string): untyped</a></li>
+          </ul></dd>
+<dt><a name="swapResultCall" href="#swapResultCall"><span>swapResultCall:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc swapResultCall(trailing: NimNode; kindSym: NimNode; newText: string;
+               bracket: NimNode)" href="ozark/query.html#swapResultCall%2CNimNode%2CNimNode%2Cstring%2CNimNode">query: proc swapResultCall(trailing: NimNode; kindSym: NimNode; newText: string;
+               bracket: NimNode)</a></li>
           </ul></dd>
 <dt><a name="table" href="#table"><span>table:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -405,6 +713,14 @@
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.Timezone" href="ozark/driver/private/types.html#Timezone">types: DataType.Timezone</a></li>
           </ul></dd>
+<dt><a name="trailingCallOf" href="#trailingCallOf"><span>trailingCallOf:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc trailingCallOf(sql: NimNode): NimNode" href="ozark/query.html#trailingCallOf%2CNimNode">query: proc trailingCallOf(sql: NimNode): NimNode</a></li>
+          </ul></dd>
+<dt><a name="truncate" href="#truncate"><span>truncate:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro truncate(modelTuple: untyped): untyped" href="ozark/query.html#truncate.m%2Cuntyped">query: macro truncate(modelTuple: untyped): untyped</a></li>
+          </ul></dd>
 <dt><a name="TsQuery" href="#TsQuery"><span>TsQuery:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.TsQuery" href="ozark/driver/private/types.html#TsQuery">types: DataType.TsQuery</a></li>
@@ -413,6 +729,14 @@
 <li><a class="reference external"
           data-doc-search-tag="types: DataType.TsVector" href="ozark/driver/private/types.html#TsVector">types: DataType.TsVector</a></li>
           </ul></dd>
+<dt><a name="unbracket" href="#unbracket"><span>unbracket:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: proc unbracket(n: NimNode): NimNode" href="ozark/query.html#unbracket%2CNimNode">query: proc unbracket(n: NimNode): NimNode</a></li>
+          </ul></dd>
+<dt><a name="unique" href="#unique"><span>unique:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro unique(sql: untyped): untyped" href="ozark/query.html#unique.m%2Cuntyped">query: macro unique(sql: untyped): untyped</a></li>
+          </ul></dd>
 <dt><a name="unserializeSchemas" href="#unserializeSchemas"><span>unserializeSchemas:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="model: proc unserializeSchemas(jsonSchema: string): RuntimeSchemas" href="ozark/model.html#unserializeSchemas%2Cstring">model: proc unserializeSchemas(jsonSchema: string): RuntimeSchemas</a></li>
@@ -420,6 +744,14 @@
 <dt><a name="update" href="#update"><span>update:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: macro update(modelTuple, data: untyped): untyped" href="ozark/query.html#update.m%2Cuntyped%2Cuntyped">query: macro update(modelTuple, data: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="upsert" href="#upsert"><span>upsert:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro upsert(modelTuple: untyped; data: untyped;
+       conflictCols: static openArray[string];
+       updateCols: static openArray[string]): untyped" href="ozark/query.html#upsert.m%2Cuntyped%2Cuntyped%2CstaticopenArray%5Bstring%5D%2CstaticopenArray%5Bstring%5D">query: macro upsert(modelTuple: untyped; data: untyped;
+       conflictCols: static openArray[string];
+       updateCols: static openArray[string]): untyped</a></li>
           </ul></dd>
 <dt><a name="Uuid" href="#Uuid"><span>Uuid:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -433,9 +765,21 @@
 <li><a class="reference external"
           data-doc-search-tag="query: macro where(sql: untyped; col: static string; vals: untyped): untyped" href="ozark/query.html#where.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro where(sql: untyped; col: static string; vals: untyped): untyped</a></li>
           </ul></dd>
+<dt><a name="whereBetween" href="#whereBetween"><span>whereBetween:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped" href="ozark/query.html#whereBetween.m%2Cuntyped%2Cstaticstring%2Cuntyped%2Cuntyped">query: macro whereBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped</a></li>
+          </ul></dd>
 <dt><a name="whereEndsLike" href="#whereEndsLike"><span>whereEndsLike:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: macro whereEndsLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereEndsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereEndsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="whereGt" href="#whereGt"><span>whereGt:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereGt(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereGt.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereGt(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="whereGte" href="#whereGte"><span>whereGte:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereGte(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereGte.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereGte(sql: untyped; col: static string; val: untyped): untyped</a></li>
           </ul></dd>
 <dt><a name="whereIn" href="#whereIn"><span>whereIn:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -445,9 +789,21 @@
 <li><a class="reference external"
           data-doc-search-tag="query: macro whereLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
           </ul></dd>
+<dt><a name="whereLt" href="#whereLt"><span>whereLt:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereLt(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereLt.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereLt(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="whereLte" href="#whereLte"><span>whereLte:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereLte(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereLte.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereLte(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
 <dt><a name="whereNot" href="#whereNot"><span>whereNot:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: macro whereNot(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereNot.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereNot(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="whereNotBetween" href="#whereNotBetween"><span>whereNotBetween:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereNotBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped" href="ozark/query.html#whereNotBetween.m%2Cuntyped%2Cstaticstring%2Cuntyped%2Cuntyped">query: macro whereNotBetween(sql: untyped; col: static string; lo: untyped; hi: untyped): untyped</a></li>
           </ul></dd>
 <dt><a name="whereNotEndsLike" href="#whereNotEndsLike"><span>whereNotEndsLike:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -461,9 +817,17 @@
 <li><a class="reference external"
           data-doc-search-tag="query: macro whereNotLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereNotLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereNotLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
           </ul></dd>
+<dt><a name="whereNotNull" href="#whereNotNull"><span>whereNotNull:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereNotNull(sql: untyped; col: static string): untyped" href="ozark/query.html#whereNotNull.m%2Cuntyped%2Cstaticstring">query: macro whereNotNull(sql: untyped; col: static string): untyped</a></li>
+          </ul></dd>
 <dt><a name="whereNotStartsLike" href="#whereNotStartsLike"><span>whereNotStartsLike:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: macro whereNotStartsLike(sql: untyped; col: static string; val: untyped): untyped" href="ozark/query.html#whereNotStartsLike.m%2Cuntyped%2Cstaticstring%2Cuntyped">query: macro whereNotStartsLike(sql: untyped; col: static string; val: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="whereNull" href="#whereNull"><span>whereNull:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro whereNull(sql: untyped; col: static string): untyped" href="ozark/query.html#whereNull.m%2Cuntyped%2Cstaticstring">query: macro whereNull(sql: untyped; col: static string): untyped</a></li>
           </ul></dd>
 <dt><a name="whereStartsLike" href="#whereStartsLike"><span>whereStartsLike:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -481,15 +845,23 @@
 <li><a class="reference external"
           data-doc-search-tag="query: template withColumnsCheck(model: NimNode; cols: openArray[string]; body)" href="ozark/query.html#withColumnsCheck.t%2CNimNode%2CopenArray%5Bstring%5D%2C">query: template withColumnsCheck(model: NimNode; cols: openArray[string]; body)</a></li>
           </ul></dd>
+<dt><a name="withOzarkMigrationLibs" href="#withOzarkMigrationLibs"><span>withOzarkMigrationLibs:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="migration: template withOzarkMigrationLibs(dir: string; loaded, body)" href="ozark/migration.html#withOzarkMigrationLibs.t%2Cstring%2C%2C">migration: template withOzarkMigrationLibs(dir: string; loaded, body)</a></li>
+          </ul></dd>
 <dt><a name="withTableCheck" href="#withTableCheck"><span>withTableCheck:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="query: template withTableCheck(modelTuple: NimNode; body)" href="ozark/query.html#withTableCheck.t%2CNimNode%2C">query: template withTableCheck(modelTuple: NimNode; body)</a></li>
+          </ul></dd>
+<dt><a name="withTransaction" href="#withTransaction"><span>withTransaction:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="query: macro withTransaction(body: untyped): untyped" href="ozark/query.html#withTransaction.m%2Cuntyped">query: macro withTransaction(body: untyped): untyped</a></li>
           </ul></dd>
 </dl>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-08-10 13:46:40 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-10-20 20:22:04 UTC</small>
       </div>
     </div>
   </div>
