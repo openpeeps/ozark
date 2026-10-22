@@ -26,6 +26,13 @@
 
 ## Examples
 
+A complete, runnable example lives in [`examples/sqlite.nim`](examples/sqlite.nim)
+(SQLite, no external services). Compile and run it with:
+
+```bash
+cd examples && nim c -r sqlite.nim
+```
+
 ### Connecting to the database
 Initialize the database connection with the given parameters
 
@@ -90,36 +97,216 @@ withDB do:
 ```
 
 ### Querying the database
-For simple queries, you can use the macro-based query builder. The query builder provides a fluent API for constructing SQL queries in a type-safe way. The generated SQL is validated at compile time to catch errors early.
+For simple queries, use the macro-based query builder. It provides a fluent API for constructing SQL in a type-safe way. Model and column names are validated at compile time. All `where*` values are bound parameters (no string interpolation, no SQL injection).
 
-#### Insert data
+Every read chain starts with `selectAll`, `select(col|cols)` or `findById`, adds optional filter/sort clauses, and ends with a terminal (`get`, `getAll`, `getRaw`, `pluck`, `exists`, `count`, etc.). Every write chain ends with `exec`, `execGet` or `returning` (PostgreSQL only).
+
+#### Insert
+
 ```nim
 import ozark/query
 
 withDBPool do:
+  # single row, returns the new id
   let id = Models.table(Users).insert({
     name: "John Doe",
     username: "johndoe",
     email: "johndoe@example.com",
-  }).execGet() # returns the id of the inserted row
+  }).execGet()
+
+  # multiple rows in one statement (all rows must share the same columns)
+  Models.table(Users).insertMany([
+    {username: "alice", name: "Alice", email: "alice@x.io"},
+    {username: "bob", name: "Bob", email: "bob@x.io"},
+  ]).exec()
+
+  # upsert on conflict (PostgreSQL + SQLite 3.24+).
+  # Empty updateCols => DO NOTHING
+  Models.table(Users).upsert({
+    username: "alice",
+    name: "Alice Updated",
+    email: "alice@x.io",
+  }, ["username"], ["name"]).exec()
+
+  # PostgreSQL only: return arbitrary columns
+  let rows = Models.table(Users).insert({
+    username: "dave", name: "Dave", email: "dave@x.io"
+  }).returning(["id", "name"]) # seq[seq[string]]
 ```
 
-#### Select Query
+#### Select
+
 ```nim
 withDBPool do:
-  let res = Models.table(Users)
-                  .select(["name", "email"])
-                  .where("name", "John")
-                  .get()
+  # all columns, all rows
+  let all = Models.table(Users).selectAll().getAll()
+
+  # specific columns (unselected string fields read as "")
+  let some = Models.table(Users)
+                .select(["name", "email"])
+                .where("name", "John Doe").get()
+
+  # single column
+  let names = Models.table(Users)
+                .select("name")
+                .where("name", "John Doe").get()
+
+  # DISTINCT
+  let distinctNames = Models.table(Users).select(["name"]).unique().getAll()
+
+  # by primary key
+  let one = Models.table(Users).findById("2").get()
+
+  # first matching row (alias for `.get()`)
+  let first = Models.table(Users).selectAll()
+                  .where("name", "Bob").first()
+
+  # last inserted row (ORDER BY id DESC LIMIT 1)
+  let last = Models.table(Users).selectAll().last()
+```
+
+#### Where filters
+
+```nim
+withDBPool do:
+  # equality / inequality
+  discard Models.table(Users).select("name").where("name", "John Doe").get()
+  discard Models.table(Users).select("name").whereNot("name", "Ghost").get()
+  discard Models.table(Users).select("name")
+            .where("name", "Ghost").orWhere("name", "John Doe").get()
+  discard Models.table(Users).select("name")
+            .whereNot("name", "John Doe").orWhereNot("name", "Ghost").get()
+
+  # comparison
+  discard Models.table(Users).select("id").whereGt("id", "2").getAll()
+  discard Models.table(Users).select("id").whereGte("id", "3").getAll()
+  discard Models.table(Users).select("id").whereLt("id", "3").getAll()
+  discard Models.table(Users).select("id").whereLte("id", "2").getAll()
+  discard Models.table(Users).select("id")
+            .where("id", "1").orWhereGt("id", "10").getAll()
+
+  # NULL
+  discard Models.table(Users).select("id").whereNull("updated_at").getAll()
+  discard Models.table(Users).select("id").whereNotNull("updated_at").getAll()
+
+  # BETWEEN
+  discard Models.table(Users).select("id").whereBetween("id", "2", "3").getAll()
+  discard Models.table(Users).select("id").whereNotBetween("id", "2", "3").getAll()
+  discard Models.table(Users).select("id").orWhereBetween("id", "2", "3").getAll()
+
+  # IN / NOT IN (also orWhereIn / orWhereNotIn)
+  discard Models.table(Users).select("name").whereIn("name", ["Alice", "Bob"]).getAll()
+  discard Models.table(Users).select("name").whereNotIn("name", ["Alice"]).getAll()
+  discard Models.table(Users).select("id")
+            .where("id", "1").orWhereIn("name", ["Bob", "Carol"]).getAll()
+
+  # LIKE: contains / prefix / suffix (+ NOT and OR variants)
+  discard Models.table(Users).select("name").whereLike("name", "Jo").get()
+  discard Models.table(Users).select("name").whereStartsLike("name", "Jo").get()
+  discard Models.table(Users).select("name").whereEndsLike("name", "oe").get()
+  discard Models.table(Users).select("name").whereNotLike("name", "Gh").get()
+  discard Models.table(Users).select("name").whereNotStartsLike("name", "Gh").get()
+  discard Models.table(Users).select("name").whereNotEndsLike("name", "st").get()
+  discard Models.table(Users).select("name")
+            .where("id", "4").whereStartsLike("username", "da").get()
+  discard Models.table(Users).select("name").orWhereLike("name", "Jo").get()
+  discard Models.table(Users).select("name")
+            .orWhereStartsLike("name", "Jo").orWhereEndsLike("name", "oe").get()
+```
+
+#### Ordering, limit, pagination
+
+```nim
+withDBPool do:
+  # ORDER BY (explicit direction, or Asc/Desc helpers)
+  discard Models.table(Users).selectAll().orderAscBy(["username"]).getAll()
+  discard Models.table(Users).selectAll().orderDescBy(["username"]).getAll()
+  discard Models.table(Users).select("username").orderBy(["username"], Asc).getAll()
+  discard Models.table(Users).selectAll().orderBy(["username"], Desc).getAll()
+
+  # LIMIT / OFFSET (static ints, applied before OFFSET)
+  discard Models.table(Users).selectAll().limit(1).getAll()
+  discard Models.table(Users).selectAll()
+            .orderAscBy(["username"]).limit(2).offset(1).getAll()
+
+  # paginate(page, perPage), page is 1-based
+  discard Models.table(Users).selectAll()
+            .orderAscBy(["username"]).paginate(2, 2).getAll()
+```
+
+#### Group by, having, aggregates
+
+```nim
+withDBPool do:
+  # GROUP BY must precede HAVING
+  discard Models.table(Users).select(["name"])
+            .groupBy(["name"]).having("name", "Alice").getAll()
+  discard Models.table(Users).select(["name"])
+            .groupBy(["name"]).havingGte("name", "B").getAll()
+  # also: havingGt / havingLt / havingLte
+
+  # aggregates execute immediately (no .get/.getAll)
+  let total: int64 = Models.table(Users).selectAll().count()
+  let distinctPrices: string = Models.table(Plans).selectAll().countDistinct("price")
+  let sum: string = Models.table(Plans).selectAll().sumOf("price")
+  let avg: string = Models.table(Plans).selectAll().avgOf("price")
+  let lo: string = Models.table(Plans).selectAll().minOf("price")
+  let hi: string = Models.table(Plans).selectAll().maxOf("price")
+
+  # aggregates respect filters and bound params
+  let filteredSum = Models.table(Plans).selectAll()
+                      .whereGte("price", "20").sumOf("price")
+```
+
+#### Update and delete
+
+```nim
+withDBPool do:
+  # UPDATE ... WHERE ...
+  Models.table(Users).update({name: "John Doe"}).where("id", "1").exec()
+
+  # atomic counters (chainable with .where().exec())
+  Models.table(Metrics).increment("hits", 5).where("id", "1").exec()
+  Models.table(Metrics).decrement("hits").where("id", "1").exec() # default n = 1
+
+  # DELETE ... WHERE ...
+  Models.table(Users).removeRow().where("id", "1").exec()
+
+  # delete all rows (portable DELETE FROM, no TRUNCATE)
+  Models.table(Users).truncate().exec()
+```
+
+#### Terminals: how results come back
+
+```nim
+withDBPool do:
+  # Collection[Model]: .get() = first match, .getAll() = all matches
+  let c1 = Models.table(Users).selectAll().where("id", "1").get()
+  let c2 = Models.table(Users).selectAll().where("id", "1").getAll()
+  check c1.get(0).name == "John Doe"
+  for u in c2: echo u.name
+
+  # raw rows, no model mapping
+  let raw: seq[seq[string]] = Models.table(Users).selectAll().limit(2).getRaw()
+
+  # single column as seq[string]
+  let hits: seq[string] = Models.table(Metrics).selectAll()
+                              .orderAscBy(["hits"]).pluck("hits")
+
+  # existence checks (chained or table-level), return bool
+  let hasBob: bool = Models.table(Users).selectAll().where("name", "Bob").exists()
+  let hasAny: bool = Models.table(Users).exists()
+
+  # row count, returns int64
+  let n: int64 = Models.table(Users).selectAll().count()
 ```
 
 ### Querying with raw SQL
 When things are getting too complex for the query builder, you can use `rawSQL` to write raw SQL queries while still benefiting from **compile-time validation** & **type safety**. The `rawSQL` macro allows you to write raw SQL queries with **parameter binding** to **prevent SQL injection attacks**.
 
 ```nim
-Models.table(Users)
-      .rawSQL("SELECT * FROM users WHERE name = ?", "Alice")
-      .get(Users)
+Models.rawSQL("SELECT * FROM users WHERE name = ?", "Alice")
+      .getWith(Users)
 ```
 
 ### Migrations
