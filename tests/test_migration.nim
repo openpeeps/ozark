@@ -16,25 +16,24 @@ const
 var workDir = getTempDir() / "ozark_migration_test"
 var migDir = workDir / "migrations"
 
-proc nimExe(): string =
-  result = findExe("nim")
-  assert result.len > 0, "nim not found in PATH"
+proc clueExe(): string =
+  result = findExe("clue")
+  assert result.len > 0, "clue not found in PATH"
 
 proc buildMigration(srcName, outName: string): tuple[output: string, exitCode: int] =
-  ## Compiles one migration fixture as a dynamic library.
+  ## Compiles one migration fixture as a dynamic library via `clue build`,
+  ## so `pkg/...` dependencies resolve exactly as they do for the test itself.
+  ## (A raw `nim c` subprocess loses the package-manager paths, which breaks
+  ## the build in CI with `cannot open file: pkg/...`.)
   ## NB: `system.gorgeEx` is compile-time only; `execCmdEx` runs at test time.
-  var cmd = nimExe() & " c --hints:off --app:lib" &
+  let cmd = clueExe() & " build --app:lib" &
     " --path:" & quoteShell(ozarkSrc) &
-    " --path:" & quoteShell(migDir)
-  # Include clue/nimble dependency roots so `pkg/...` imports resolve in CI.
-  for root in [getHomeDir() / ".clue" / "packages", getHomeDir() / ".nimble" / "pkgs2"]:
-    if dirExists(root):
-      for kind, path in walkDir(root):
-        if kind == pcDir:
-          cmd &= " --path:" & quoteShell(path)
-  cmd &= " --out:" & quoteShell(migDir / outName) &
+    " --path:" & quoteShell(migDir) &
+    " --out:" & quoteShell(migDir / outName) &
     " " & quoteShell(migDir / srcName)
-  osproc.execCmdEx(cmd)
+  # Run from the ozark project root so `clue` picks up this project (and its
+  # lockfile) for dependency resolution.
+  osproc.execCmdEx(cmd, workingDir = testsDir / "..")
 
 proc setupFixtures() =
   removeDir(workDir)
