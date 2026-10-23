@@ -1,45 +1,9 @@
 name: test
-on:
-  push:
-    paths-ignore:
-      - LICENSE
-      - README.*
-      - examples
-      - .github/workflows
-  pull_request:
-    paths-ignore:
-      - LICENSE
-      - README.*
-      - examples
-      - .github/workflows
+on: [push, pull_request]
 jobs:
   test:
-    runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: ozark_test
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-    strategy:
-      matrix:
-        nim-version:
-          - 'stable'
-    steps:
-      - uses: actions/checkout@v3
-      - uses: jiro4989/setup-nim-action@v1
-        with:
-          nim-version: ${{ matrix.nim-version }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: sudo apt-get update && sudo apt-get install -y default-mysql-client
-      - run: nimble install greskewel
-      - run: nimble install -Y
-      - run: nim c -r src/${{ github.event.repository.name }}.nim
-      - run: nim c -d:mysqlTests -r tests/test_mysql.nim
+    uses: nimbase/setup-nim-action/.github/workflows/test_clue.yml@main
+    with:
+      cache: false
+      nim-version: stable
+      test-flags: "-d:release"
