@@ -7,3 +7,5 @@ jobs:
       cache: false
       nim-version: stable
       test-flags: "-d:release"
+      pre-test-command: |
+        clue install threading
