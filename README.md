@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="Ozark ORM" src="https://github.com/openpeeps/ozark/blob/main/.github/ozark-logo-v21.png" width=“120px"><br>
+  <img alt="Ozark ORM" src="https://github.com/openpeeps/ozark/blob/main/.github/ozark-logo-v21.png" width="200px"><br>
   A magical ORM for the Nim language 👑
 </p>
 
