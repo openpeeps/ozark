@@ -55,6 +55,8 @@ const
     ## Driver id for PostgreSQL (matches the `sqlDriver` const injected by the pg driver).
   OzarkMigrationDriverSqlite* = 3
     ## Driver id for SQLite (matches the `sqlDriver` const injected by the sqlite driver).
+  OzarkMigrationDriverMysql* = 2
+    ## Driver id for MySQL (matches the `sqlDriver` const injected by the mysql driver).
   ozarkMigrationExecStages = [
     "ozarkWhereResult", "ozarkRawSQLResult", "ozarkInsertResult",
     "ozarkCreateTableResult", "ozarkRemoveResult", "ozarkUpsertResult"
@@ -195,8 +197,10 @@ macro newMigration*(name: untyped, body: untyped): untyped =
     newProc(ident(procName), body = procBody)
 
   let upPgsqlImpl = mkFlavorProc("ozarkMigUpPgsql", 1, upBlock)
+  let upMysqlImpl = mkFlavorProc("ozarkMigUpMysql", 2, upBlock)
   let upSqliteImpl = mkFlavorProc("ozarkMigUpSqlite", 3, upBlock)
   let downPgsqlImpl = mkFlavorProc("ozarkMigDownPgsql", 1, downBlock)
+  let downMysqlImpl = mkFlavorProc("ozarkMigDownMysql", 2, downBlock)
   let downSqliteImpl = mkFlavorProc("ozarkMigDownSqlite", 3, downBlock)
 
   result = quote do:
@@ -246,10 +250,13 @@ macro newMigration*(name: untyped, body: untyped): untyped =
 
     proc migration_up*(driver: cint): cstring =
       ozarkMigIsPgsql = driver == cint(OzarkMigrationDriverPgsql)
+      ozarkMigIsMysql = driver == cint(OzarkMigrationDriverMysql)
       var stmts: seq[OzarkMigrationStmt] = @[]
       ozarkMigCollector = addr stmts
       if driver == cint(OzarkMigrationDriverPgsql):
         ozarkMigUpPgsql()
+      elif driver == cint(OzarkMigrationDriverMysql):
+        ozarkMigUpMysql()
       else:
         ozarkMigUpSqlite()
       ozarkMigJsonCache = $ozarkMigStmtsToJson(stmts)
@@ -257,18 +264,21 @@ macro newMigration*(name: untyped, body: untyped): untyped =
 
     proc migration_down*(driver: cint): cstring =
       ozarkMigIsPgsql = driver == cint(OzarkMigrationDriverPgsql)
+      ozarkMigIsMysql = driver == cint(OzarkMigrationDriverMysql)
       var stmts: seq[OzarkMigrationStmt] = @[]
       ozarkMigCollector = addr stmts
       if driver == cint(OzarkMigrationDriverPgsql):
         ozarkMigDownPgsql()
+      elif driver == cint(OzarkMigrationDriverMysql):
+        ozarkMigDownMysql()
       else:
         ozarkMigDownSqlite()
       ozarkMigJsonCache = $ozarkMigStmtsToJson(stmts)
       ozarkMigJsonCache.cstring
     {.pop.}
 
-  let headed = newStmtList(upPgsqlImpl, upSqliteImpl, downPgsqlImpl,
-                             downSqliteImpl)
+  let headed = newStmtList(upPgsqlImpl, upMysqlImpl, upSqliteImpl,
+                             downPgsqlImpl, downMysqlImpl, downSqliteImpl)
   for s in result:
     headed.add(copyNimTree(s))
   result = headed
@@ -284,6 +294,8 @@ when compileOption("app", "lib"):
     ## generated `migration_up` / `migration_down` before running each body.
   var ozarkMigIsPgsql* {.global.}: bool
     ## True while capturing the PostgreSQL flavor (drives value mapping).
+  var ozarkMigIsMysql* {.global.}: bool
+    ## True while capturing the MySQL flavor (drives value mapping).
   var ozarkMigJsonCache* {.global.}: string
     ## Backing store for returned `cstring`s; keeps them alive across the ABI.
 
@@ -296,6 +308,7 @@ when compileOption("app", "lib"):
       (if v: "1" else: "0")
   proc migVal*(v: DateTime): string =
     if ozarkMigIsPgsql: v.format("yyyy-MM-dd HH:mm:sszz")
+    elif ozarkMigIsMysql: v.format("yyyy-MM-dd HH:mm:ss")
     else: v.format("yyyy-MM-dd'T'HH:mm:sszzz")
   proc migVal*[T](v: T): string = $v
 

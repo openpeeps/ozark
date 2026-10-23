@@ -292,8 +292,20 @@ macro prepareTable*(modelTuple): untyped =
         colDef &= (
           if t[1].strVal == "serial" and driverType == SqlDriver.sqlite:
             $(DataType.Integer)
-          else:
-            t[1].strVal
+         elif t[1].strVal == "serial" and driverType == SqlDriver.mysql:
+           "int"
+         elif t[1].strVal == "bigserial" and driverType == SqlDriver.mysql:
+           "bigint"
+         elif t[1].strVal == "smallserial" and driverType == SqlDriver.mysql:
+           "smallint"
+         elif t[1].strVal == "money" and driverType == SqlDriver.mysql:
+           "decimal(19,2)"
+         elif t[1].strVal == "boolean" and driverType == SqlDriver.mysql:
+           "tinyint(1)"
+         elif t[1].strVal == "timestamptz" and driverType == SqlDriver.mysql:
+           "timestamp"
+         else:
+           t[1].strVal
         )
       elif t[1].kind == nkCall:
         colDef &= t[1][0].strVal & "(" & 
@@ -302,6 +314,8 @@ macro prepareTable*(modelTuple): untyped =
         for i in 2..<t.len:
           if t[i].kind == nkPrimaryKey:
             compositePkCols.add(t[0].strVal)
+            if driverType == SqlDriver.mysql and t[1].kind == nkIdent and t[1].strVal == "serial":
+              colDef &= " AUTO_INCREMENT"
           else:
             colDef &= " " & $t[i]
       colDef
@@ -337,7 +351,7 @@ macro dropTable*(modelTuple: untyped, cascade: static bool = false): untyped =
     result = newCall(
       bindSym"ozarkRawSQLResult",
       newLit(
-        if modelTuple.getDriverType() == SqlDriver.sqlite:
+        if modelTuple.getDriverType() in {SqlDriver.sqlite, SqlDriver.mysql}:
           "DROP TABLE IF EXISTS " & tableName
         else:
           "DROP TABLE IF EXISTS " & tableName & (if cascade: " CASCADE" else: "")),
@@ -1099,14 +1113,23 @@ macro upsert*(modelTuple: untyped, data: untyped,
       " (" & cols.join(",") & ") VALUES (" &
       valueIds.mapIt(getPlaceholder(modelTuple, it)).join(",") & ")"
     if conflictCols.len > 0:
-      sqlTxt &= " ON CONFLICT (" & conflictCols.join(", ") & ")"
-      if updateCols.len > 0:
-        var setPairs: seq[string]
-        for col in updateCols:
-          setPairs.add(col & " = EXCLUDED." & col)
-        sqlTxt &= " DO UPDATE SET " & setPairs.join(", ")
+      let driverType = modelTuple.getDriverType()
+      if driverType == SqlDriver.mysql:
+        if updateCols.len > 0:
+          var setPairs: seq[string]
+          for col in updateCols:
+            setPairs.add(col & " = VALUES(" & col & ")")
+          sqlTxt &= " ON DUPLICATE KEY UPDATE " & setPairs.join(", ")
+        # else: plain INSERT (ignore duplicate) -> use INSERT IGNORE? keep as-is
       else:
-        sqlTxt &= " DO NOTHING"
+        sqlTxt &= " ON CONFLICT (" & conflictCols.join(", ") & ")"
+        if updateCols.len > 0:
+          var setPairs: seq[string]
+          for col in updateCols:
+            setPairs.add(col & " = EXCLUDED." & col)
+          sqlTxt &= " DO UPDATE SET " & setPairs.join(", ")
+        else:
+          sqlTxt &= " DO NOTHING"
     result =
       newCall(
         bindSym"ozarkUpsertResult",

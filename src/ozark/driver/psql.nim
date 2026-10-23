@@ -658,3 +658,34 @@ macro returning*(sql: untyped, cols: static openArray[string]): untyped =
   for v in bracket:
     call.add(v)
   result = call
+
+
+import std/asyncdispatch
+
+macro asyncGetAll*(sql: untyped): untyped =
+  let tmp = genSym(nskLet, "ozarkAsyncResult")
+  result = quote do:
+    block:
+      let `tmp` = `sql`.getAll()
+      let fut = newFuture[typeof(`tmp`)]("ozarkAsyncGetAll")
+      fut.complete(`tmp`)
+      fut
+
+macro asyncGet*(sql: untyped): untyped =
+  let tmp = genSym(nskLet, "ozarkAsyncResult")
+  result = quote do:
+    block:
+      let `tmp` = `sql`.get()
+      let fut = newFuture[typeof(`tmp`)]("ozarkAsyncGet")
+      fut.complete(`tmp`)
+      fut
+
+macro asyncExec*(sql: untyped): untyped =
+  result = quote do:
+    block:
+      proc ozarkAsyncExecRun() =
+        `sql`.exec()
+      ozarkAsyncExecRun()
+      let fut = newFuture[void]("ozarkAsyncExec")
+      fut.complete()
+      fut

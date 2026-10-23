@@ -13,13 +13,22 @@
 </p>
 
 ## 😍 Key Features
-- [x] Macro-based query builder with a fluent API
-- [x] Compile-time SQL validation & type safety
-- [x] Support for PostgreSQL and SQLite
-- [x] Transactions (`withTransaction`) with automatic commit/rollback
-- [x] Upserts, batch inserts, aggregates, pagination, raw SQL with bound params
-- [ ] Async query execution (coming soon)
-- [x] Pluginkit-backed migration system with compile-time validated DSL
+- Macro-based query builder with a fluent API
+- Compile-time SQL validation and type safety
+- Support for PostgreSQL, MySQL, and SQLite
+- Connection pooling (`withDB`, `withDBPool`) and `withTransaction` with automatic commit/rollback
+- Models with compile-time schema definitions and table creation (`prepareTable`, `dropTable`)
+- Inserts, batch inserts (`insertMany`), updates, deletes, truncates, and atomic counters (`increment`/`decrement`)
+- Upserts with driver-specific conflict handling (`ON CONFLICT` / `ON DUPLICATE KEY UPDATE`)
+- Rich filtering: equality, comparison, NULL, BETWEEN, IN/NOT IN, LIKE (prefix/suffix/contains), OR variants
+- Ordering, LIMIT/OFFSET, pagination (`paginate`), and DISTINCT (`unique`)
+- GROUP BY and HAVING
+- Aggregates: `count`, `countDistinct`, `sumOf`, `avgOf`, `minOf`, `maxOf`
+- Terminals: `get`, `getAll`, `getRaw`, `first`, `last`, `findById`, `exists`, `pluck`
+- Raw SQL with bound parameters and compile-time validation (`rawSQL`, `getWith`)
+- PostgreSQL `RETURNING` support
+- Pluginkit-backed migration system with a compile-time validated DSL
+- Async terminals: `asyncGet`, `asyncGetAll`, `asyncExec` (return `Future`)
 
 > [!NOTE]
 > Ozark is still in active development. Expect bugs and breaking changes. Contributions are welcome!
@@ -39,7 +48,14 @@ Initialize the database connection with the given parameters
 ```nim
 import ozark/database
 
+# PostgreSQL
 initOzarkDatabase("localhost", "mydb", "myuser", "mypassword", 5432.Port)
+
+# MySQL
+initOzarkDatabase("localhost", "mydb", "myuser", "mypassword", 3306.Port)
+
+# SQLite
+initOzarkDatabase("app.db")
 ```
 
 #### `withDB` or `withDBPool`
@@ -299,6 +315,17 @@ withDBPool do:
 
   # row count, returns int64
   let n: int64 = Models.table(Users).selectAll().count()
+```
+
+#### Async terminals
+Async variants return a `Future` and can be awaited inside an async proc (run within a `withDB`/`withDBPool` block so a connection is available):
+
+```nim
+proc loadUsers() {.async.} =
+  withDBPool do:
+    let all = await Models.table(Users).selectAll().asyncGetAll()
+    let one = await Models.table(Users).selectAll().limit(1).asyncGet()
+    await Models.table(Users).removeRow().asyncExec()
 ```
 
 ### Querying with raw SQL
