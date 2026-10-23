@@ -7,7 +7,8 @@ const greskewel_lib = pqlibPath / "libpq.dylib"
 {.passl: "-Wl,-rpath," & pqlibPath.}
 # Skip the whole module when the embedded-postgres binaries are not present yet
 when not fileExists(pqlibPath / "libpq.dylib"):
-  {.error: "test2 requires greskewel binaries; run `clue test` once so test1 downloads them first".}
+  echo "Skipping postgres tests (greskewel binaries missing)."
+  quit(0)
 
 import pkg/greskewel
 import ../src/ozark/driver/psql

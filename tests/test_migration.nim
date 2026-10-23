@@ -23,11 +23,18 @@ proc nimExe(): string =
 proc buildMigration(srcName, outName: string): tuple[output: string, exitCode: int] =
   ## Compiles one migration fixture as a dynamic library.
   ## NB: `system.gorgeEx` is compile-time only; `execCmdEx` runs at test time.
-  osproc.execCmdEx(nimExe() & " c --hints:off --app:lib" &
+  var cmd = nimExe() & " c --hints:off --app:lib" &
     " --path:" & quoteShell(ozarkSrc) &
-    " --path:" & quoteShell(migDir) &
-    " --out:" & quoteShell(migDir / outName) &
-    " " & quoteShell(migDir / srcName))
+    " --path:" & quoteShell(migDir)
+  # Include clue/nimble dependency roots so `pkg/...` imports resolve in CI.
+  for root in [getHomeDir() / ".clue" / "packages", getHomeDir() / ".nimble" / "pkgs2"]:
+    if dirExists(root):
+      for kind, path in walkDir(root):
+        if kind == pcDir:
+          cmd &= " --path:" & quoteShell(path)
+  cmd &= " --out:" & quoteShell(migDir / outName) &
+    " " & quoteShell(migDir / srcName)
+  osproc.execCmdEx(cmd)
 
 proc setupFixtures() =
   removeDir(workDir)
