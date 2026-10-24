@@ -451,29 +451,38 @@ else:
       raise newException(OzarkMigrationError,
         "Migrations directory not found: " & dir)
     var seen = initTable[string, string]()
-    for kind, path in walkDir(dir):
-      if kind != pcFile: continue
-      if splitFile(path).ext.toLowerAscii notin [".so", ".dylib", ".dll"]:
-        continue
-      let id = manager.load(path)
-      let plugin = manager.getPlugin(id)
-      let handle = plugin.getHandle()
-      let infoFn = cast[migration_info_fn](handle.symAddr("migration_get_info"))
-      let runUp = cast[migration_run_fn](handle.symAddr("migration_up"))
-      let runDown = cast[migration_run_fn](handle.symAddr("migration_down"))
-      if infoFn.isNil or runUp.isNil or runDown.isNil:
-        manager.unload(id)
-        raise newException(OzarkMigrationError,
-          "Not a migration plugin (missing migration_* symbols): " & path)
-      manager.activate(id)
-      let info = parseOzarkMigrationInfo($infoFn(), path)
-      if seen.hasKey(info.version):
-        raise newException(OzarkMigrationError,
-          "Duplicate migration version `" & info.version & "` in `" &
-          seen[info.version] & "` and `" & path & "`")
-      seen[info.version] = path
-      result.add(OzarkLoadedMigration(
-        info: info, pluginId: id, runUp: runUp, runDown: runDown))
+    try:
+      for kind, path in walkDir(dir):
+        if kind != pcFile: continue
+        if splitFile(path).ext.toLowerAscii notin [".so", ".dylib", ".dll"]:
+          continue
+        let id = manager.load(path)
+        let plugin = manager.getPlugin(id)
+        let handle = plugin.getHandle()
+        let infoFn = cast[migration_info_fn](handle.symAddr("migration_get_info"))
+        let runUp = cast[migration_run_fn](handle.symAddr("migration_up"))
+        let runDown = cast[migration_run_fn](handle.symAddr("migration_down"))
+        if infoFn.isNil or runUp.isNil or runDown.isNil:
+          manager.unload(id)
+          raise newException(OzarkMigrationError,
+            "Not a migration plugin (missing migration_* symbols): " & path)
+        manager.activate(id)
+        let info = parseOzarkMigrationInfo($infoFn(), path)
+        if seen.hasKey(info.version):
+          raise newException(OzarkMigrationError,
+            "Duplicate migration version `" & info.version & "` in `" &
+            seen[info.version] & "` and `" & path & "`")
+        seen[info.version] = path
+        result.add(OzarkLoadedMigration(
+          info: info, pluginId: id, runUp: runUp, runDown: runDown))
+    except CatchableError:
+      # Unload everything loaded so far before propagating the error.
+      # On Windows a loaded library keeps the file locked, so leaking
+      # handles breaks cleanup (e.g. removeFile of the .so/.dll).
+      for m in result:
+        try: manager.unload(m.pluginId)
+        except CatchableError: discard
+      raise
     result.sort(proc(a, b: OzarkLoadedMigration): int =
       cmp(a.info.version, b.info.version))
 
